@@ -1,0 +1,2 @@
+. .husky/common.sh
+npx lint-staged
