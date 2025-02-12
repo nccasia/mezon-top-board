@@ -42,23 +42,3 @@ export const getQueryParams = (url: string) => {
     return {}
   }
 }
-
-export const getInvoiceHash = (payUrl?: string) => {
-  if (!payUrl) return ''
-  return payUrl.split('/').pop() || ''
-}
-
-export const replacePostProductionTitle = (title: string, currency: string = 'CA') => {
-  if (!title) return ''
-
-  return title.replace(new RegExp(` - ?${currency}$`), '').replace(new RegExp(`-?${currency}$`), '')
-}
-
-export const getFileNameWithoutExtension = (fileName: string) => {
-  if (!fileName) return ''
-  return fileName.substring(0, fileName.lastIndexOf('.'))
-}
-
-export const checkPlaceholderFile = (self_notes: string) => {
-  return self_notes?.includes('placeholder file.')
-}

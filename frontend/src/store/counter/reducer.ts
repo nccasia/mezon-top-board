@@ -1,5 +1,5 @@
 import { PayloadAction } from '@reduxjs/toolkit'
-import { ICounterStore } from '@store/counter/index'
+import { ICounterStore } from '.'
 
 export const counterReducers = {
   increment: (state: ICounterStore) => {

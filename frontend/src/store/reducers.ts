@@ -1,5 +1,5 @@
 import { combineReducers } from '@reduxjs/toolkit'
-import { api } from '@services/apiInstance'
+import { api } from '@app/services/apiInstance'
 import { counterReducer } from './counter'
 
 export const rootReducer = combineReducers({

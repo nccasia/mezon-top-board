@@ -1,11 +1,11 @@
-import { RouterProvider } from 'react-router-dom'
-import { router } from './router'
 import { Bounce, ToastContainer } from 'react-toastify'
+import { renderRoutes } from './navigation/router'
+import { Routes } from 'react-router-dom'
 
 function App() {
   return (
     <>
-      <RouterProvider router={router}></RouterProvider>
+      <Routes>{renderRoutes()}</Routes>
       <ToastContainer
         position='top-center'
         autoClose={5000}

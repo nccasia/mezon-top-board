@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux'
-import { decrement, ICounterStore, increment } from '@/store/counter'
-import { RootState } from '@/store'
+import { decrement, ICounterStore, increment } from '@app/store/counter'
+import { RootState } from '@app/store'
 import styles from './HomePage.module.scss'
 import { Button, Flex } from 'antd'
 function HomePage() {

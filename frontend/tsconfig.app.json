@@ -23,21 +23,9 @@
     "noUncheckedSideEffectImports": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@assets/*": ["./src/assets/*"],
-      "@components/*": ["./src/components/*"],
-      "@store/*": ["./src/store/*"],
-      "@services/*": ["./src/services/*"],
-      "@constants/*": ["./src/constants/*"],
-      "@enums/*": ["./src/enums/*"],
-      "@interface/*": ["./src/interface/*"],
-      "@layouts/*": ["./src/layouts/*"],
-      "@pages/*": ["./src/pages/*"],
-      "@types/*": ["./src/types/*"],
-      "@utils/*": ["./src/utils/*"],
-      "@validations/*": ["./src/validations/*"]
+      "@app/*": ["src/*"]
     }
   },
-  "include": ["src"],
+  "include": ["src", "src/constants/.gitkeep", "src/enums/.gitkeep", "src/types/.gitkeep", "src/validations/.gitkeep"],
   "exclude": ["node_modules", "dist"]
 }

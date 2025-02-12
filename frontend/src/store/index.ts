@@ -1,6 +1,6 @@
-import { api } from '@/services/apiInstance'
+import { api } from '@app/services/apiInstance'
 import { configureStore } from '@reduxjs/toolkit'
-import { rootReducer } from '@store/reducers'
+import { rootReducer } from './reducers'
 // ...
 
 export const store = configureStore({
