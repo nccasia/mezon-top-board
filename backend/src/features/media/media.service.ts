@@ -1,30 +1,57 @@
-import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
+import { BadRequestException, Injectable } from "@nestjs/common";
 
-import { Repository } from "typeorm";
+import { EntityManager } from "typeorm";
 
+import { RequestWithId } from "@domain/common/dtos/request.dto";
+import { Result } from "@domain/common/dtos/result.dto";
+import { Media } from "@domain/entities";
 
-import { Result } from "@domains/common/dtos/result.dto";
-import { Media } from "@domains/entities/media.entity";
-
-
+import { GenericRepository } from "@libs/repository/genericRepository";
 import { Mapper } from "@libs/utils/mapper";
+import { paginate } from "@libs/utils/paginate";
 
-import { GetUserResponse } from "./media.dto";
+import { CreateMediaRequest, DeleteMediaRequest, GetMediaRequest, UpdateMediaRequest } from "./dtos/request";
+import { GetMediaResponse } from "./dtos/response";
 
 @Injectable()
 export class MediaService {
-  constructor(
-    @InjectRepository(Media)
-    private readonly mediaRepository: Repository<Media>,
-  ) {}
+  private readonly mediaRepository: GenericRepository<Media>;
+  constructor(private manager: EntityManager) {
+    this.mediaRepository = new GenericRepository(Media, manager);
+  }
 
-  async getAll() {
-    const result = (await this.mediaRepository.find()).map((item) =>
-      Mapper(GetUserResponse, item),
+  async getAll(query: GetMediaRequest) {
+    return paginate<Media, GetMediaResponse>(
+      () =>
+        this.mediaRepository.findMany(query),
+      query.pageSize,
+      query.pageNumber,
+      (entity) => Mapper(GetMediaResponse, entity),
     );
-    return new Result({
-      data: result,
-    });
+  }
+
+  async getMedia(query: RequestWithId) {
+    const media = await this.mediaRepository.findById(query.id)
+    return new Result({ data: media })
+  }
+
+  async createMedia(req: CreateMediaRequest) {
+    const { name } = req;
+    const media = await this.mediaRepository.getRepository().findOneBy({ name });
+    if (media)
+      throw new BadRequestException("This name is already existed.");
+    await this.mediaRepository.create({ name })
+
+    return new Result({})
+  }
+
+  async deleteMedia(req: DeleteMediaRequest) {
+    await this.mediaRepository.softDelete(req.id)
+    return new Result({})
+  }
+
+  async update(req: UpdateMediaRequest) {
+    await this.mediaRepository.update(req.id, { name: req.name })
+    return new Result({})
   }
 }

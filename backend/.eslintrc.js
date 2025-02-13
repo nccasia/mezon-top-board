@@ -33,7 +33,7 @@ module.exports = {
             position: "before",
           },
           {
-            pattern: "@domains/**",
+            pattern: "@domain/**",
             group: "internal",
             position: "before",
           },

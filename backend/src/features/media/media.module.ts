@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
-import { Media } from "@domains/entities/media.entity";
+import { Media } from "@domain/entities";
 
 import { MediaController } from "./media.controller";
 import { MediaService } from "./media.service";
