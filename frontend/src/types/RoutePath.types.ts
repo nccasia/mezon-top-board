@@ -5,4 +5,7 @@ export type RoutePath = {
     path: string;
     element: JSX.Element;
     children?: RoutePath[];
+    label?: string | JSX.Element;
+    isShowMenu?: boolean;
+    isShowTextLink?: boolean
 }

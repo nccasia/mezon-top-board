@@ -14,6 +14,7 @@
     "gen-api": "cd ./services && npx @rtk-query/codegen-openapi openapiConfig.ts"
   },
   "dependencies": {
+    "@ant-design/icons": "^5.6.1",
     "@hookform/resolvers": "^4.0.0",
     "@reduxjs/toolkit": "^2.5.1",
     "@rtk-query/codegen-openapi": "^2.0.0",

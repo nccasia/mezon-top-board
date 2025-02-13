@@ -42,3 +42,10 @@ export const getQueryParams = (url: string) => {
     return {}
   }
 }
+
+export const handleMapOption = (enums: Record<string, string>) => {
+  return Object.entries(enums).map(([key, value]) => ({
+    value: key,
+    label: value
+  }))
+}
