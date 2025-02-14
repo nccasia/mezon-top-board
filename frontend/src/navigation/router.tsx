@@ -29,3 +29,16 @@ export const renderRoutes = () => {
     </>
   )
 };
+
+export const renderMenu = () => {
+  return routePaths.map((route, index) => {
+    if (route.isShowMenu) {
+      return (
+        <li key={`${route.path}-${index}`}>
+          <a href={route.path} className='!text-black'>{route.label}</a>
+        </li>
+      )
+    }
+    return null
+  })
+}
