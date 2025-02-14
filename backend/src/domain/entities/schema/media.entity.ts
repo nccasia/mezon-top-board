@@ -1,6 +1,6 @@
 import { Entity, Column, Unique } from "typeorm";
 
-import { BaseSoftDelete } from "./base";
+import { BaseSoftDelete } from "../base";
 
 @Entity()
 @Unique(["name"])

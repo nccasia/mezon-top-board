@@ -1,6 +1,6 @@
 import { Expose } from "class-transformer";
 
-export class GetUserResponse {
+export class GetMediaResponse {
   @Expose()
   public name: string;
 }

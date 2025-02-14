@@ -12,7 +12,7 @@ export const dataSourceOption: DataSourceOptions = {
   password: config().DB_PASSWORD,
   synchronize: false,
   logging: true,
-  entities: ["dist/domains/entities/*.entity.js"],
+  entities: ["dist/domain/entities/schema/*.entity.js"],
   migrations: ["dist/migrations/*.js"],
   subscribers: [],
   schema: config().DB_SCHEMA ?? "public",
