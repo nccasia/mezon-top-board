@@ -1,9 +1,11 @@
-import { Button, Divider, Flex, Input, Pagination, Select, Tag } from 'antd'
+import { Divider, Flex, Input, Pagination, Tag } from 'antd'
 import styles from './Main.module.scss'
 import { ArrowLeftOutlined, ArrowRightOutlined, SearchOutlined } from '@ant-design/icons'
 import { useMemo } from 'react'
 import BotCard from '@app/components/BotCard/BotCard'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
+import Button from '@app/components/common/Button'
+import SingleSelect, { IOption } from '@app/components/common/SingleSelect'
 
 const pageOptions = [5, 10, 15]
 function Main() {
@@ -15,6 +17,9 @@ function Main() {
       }
     })
   }, [])
+  const handlePageSizeChange = (option: IOption) => {
+    console.log("item per page", option)
+  }
   return (
     <div className={`flex flex-col justify-center m-auto pt-8 ${styles.main} pb-12`}>
       <Divider variant='solid' style={{ borderColor: 'gray' }}>
@@ -22,13 +27,13 @@ function Main() {
       </Divider>
       <div className='flex gap-5 pt-3'>
         <Input placeholder='Search' type='text' prefix={<SearchOutlined />} style={{ borderRadius: '50px' }}></Input>
-        <Button color='default' variant='solid' size='large'>
+        <Button color='primary' variant="solid" size='large' onClick={() => console.log("abc")}>
           Search
         </Button>
       </div>
       <div className={`pt-5 ${styles['main-search-tag']}`}>
         {Array.from({ length: 8 }, (_, index) => (
-          <Tag key={index} style={{ borderRadius: '10px'}} color='#999999'>Tag</Tag>
+          <Tag key={index} style={{ borderRadius: '10px' }} color='#999999'>Tag</Tag>
         ))}
       </div>
       <div className='pt-8'>
@@ -37,7 +42,14 @@ function Main() {
             <MtbTypography variant='h3'>Mezon Bots</MtbTypography>
             <MtbTypography variant='h5' weight='normal'>Showing 1 of 100 page</MtbTypography>
           </div>
-          <Select options={options} placeholder='Select' defaultValue={pageOptions[0]} size='large'></Select>
+          <SingleSelect onChange={handlePageSizeChange}
+            options={options}
+            placeholder='Select'
+            size='large'
+            className='w-[13rem]'
+            dropDownTitle='Title'
+            defaultValue={options[2]}
+          />
         </Flex>
         <div>
           <div className='flex flex-col gap-4 pt-8'>
@@ -51,7 +63,7 @@ function Main() {
               <Pagination defaultCurrent={1} total={50} />
 
               <div className='flex justify-between w-full max-w-xs mt-2 px-4 pt-5'>
-                <Button icon={<ArrowLeftOutlined />}>Older</Button>
+                <Button color='primary' icon={<ArrowLeftOutlined />}>Older</Button>
                 <Button color='primary' variant='outlined'>
                   Newer <ArrowRightOutlined />
                 </Button>

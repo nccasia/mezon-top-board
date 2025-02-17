@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.6.1",
+    "@ctrl/tinycolor": "^4.1.0",
     "@hookform/resolvers": "^4.0.0",
     "@reduxjs/toolkit": "^2.5.1",
     "@rtk-query/codegen-openapi": "^2.0.0",

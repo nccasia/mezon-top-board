@@ -1,6 +1,6 @@
-import { Button } from 'antd'
 import logo from '@app/assets/images/topLogo.png'
 import { renderMenu } from '@app/navigation/router'
+import Button from '@app/components/common/Button'
 import { useNavigate } from 'react-router-dom'
 
 function Header() {
