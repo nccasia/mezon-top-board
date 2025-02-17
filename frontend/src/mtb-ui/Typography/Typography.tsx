@@ -1,4 +1,4 @@
-import { TypographyVariant } from '@app/enums/common.enum'
+import { TypographyVariant, TypographyWeight } from '@app/enums/common.enum'
 import { ConfigProvider, Typography } from 'antd'
 import styles from './Typography.module.scss'
 import { MtbTypographyProps } from '@app/types/Typography.types'
@@ -9,10 +9,10 @@ function MtbTypography({
   variant = 'h1',
   children,
   label,
-  weight = 'bold',
+  weight = TypographyWeight.BOLD,
   textStyle = [],
   position = 'left',
-  customClassName,
+  customClassName = '',
   mt,
   mb,
   size,
@@ -26,7 +26,14 @@ function MtbTypography({
     [TypographyVariant.H5]: 5
   } as const
 
-  const classNames = [styles[weight], ...textStyle.map((style) => styles[style])].filter(Boolean).join(' ')
+  const weightClasses: Record<string, string> = {
+    [TypographyWeight.BOLD]: 'font-bold',
+    [TypographyWeight.NORMAL]: 'font-normal',
+    [TypographyWeight.ITALIC]: 'italic',
+    [TypographyWeight.SEMIBOLD]: 'font-semibold',
+    [TypographyWeight.LIGHT]: 'font-light',
+    [TypographyWeight.EXTRABOLD]: 'font-extrabold'
+  }
 
   const Component = fontSize[variant] ? Title : Text
 
@@ -40,12 +47,16 @@ function MtbTypography({
           }
         },
         token: {
-          fontFamily: 'Open Sans, sans-serif',
+          fontFamily: 'Open Sans, sans-serif'
         }
       }}
     >
-      <Component level={fontSize[variant]} className={classNames} style={{ marginTop: mt, marginBottom: mb, fontSize: size, color }}>
-        <div className={`flex items-center ${customClassName}`}>
+      <Component level={fontSize[variant]} style={{ marginTop: mt, marginBottom: mb, fontSize: size, color }}>
+        <div
+          className={['flex items-center', weightClasses[weight] || 'font-bold', ...textStyle, customClassName]
+            .filter(Boolean)
+            .join(' ')}
+        >
           {label && position === 'left' && <span className={styles.icon}>{label}</span>}
           {children}
           {label && position === 'right' && <span className={styles.icon}>{label}</span>}
