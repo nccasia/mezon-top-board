@@ -1,0 +1,10 @@
+.card {
+    &-detail {
+        &-tag {
+            :global(.ant-tag) {
+                border-radius: 50px;
+                padding: 12px 24px;
+            }
+        }
+    }
+}

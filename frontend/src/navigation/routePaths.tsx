@@ -1,3 +1,4 @@
+import BotDetailPage from '@app/pages/BotDetailPage/BotDetailPage'
 import HomePage from '@app/pages/HomePage/HomePage'
 import LoginPage from '@app/pages/LoginPage/LoginPage'
 import NotFoundPage from '@app/pages/NotFoundPage/NotFoundPage'
@@ -10,6 +11,12 @@ export const routePaths: RoutePath[] = [
     element: <HomePage />,
     label: 'Home',
     isShowMenu: true
+  },
+  {
+    path: '/detail',
+    element: <BotDetailPage />,
+    label: '',
+    isShowMenu: false
   },
   {
     path: '/about',

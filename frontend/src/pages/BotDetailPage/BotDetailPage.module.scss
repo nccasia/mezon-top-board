@@ -1,9 +1,9 @@
-.main {
+.detail {
     width: 75%;
     &-search {
         &-tag {
             :global(.ant-tag) {
-                cursor: pointer
+                cursor: pointer;
             }
         }
     }

@@ -2,13 +2,15 @@ import { Button, Flex } from 'antd'
 import logo from '@app/assets/images/topLogo.png'
 import styles from './Header.module.scss'
 import { renderMenu } from '@app/navigation/router'
+import { useNavigate } from 'react-router-dom'
 
 function Header() {
-  return(
+  const navigate = useNavigate()
+  return (
     <Flex className={styles.header} align='center' justify='space-between'>
       <Flex gap={12} align='center'>
-        <div className='w-10'>
-          <img src={logo} alt=''  width={'100%'}/>
+        <div className='w-10' onClick={() => navigate('/')}>
+          <img src={logo} alt='' width={'100%'} />
         </div>
         <p>Mezon Top Board</p>
       </Flex>

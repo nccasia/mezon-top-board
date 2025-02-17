@@ -25,7 +25,7 @@ function Main() {
           Search
         </Button>
       </Flex>
-      <div className='pt-5'>
+      <div className={`pt-5 ${styles['main-search-tag']}`}>
         {Array.from({ length: 8 }, (_, index) => (
           <Tag key={index} style={{ borderRadius: '10px'}} color='#999999'>Tag</Tag>
         ))}
