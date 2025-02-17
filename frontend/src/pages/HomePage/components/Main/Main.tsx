@@ -3,6 +3,7 @@ import styles from './Main.module.scss'
 import { ArrowLeftOutlined, ArrowRightOutlined, SearchOutlined } from '@ant-design/icons'
 import { useMemo } from 'react'
 import BotCard from '@app/components/BotCard/BotCard'
+import MtbTypography from '@app/mtb-ui/Typography/Typography'
 
 const pageOptions = [5, 10, 15]
 function Main() {
@@ -16,15 +17,15 @@ function Main() {
   }, [])
   return (
     <div className={`flex flex-col justify-center m-auto pt-8 ${styles.main} pb-12`}>
-      <Divider variant='solid' style={{ borderColor: 'gray', fontSize: '33px', fontWeight: '600' }}>
-        Explore millions of Mezon Bots
+      <Divider variant='solid' style={{ borderColor: 'gray' }}>
+        <MtbTypography variant='h1'>Explore millions of Mezon Bots</MtbTypography>
       </Divider>
-      <Flex gap={100}>
+      <div className='flex gap-5 pt-3'>
         <Input placeholder='Search' type='text' prefix={<SearchOutlined />} style={{ borderRadius: '50px' }}></Input>
         <Button color='default' variant='solid' size='large'>
           Search
         </Button>
-      </Flex>
+      </div>
       <div className={`pt-5 ${styles['main-search-tag']}`}>
         {Array.from({ length: 8 }, (_, index) => (
           <Tag key={index} style={{ borderRadius: '10px'}} color='#999999'>Tag</Tag>
@@ -33,8 +34,8 @@ function Main() {
       <div className='pt-8'>
         <Flex justify='space-between'>
           <div>
-            <p className='text-xl font-bold'>Mezon Bots</p>
-            <p>Showing 1 of 100 page</p>
+            <MtbTypography variant='h3'>Mezon Bots</MtbTypography>
+            <MtbTypography variant='h5' weight='normal'>Showing 1 of 100 page</MtbTypography>
           </div>
           <Select options={options} placeholder='Select' defaultValue={pageOptions[0]} size='large'></Select>
         </Flex>

@@ -1,0 +1,11 @@
+.mtb-progress  {
+    :global(.ant-progress) {
+        :global(.ant-progress-inner) {
+            border-radius: var(--progress-border-radius);
+            background-color: var(--progress-background-stroke-color);
+          }
+          :global(.ant-progress-bg) {
+            border-radius: var(--progress-border-radius);
+          }
+    }
+  }

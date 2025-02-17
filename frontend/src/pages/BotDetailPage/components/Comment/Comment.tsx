@@ -1,6 +1,7 @@
 import { LikeOutlined } from '@ant-design/icons'
 import avatar from '@app/assets/images/0e54d87446f106d1fd58385295ae9deb.png'
-import { Rate, Divider } from 'antd'
+import MtbRate from '@app/mtb-ui/Rate/Rate'
+import { Divider } from 'antd'
 function Comment() {
   return (
     <>
@@ -11,7 +12,7 @@ function Comment() {
         <div className='flex flex-col gap-3'>
           <p>Name</p>
           <div className='flex gap-5'>
-            <Rate defaultValue={4.5} allowHalf disabled></Rate>
+            <MtbRate value={4.5} readonly={true}></MtbRate>
             <p>over 4 years ago</p>
           </div>
           <p>Comment</p>
