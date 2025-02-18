@@ -1,5 +1,5 @@
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
-import Button from '@app/components/common/Button'
+import Button from '@app/mtb-ui/Button'
 
 function Banner() {
   return (

@@ -4,25 +4,18 @@ import styles from './BotDetailPage.module.scss'
 import BotCard from '@app/components/BotCard/BotCard'
 import DetailCard from './components/DetailCard/DetailCard'
 import CompactBotCard from '@app/components/CompactBotCard/CompactBotCard'
-import { ratings } from '@app/constants/common.constant'
+import { ratings, searchOption } from '@app/constants/common.constant'
 import Comment from './components/Comment/Comment'
 import MtbProgress from '@app/mtb-ui/ProgressBar/ProgressBar'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
-import { TypographyStyle } from '@app/enums/common.enum'
+import { TypographyStyle } from '@app/enums/typography.enum'
+import SearchBar from '@app/mtb-ui/SearchBar/SearchBar'
 function BotDetailPage() {
   return (
     <div className={`m-auto pt-10 pb-10 ${styles.detail}`}>
       <MtbTypography>Explore milions of mezon bots</MtbTypography>
-      <div className='flex gap-5 pt-5'>
-        <Input
-          placeholder='Search'
-          type='text'
-          prefix={<SearchOutlined />}
-          style={{ borderRadius: '50px', width: '40%' }}
-        ></Input>
-        <Button color='default' variant='solid' size='large'>
-          Search
-        </Button>
+      <div className='pt-5'>
+        <SearchBar data={searchOption} onSearch={(val) => console.log('Search:', val)}></SearchBar>
       </div>
       <div className={`pt-5 ${styles['detail-search-tag']}`}>
         {Array.from({ length: 8 }, (_, index) => (
@@ -34,7 +27,9 @@ function BotDetailPage() {
       <div className='pt-5 pb-5'>
         <BotCard readonly={true}></BotCard>
       </div>
-      <MtbTypography variant='h3' textStyle={[TypographyStyle.UNDERLINE]}>Overview</MtbTypography>
+      <MtbTypography variant='h3' textStyle={[TypographyStyle.UNDERLINE]}>
+        Overview
+      </MtbTypography>
       <div className='flex gap-10 pt-5 pb-5'>
         <div className='flex-3'>
           <p className='text-justify'>

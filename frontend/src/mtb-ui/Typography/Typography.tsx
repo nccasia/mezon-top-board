@@ -1,4 +1,4 @@
-import { TypographyVariant, TypographyWeight } from '@app/enums/common.enum'
+import { TypographyVariant, TypographyWeight } from '@app/enums/typography.enum'
 import { ConfigProvider, Typography } from 'antd'
 import styles from './Typography.module.scss'
 import { MtbTypographyProps } from '@app/types/Typography.types'

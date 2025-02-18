@@ -5,3 +5,5 @@ export const ratings = [
   { stars: 2, percent: 20, value: 30000 },
   { stars: 1, percent: 10, value: 10000 }
 ]
+
+export const searchOption = ['Apple', 'Banana', 'Cherry']

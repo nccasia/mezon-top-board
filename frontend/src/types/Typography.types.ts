@@ -1,4 +1,4 @@
-import { TypographyVariant, TypographyWeight, TypographyStyle } from '@app/enums/common.enum'
+import { TypographyVariant, TypographyWeight, TypographyStyle } from '@app/enums/typography.enum'
 import { ReactNode } from 'react'
 
 export interface MtbTypographyProps {

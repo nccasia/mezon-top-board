@@ -1,7 +1,7 @@
 import { Divider, Input } from 'antd'
 import styles from './Footer.module.scss'
 import { renderMenu } from '@app/navigation/router'
-import Button from '@app/components/common/Button'
+import Button from '@app/mtb-ui/Button'
 function Footer() {
   return (
     <div className='pt-10 pb-20 bg-gray-300'>

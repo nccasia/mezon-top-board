@@ -4,7 +4,7 @@ import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import { IBotCardProps } from '@app/types/Botcard.types'
 import { Tag } from 'antd'
 import { useNavigate } from 'react-router-dom'
-import Button from '../common/Button'
+import Button from '../../mtb-ui/Button'
 
 function BotCard({ readonly = false }: IBotCardProps) {
   const navigate = useNavigate()
