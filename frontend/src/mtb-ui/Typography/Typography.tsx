@@ -1,7 +1,7 @@
 import { TypographyVariant, TypographyWeight } from '@app/enums/typography.enum'
 import { ConfigProvider, Typography } from 'antd'
-import styles from './Typography.module.scss'
 import { MtbTypographyProps } from '@app/types/Typography.types'
+import { useMemo } from 'react'
 
 const { Title, Text } = Typography
 
@@ -9,21 +9,28 @@ function MtbTypography({
   variant = 'h1',
   children,
   label,
-  weight = TypographyWeight.BOLD,
+  weight,
   textStyle = [],
   position = 'left',
   customClassName = '',
-  mt,
-  mb,
   size,
-  color
+  style = {}
 }: MtbTypographyProps) {
-  const fontSize = {
+  const level: Partial<Record<TypographyVariant, 1 | 2 | 3 | 4 | 5>> = {
     [TypographyVariant.H1]: 1,
     [TypographyVariant.H2]: 2,
     [TypographyVariant.H3]: 3,
     [TypographyVariant.H4]: 4,
     [TypographyVariant.H5]: 5
+  } as const
+
+  const fontSize = {
+    [TypographyVariant.H1]: 38,
+    [TypographyVariant.H2]: 36,
+    [TypographyVariant.H3]: 24,
+    [TypographyVariant.H4]: 20,
+    [TypographyVariant.H5]: 16,
+    [TypographyVariant.P]: 14
   } as const
 
   const weightClasses: Record<string, string> = {
@@ -35,15 +42,27 @@ function MtbTypography({
     [TypographyWeight.EXTRABOLD]: 'font-extrabold'
   }
 
-  const Component = fontSize[variant] ? Title : Text
+  const Component = useMemo(() => {
+    return variant === TypographyVariant.P ? 'p' : level[variant] ? Title : Text
+  }, [variant])
+
+  const titleLevel = level[variant] ?? undefined
+
+  const fontWeight = useMemo(() => {
+    return weight
+      ? weightClasses[weight]
+      : variant === TypographyVariant.P
+        ? weightClasses[TypographyWeight.NORMAL]
+        : weightClasses[TypographyWeight.BOLD]
+  }, [weight, variant])
 
   return (
     <ConfigProvider
       theme={{
         components: {
           Typography: {
-            titleMarginTop: mt ?? 8,
-            titleMarginBottom: mb ?? 8
+            titleMarginTop: 8,
+            titleMarginBottom: 8
           }
         },
         token: {
@@ -51,15 +70,17 @@ function MtbTypography({
         }
       }}
     >
-      <Component level={fontSize[variant]} style={{ marginTop: mt, marginBottom: mb, fontSize: size, color }}>
-        <div
-          className={['flex items-center', weightClasses[weight] || 'font-bold', ...textStyle, customClassName]
-            .filter(Boolean)
-            .join(' ')}
-        >
-          {label && position === 'left' && <span className={styles.icon}>{label}</span>}
+      <Component
+        {...(titleLevel ? { level: titleLevel } : {})}
+        style={{
+          ...style,
+          fontSize: size ?? fontSize[variant]
+        }}
+      >
+        <div className={['flex items-center', fontWeight, ...textStyle, customClassName].filter(Boolean).join(' ')}>
+          {label && position === 'left' && <span className='mx-2 align-middle'>{label}</span>}
           {children}
-          {label && position === 'right' && <span className={styles.icon}>{label}</span>}
+          {label && position === 'right' && <span className='mx-2 align-middle'>{label}</span>}
         </div>
       </Component>
     </ConfigProvider>
