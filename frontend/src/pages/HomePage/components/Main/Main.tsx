@@ -67,10 +67,10 @@ function Main() {
               <Pagination defaultCurrent={1} total={50} />
 
               <div className='flex justify-between w-full max-w-xs mt-2 px-4 pt-5'>
-                <Button color='primary' icon={<ArrowLeftOutlined />}>
+                <Button color='primary' variant='outlined' icon={<ArrowLeftOutlined />}>
                   Older
                 </Button>
-                <Button color='primary' variant='outlined'>
+                <Button color='primary' variant='solid'>
                   Newer <ArrowRightOutlined />
                 </Button>
               </div>

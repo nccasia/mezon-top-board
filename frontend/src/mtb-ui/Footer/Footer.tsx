@@ -17,7 +17,7 @@ function Footer() {
           <p>Get Newsletter</p>
           <div className='flex'>
             <Input type='text' placeholder='Your email address' style={{ borderRadius: 0 }}></Input>
-            <Button color='default' variant='solid' style={{ borderRadius: 0 }}>
+            <Button color='default' variant='solid' customClassName='!bg-black !text-white !border-black !rounded-none opacity-100 hover:opacity-75'> 
               Subscribe
             </Button>
           </div>

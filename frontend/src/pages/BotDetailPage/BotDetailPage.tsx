@@ -1,5 +1,4 @@
-import { SearchOutlined } from '@ant-design/icons'
-import { Input, Button, Tag, Divider, Rate, Progress } from 'antd'
+import { Tag, Divider, Rate } from 'antd'
 import styles from './BotDetailPage.module.scss'
 import BotCard from '@app/components/BotCard/BotCard'
 import DetailCard from './components/DetailCard/DetailCard'
@@ -94,7 +93,7 @@ function BotDetailPage() {
             </div>
             <Divider></Divider>
             {Array.from({ length: 5 }, (_, index) => (
-              <Comment></Comment>
+              <Comment key={index}></Comment>
             ))}
           </div>
         </div>
