@@ -1,10 +1,10 @@
 import { UploadOutlined } from '@ant-design/icons'
+import Button from '@app/mtb-ui/Button'
 import MtbRate from '@app/mtb-ui/Rate/Rate'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import { IBotCardProps } from '@app/types/Botcard.types'
 import { Tag } from 'antd'
 import { useNavigate } from 'react-router-dom'
-import Button from '../../mtb-ui/Button'
 
 function BotCard({ readonly = false }: IBotCardProps) {
   const navigate = useNavigate()
@@ -37,8 +37,8 @@ function BotCard({ readonly = false }: IBotCardProps) {
         </div>
       </div>
       <div className='absolute top-2 right-2 flex gap-3'>
-        <Button variant="solid" color="secondary" size='large' className="!text-[#000]">Invite</Button>
-        <Button size='large' icon={<UploadOutlined />} />
+        <Button variant="solid" color="secondary" size='large'>Invite</Button>
+        <Button size='large' color='default' icon={<UploadOutlined />} />
       </div>
     </div>
   )

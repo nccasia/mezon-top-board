@@ -1,35 +1,29 @@
-import { colorMap } from "@app/constants/color";
-import { TinyColor } from "@ctrl/tinycolor";
-import { Button as AntdButton, ButtonProps as AntdButtonProps, ConfigProvider } from "antd";
-import { useMemo } from "react";
+import { EButtonColor } from '@app/enums/button.enum'
+import { IButtonProps } from '@app/types/Button.types'
+import { Button as AntdButton, ButtonProps as AntdButtonProps } from 'antd'
+import { useMemo } from 'react'
 
-interface IButtonProps {
-    color?: "default" | "primary" | "secondary",
-}
+const Button = (props: IButtonProps & Omit<AntdButtonProps, 'color'>) => {
+  const { color = 'primary', children, customClassName } = props
 
-const Button = (props: IButtonProps & Omit<AntdButtonProps, "color">) => {
-    const { color = "primary", children } = props;
+  const colorClassName: Record<string, string> = {
+    [EButtonColor.PRIMARY]:
+      '!bg-primary-default hover:!bg-primary-hover active:!bg-primary-active !text-white !border-primary-border hover:!border-primary-hover active:!border-primary-active',
+    [EButtonColor.SECONDARY]:
+      '!bg-secondary-default hover:!bg-secondary-hover active:!bg-secondary-active !text-white !border-secondary-border hover:!border-secondary-hover active:!border-secondary-active',
+    [EButtonColor.DEFAULT]:
+      'hover:!bg-default-hover active:!bg-default-active hover:!text-white !border-default-border hover:!border-default-hover active:!border-default-active'
+  }
 
-    const colorPrimary = useMemo(() => {
-        return colorMap[color];
-    }, [color]);
+  const _className = useMemo(() => {
+    return `${colorClassName[color]} ${customClassName || ''}`
+  }, [color, customClassName])
 
-    return (
-        <ConfigProvider
-            theme={{
-                components: {
-                    Button: {
-                        colorPrimary,
-                        colorPrimaryHover: new TinyColor(colorPrimary).lighten(5).toString(),
-                        colorPrimaryActive: new TinyColor(colorPrimary).lighten(10).toString(),
-                        fontWeight: 500
-                    },
-                },
-            }}
-        >
-            <AntdButton {...props}>{children}</AntdButton>
-        </ConfigProvider>
-    )
+  return (
+    <AntdButton className={_className} {...props}>
+      {children}
+    </AntdButton>
+  )
 }
 
 export default Button

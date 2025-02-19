@@ -1,9 +1,7 @@
 import { TypographyVariant, TypographyWeight } from '@app/enums/typography.enum'
+import { AntdTypographyComponent, levelTitle, MtbTypographyProps } from '@app/types/Typography.types'
 import { ConfigProvider, Typography } from 'antd'
-import { MtbTypographyProps } from '@app/types/Typography.types'
 import { useMemo } from 'react'
-
-const { Title, Text } = Typography
 
 function MtbTypography({
   variant = 'h1',
@@ -16,37 +14,25 @@ function MtbTypography({
   size,
   style = {}
 }: MtbTypographyProps) {
-  const level: Partial<Record<TypographyVariant, 1 | 2 | 3 | 4 | 5>> = {
-    [TypographyVariant.H1]: 1,
-    [TypographyVariant.H2]: 2,
-    [TypographyVariant.H3]: 3,
-    [TypographyVariant.H4]: 4,
-    [TypographyVariant.H5]: 5
-  } as const
-
-  const fontSize = {
-    [TypographyVariant.H1]: 38,
-    [TypographyVariant.H2]: 36,
-    [TypographyVariant.H3]: 24,
-    [TypographyVariant.H4]: 20,
-    [TypographyVariant.H5]: 16,
-    [TypographyVariant.P]: 14
-  } as const
-
-  const weightClasses: Record<string, string> = {
-    [TypographyWeight.BOLD]: 'font-bold',
-    [TypographyWeight.NORMAL]: 'font-normal',
-    [TypographyWeight.ITALIC]: 'italic',
-    [TypographyWeight.SEMIBOLD]: 'font-semibold',
-    [TypographyWeight.LIGHT]: 'font-light',
-    [TypographyWeight.EXTRABOLD]: 'font-extrabold'
+  const levelMap: Record<TypographyVariant, { Component: AntdTypographyComponent; className: string }> = {
+    [TypographyVariant.H1]: { Component: Typography.Title, className: 'text-3xl' },
+    [TypographyVariant.H2]: { Component: Typography.Title, className: 'text-2xl' },
+    [TypographyVariant.H3]: { Component: Typography.Title, className: 'text-xl' },
+    [TypographyVariant.H4]: { Component: Typography.Title, className: 'text-lg' },
+    [TypographyVariant.H5]: { Component: Typography.Title, className: 'text-sm' },
+    [TypographyVariant.P]: { Component: Typography.Text, className: 'text-md' }
   }
 
-  const Component = useMemo(() => {
-    return variant === TypographyVariant.P ? 'p' : level[variant] ? Title : Text
-  }, [variant])
+  const { Component, className: fontSize } = levelMap[variant]
 
-  const titleLevel = level[variant] ?? undefined
+  const weightClasses: Record<string, string> = {
+    [TypographyWeight.BOLD]: '!font-bold',
+    [TypographyWeight.NORMAL]: '!font-normal',
+    [TypographyWeight.ITALIC]: '!italic',
+    [TypographyWeight.SEMIBOLD]: '!font-semibold',
+    [TypographyWeight.LIGHT]: '!font-light',
+    [TypographyWeight.EXTRABOLD]: '!font-extrabold'
+  }
 
   const fontWeight = useMemo(() => {
     return weight
@@ -56,13 +42,15 @@ function MtbTypography({
         : weightClasses[TypographyWeight.BOLD]
   }, [weight, variant])
 
+  const TypographyStyle = useMemo(() => ({ ...style, fontSize: size ? `${size}px` : undefined }), [style, size])
+
   return (
     <ConfigProvider
       theme={{
         components: {
           Typography: {
-            titleMarginTop: 8,
-            titleMarginBottom: 8
+            titleMarginBottom: 8,
+            titleMarginTop: 8
           }
         },
         token: {
@@ -71,17 +59,15 @@ function MtbTypography({
       }}
     >
       <Component
-        {...(titleLevel ? { level: titleLevel } : {})}
-        style={{
-          ...style,
-          fontSize: size ?? fontSize[variant]
-        }}
+        level={variant !== TypographyVariant.P ? (parseInt(variant.replace('h', ''), 10) as levelTitle) : undefined}
+        className={['flex items-center', fontSize, fontWeight, customClassName, ...textStyle]
+          .filter(Boolean)
+          .join(' ')}
+        style={TypographyStyle}
       >
-        <div className={['flex items-center', fontWeight, ...textStyle, customClassName].filter(Boolean).join(' ')}>
-          {label && position === 'left' && <span className='mx-2 align-middle'>{label}</span>}
-          {children}
-          {label && position === 'right' && <span className='mx-2 align-middle'>{label}</span>}
-        </div>
+        {label && position === 'left' && <span className='mx-2 align-middle'>{label}</span>}
+        {children}
+        {label && position === 'right' && <span className='mx-2 align-middle'>{label}</span>}
       </Component>
     </ConfigProvider>
   )

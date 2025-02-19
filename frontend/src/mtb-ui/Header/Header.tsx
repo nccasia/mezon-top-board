@@ -16,7 +16,7 @@ function Header() {
       <div className='flex items-center justify-between gap-12.5'>
         <ul className='flex gap-10'>{renderMenu()}</ul>
         <div className='flex gap-2.5'>
-          <Button color='default' variant='solid' size='large'>
+          <Button color='primary' variant='solid' size='large'>
             Sign Up
           </Button>
           <Button color='default' variant='outlined' size='large'>
