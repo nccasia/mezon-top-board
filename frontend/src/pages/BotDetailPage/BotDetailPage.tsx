@@ -4,22 +4,18 @@ import styles from './BotDetailPage.module.scss'
 import BotCard from '@app/components/BotCard/BotCard'
 import DetailCard from './components/DetailCard/DetailCard'
 import CompactBotCard from '@app/components/CompactBotCard/CompactBotCard'
-import { ratings } from '@app/constants/common.constant'
+import { ratings, searchOption } from '@app/constants/common.constant'
 import Comment from './components/Comment/Comment'
+import MtbProgress from '@app/mtb-ui/ProgressBar/ProgressBar'
+import MtbTypography from '@app/mtb-ui/Typography/Typography'
+import { TypographyStyle } from '@app/enums/typography.enum'
+import SearchBar from '@app/mtb-ui/SearchBar/SearchBar'
 function BotDetailPage() {
   return (
     <div className={`m-auto pt-10 pb-10 ${styles.detail}`}>
-      <p className='text-4xl font-bold'>Explore milions of mezon bots</p>
-      <div className='flex gap-5 pt-5'>
-        <Input
-          placeholder='Search'
-          type='text'
-          prefix={<SearchOutlined />}
-          style={{ borderRadius: '50px', width: '40%' }}
-        ></Input>
-        <Button color='default' variant='solid' size='large'>
-          Search
-        </Button>
+      <MtbTypography>Explore milions of mezon bots</MtbTypography>
+      <div className='pt-5'>
+        <SearchBar data={searchOption} onSearch={(val) => console.log('Search:', val)}></SearchBar>
       </div>
       <div className={`pt-5 ${styles['detail-search-tag']}`}>
         {Array.from({ length: 8 }, (_, index) => (
@@ -31,7 +27,9 @@ function BotDetailPage() {
       <div className='pt-5 pb-5'>
         <BotCard readonly={true}></BotCard>
       </div>
-      <p className='underline font-bold text-2xl'>Overview</p>
+      <MtbTypography variant='h3' textStyle={[TypographyStyle.UNDERLINE]}>
+        Overview
+      </MtbTypography>
       <div className='flex gap-10 pt-5 pb-5'>
         <div className='flex-3'>
           <p className='text-justify'>
@@ -59,7 +57,7 @@ function BotDetailPage() {
             aperiam, soluta facilis nulla eum, alias beatae eaque repellat illum, eius dolore?
           </p>
           <div className='pt-5'>
-            <p className='text-2xl font-bold'>More like this</p>
+            <MtbTypography variant='h3'>More like this</MtbTypography>
             <Divider></Divider>
             <div className='flex justify-between'>
               {Array.from({ length: 5 }, (_, index) => (
@@ -68,7 +66,7 @@ function BotDetailPage() {
             </div>
           </div>
           <div className='pt-8'>
-            <p className='text-2xl font-bold'>Ratings & Reviews</p>
+            <MtbTypography variant='h3'>Ratings & Reviews</MtbTypography>
             <Divider></Divider>
             <div className='flex justify-between gap-4'>
               <div className='flex-1'>
@@ -88,7 +86,8 @@ function BotDetailPage() {
                 {ratings.map((rating) => (
                   <div key={rating.stars} className='flex items-center gap-2 pb-2'>
                     <p className='whitespace-nowrap'>{rating.stars} stars</p>
-                    <Progress percent={rating.percent} className='flex-1' />
+                    <MtbProgress percent={rating.percent} strokeColor={'red'} showInfo={false}></MtbProgress>
+                    <p className='align-middle'>{rating.value}</p>
                   </div>
                 ))}
               </div>
