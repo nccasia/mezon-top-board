@@ -10,7 +10,7 @@ const Button = (props: IButtonProps & Omit<AntdButtonProps, 'color'>) => {
     [EButtonColor.PRIMARY]:
       '!bg-primary-default hover:!bg-primary-hover active:!bg-primary-active !text-white !border-primary-border hover:!border-primary-hover active:!border-primary-active',
     [EButtonColor.SECONDARY]:
-      '!bg-secondary-default hover:!bg-secondary-hover active:!bg-secondary-active !text-white !border-secondary-border hover:!border-secondary-hover active:!border-secondary-active',
+      '!bg-secondary-default hover:!bg-secondary-hover active:!bg-secondary-active !text- !border-secondary-border hover:!border-secondary-hover active:!border-secondary-active',
     [EButtonColor.DEFAULT]:
       'hover:!bg-default-hover active:!bg-default-active hover:!text-white !border-default-border hover:!border-default-hover active:!border-default-active'
   }
@@ -21,7 +21,7 @@ const Button = (props: IButtonProps & Omit<AntdButtonProps, 'color'>) => {
 
   return (
     <AntdButton className={_className} {...props}>
-      <div>{children}</div>
+      {children}
     </AntdButton>
   )
 }
