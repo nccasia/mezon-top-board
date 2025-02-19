@@ -26,12 +26,12 @@ function MtbTypography({
   const { Component, className: fontSize } = levelMap[variant]
 
   const weightClasses: Record<string, string> = {
-    [TypographyWeight.BOLD]: 'font-bold',
-    [TypographyWeight.NORMAL]: 'font-normal',
-    [TypographyWeight.ITALIC]: 'italic',
-    [TypographyWeight.SEMIBOLD]: 'font-semibold',
-    [TypographyWeight.LIGHT]: 'font-light',
-    [TypographyWeight.EXTRABOLD]: 'font-extrabold'
+    [TypographyWeight.BOLD]: '!font-bold',
+    [TypographyWeight.NORMAL]: '!font-normal',
+    [TypographyWeight.ITALIC]: '!italic',
+    [TypographyWeight.SEMIBOLD]: '!font-semibold',
+    [TypographyWeight.LIGHT]: '!font-light',
+    [TypographyWeight.EXTRABOLD]: '!font-extrabold'
   }
 
   const fontWeight = useMemo(() => {
