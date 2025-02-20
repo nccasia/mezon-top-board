@@ -1,11 +1,10 @@
 import { LikeOutlined } from '@ant-design/icons'
 import avatar from '@app/assets/images/0e54d87446f106d1fd58385295ae9deb.png'
 import MtbRate from '@app/mtb-ui/Rate/Rate'
-import { Divider } from 'antd'
 function Comment() {
   return (
     <>
-      <div className='flex gap-10 pb-3'>
+      <div className='flex gap-10 p-4 shadow-sm rounded-2xl'>
         <div className='w-15'>
           <img src={avatar} alt='' className='rounded-full' />
         </div>
@@ -21,7 +20,6 @@ function Comment() {
           </p>
         </div>
       </div>
-      <Divider></Divider>
     </>
   )
 }
