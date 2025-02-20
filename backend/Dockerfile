@@ -1,20 +1,20 @@
 # Use the official Node.js image as the base image
 FROM node:22
 
-# Set the working directory
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copy package.json and yarn.lock
-COPY package.json yarn.lock ./
+# Copy the source code to the working directory
+COPY . .
 
-# Install dependencies using Yarn
-RUN yarn install
+# Copy the package.json and yarn.lock files to the working directory
+COPY package.json yarn.lock ./
 
 # Install NestJS CLI globally
 RUN yarn global add @nestjs/cli
 
-# Copy the rest of the application code
-COPY . .
+# Install the dependencies using Yarn
+RUN yarn
 
 # Build the NestJS application
 RUN yarn build

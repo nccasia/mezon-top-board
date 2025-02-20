@@ -5,6 +5,8 @@ export const envFilePath = `.env.${ENV ?? "local"}`;
 
 dotenv.config({ path: envFilePath });
 
+console.log(process.env.POSTGRES_PORT)
+
 export default () => ({
   PORT: process.env.PORT || 8000,
   DB_NAME: process.env.POSTGRES_DB || "",
