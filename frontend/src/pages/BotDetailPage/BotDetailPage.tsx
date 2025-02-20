@@ -1,5 +1,4 @@
 import { Tag, Divider, Rate } from 'antd'
-import styles from './BotDetailPage.module.scss'
 import BotCard from '@app/components/BotCard/BotCard'
 import DetailCard from './components/DetailCard/DetailCard'
 import CompactBotCard from '@app/components/CompactBotCard/CompactBotCard'
@@ -11,14 +10,14 @@ import { TypographyStyle } from '@app/enums/typography.enum'
 import SearchBar from '@app/mtb-ui/SearchBar/SearchBar'
 function BotDetailPage() {
   return (
-    <div className={`m-auto pt-10 pb-10 ${styles.detail}`}>
+    <div className='m-auto pt-10 pb-10 w-[75%]'>
       <MtbTypography>Explore milions of mezon bots</MtbTypography>
       <div className='pt-5'>
         <SearchBar data={searchOption} onSearch={(val) => console.log('Search:', val)}></SearchBar>
       </div>
-      <div className={`pt-5 ${styles['detail-search-tag']}`}>
+      <div className='pt-5 cursor-pointer'>
         {Array.from({ length: 8 }, (_, index) => (
-          <Tag key={index} style={{ borderRadius: '10px' }} color='#999999'>
+          <Tag key={index} className='!rounded-[10px]' color='#999999'>
             Tag
           </Tag>
         ))}
@@ -57,8 +56,8 @@ function BotDetailPage() {
           </p>
           <div className='pt-5'>
             <MtbTypography variant='h3'>More like this</MtbTypography>
-            <Divider></Divider>
-            <div className='flex justify-between'>
+            <Divider className='bg-gray-200'></Divider>
+            <div className='flex justify-between gap-10 items-center max-lg:text-center max-2xl:text-center max-lg:flex-wrap max-2xl:flex-wrap max-lg:justify-center max-2xl:justify-center'>
               {Array.from({ length: 5 }, (_, index) => (
                 <CompactBotCard key={index}></CompactBotCard>
               ))}
@@ -66,17 +65,17 @@ function BotDetailPage() {
           </div>
           <div className='pt-8'>
             <MtbTypography variant='h3'>Ratings & Reviews</MtbTypography>
-            <Divider></Divider>
-            <div className='flex justify-between gap-4'>
+            <Divider className='bg-gray-200'></Divider>
+            <div className='flex justify-between gap-4 max-lg:flex-col max-2xl:flex-col'>
               <div className='flex-1'>
-                <div className='flex items-center gap-10'>
+                <div className='flex items-center gap-10 max-lg:justify-between max-2xl:justify-between'>
                   <p className='text-6xl'>4.54</p>
                   <div>
                     <Rate defaultValue={4.5} allowHalf disabled></Rate>
                     <p className='pt-2'>9,160 reviews</p>
                   </div>
                 </div>
-                <p className='pt-5'>
+                <p className='pt-5 max-lg:pt-7 max-2xl:pt-7'>
                   Reviews can be left only by registered users. All reviews are moderated by Top.gg moderators. Please
                   make sure to check our guidelines before posting.
                 </p>
@@ -91,10 +90,12 @@ function BotDetailPage() {
                 ))}
               </div>
             </div>
-            <Divider></Divider>
-            {Array.from({ length: 5 }, (_, index) => (
-              <Comment key={index}></Comment>
-            ))}
+            <Divider className='bg-gray-200'></Divider>
+            <div className='flex flex-col gap-5'>
+              {Array.from({ length: 5 }, (_, index) => (
+                <Comment key={index}></Comment>
+              ))}
+            </div>
           </div>
         </div>
         <div className='flex-1'>

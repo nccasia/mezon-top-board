@@ -7,12 +7,21 @@ const Button = (props: IButtonProps & Omit<AntdButtonProps, 'color'>) => {
   const { color = 'primary', children, customClassName } = props
 
   const colorClassName: Record<string, string> = {
-    [EButtonColor.PRIMARY]:
-      '!bg-primary-default hover:!bg-primary-hover active:!bg-primary-active !text-white !border-primary-border hover:!border-primary-hover active:!border-primary-active',
-    [EButtonColor.SECONDARY]:
-      '!bg-secondary-default hover:!bg-secondary-hover active:!bg-secondary-active !text-white !border-secondary-border hover:!border-secondary-hover active:!border-secondary-active',
-    [EButtonColor.DEFAULT]:
-      'hover:!bg-default-hover active:!bg-default-active hover:!text-white !border-default-border hover:!border-default-hover active:!border-default-active'
+    [EButtonColor.PRIMARY]: `
+      !bg-primary-default hover:!bg-primary-hover active:!bg-primary-active 
+      !text-white !border-primary-border hover:!border-primary-hover active:!border-primary-active 
+      disabled:!bg-gray-300 disabled:!border-gray-400 disabled:!text-gray-500 disabled:!cursor-not-allowed
+    `,
+    [EButtonColor.SECONDARY]: `
+      !bg-secondary-default hover:!bg-secondary-hover active:!bg-secondary-active 
+      !text-white !border-secondary-border hover:!border-secondary-hover active:!border-secondary-active 
+      disabled:!bg-gray-300 disabled:!border-gray-400 disabled:!text-gray-500 disabled:!cursor-not-allowed
+    `,
+    [EButtonColor.DEFAULT]: `
+      hover:!bg-default-hover active:!bg-default-active hover:!text-white 
+      !border-default-border hover:!border-default-hover active:!border-default-active 
+      disabled:!bg-gray-200 disabled:!border-gray-300 disabled:!text-gray-400 disabled:!cursor-not-allowed
+    `
   }
 
   const _className = useMemo(() => {
