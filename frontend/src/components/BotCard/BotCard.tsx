@@ -6,7 +6,7 @@ import { IBotCardProps } from '@app/types/Botcard.types'
 import { Tag } from 'antd'
 import { useNavigate } from 'react-router-dom'
 
-function BotCard({ readonly = false }: IBotCardProps) {
+function BotCard({ readonly = false, number }: IBotCardProps) {
   const navigate = useNavigate()
   return (
     <div
@@ -20,7 +20,7 @@ function BotCard({ readonly = false }: IBotCardProps) {
 
         <div className='flex-1'>
           <div className='flex flex-col gap-3'>
-            <MtbTypography variant='h4'>Mezon Bot 1</MtbTypography>
+            <MtbTypography variant='h4'>Mezon Bot {number}</MtbTypography>
             <div className='flex gap-1'>
               <MtbRate readonly={readonly} value={4.5}></MtbRate>
             </div>

@@ -65,9 +65,9 @@ function MtbTypography({
           .join(' ')}
         style={TypographyStyle}
       >
-        {label && position === 'left' && <span className='mx-2 align-middle'>{label}</span>}
+        {label && position === 'left' && <span className='mr-2 align-middle'>{label}</span>}
         {children}
-        {label && position === 'right' && <span className='mx-2 align-middle'>{label}</span>}
+        {label && position === 'right' && <span className='ml-2 align-middle'>{label}</span>}
       </Component>
     </ConfigProvider>
   )

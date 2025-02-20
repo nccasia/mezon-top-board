@@ -20,7 +20,7 @@ function Banner() {
             </Button>
           </div>
         </div>
-        <div className='flex-1'>
+        <div className='flex-1 object-cover w-full'>
           <img src='https://placehold.co/350x200' alt='' width='100%' />
         </div>
       </div>

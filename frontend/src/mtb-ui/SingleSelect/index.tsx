@@ -30,6 +30,7 @@ const SingleSelect = (props: ISelectProps & SelectProps<IOption>) => {
         <AntSelect
             value={selectedValue}
             labelInValue={true}
+            title=""
             className={_className}
             dropdownRender={() => (
                 <div className="p-2">

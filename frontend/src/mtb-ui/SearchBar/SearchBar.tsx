@@ -42,7 +42,7 @@ const SearchBar = ({
   }
 
   return (
-    <div className='flex gap-5'>
+    <div className='flex gap-5 items-center'>
       <form onSubmit={handleSubmit(onSubmit)} style={{ width: '100%' }}>
         <Controller
           name='search'
@@ -67,7 +67,9 @@ const SearchBar = ({
                 prefix={<SearchOutlined style={{ color: '#bbb' }} />}
                 suffix={
                   allowClear && field.value ? (
-                    <Button type='text' icon={<CloseCircleOutlined />} onClick={handleClear} />
+                    <button onClick={handleClear} className='cursor-pointer flex align-middle'>
+                      <CloseCircleOutlined  className='text-sm'/>
+                    </button>
                   ) : null
                 }
                 onPressEnter={handleSubmit(onSubmit)}
