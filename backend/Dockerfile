@@ -20,7 +20,7 @@ COPY . .
 RUN yarn build
 
 # Run migrations
-RUN yarn db:run
+CMD ["yarn", "db:run"]
 
 # Start the NestJS application
 CMD ["yarn", "start:prod"]

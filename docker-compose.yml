@@ -17,6 +17,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - mezon-mtb-net
 
   backend:
     build: ./backend
@@ -29,12 +31,14 @@ services:
     environment:
       POSTGRES_USERNAME: ${POSTGRES_USERNAME}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_HOST: localhost
+      POSTGRES_HOST: postgres
       POSTGRES_PORT: ${POSTGRES_PORT}
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_SCHEMA: ${POSTGRES_SCHEMA}
     ports:
       - "${BACKEND_PORT}:8000"
+    networks:
+      - mezon-mtb-net
 
   frontend:
     build: ./frontend
@@ -43,6 +47,8 @@ services:
       REACT_APP_BACKEND_URL: ${REACT_APP_BACKEND_ENDPOINT}
     ports:
       - "${FRONTEND_PORT}:3000"
+    networks:
+      - mezon-mtb-net
 
   # nginx:
   #   image: nginx:latest
@@ -55,6 +61,11 @@ services:
   #   depends_on:
   #     - backend
   #     - frontend
+  #   networks:
+  #     - mezon-mtb-net
 
 volumes:
   postgres_data:
+
+networks:
+  mezon-mtb-net:
