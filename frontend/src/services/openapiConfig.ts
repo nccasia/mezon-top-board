@@ -8,7 +8,7 @@ dotenv.config({
 
 console.log('first', process.env.REACT_APP_BACKEND_ENDPOINT)
 
-const schemaUrl = safeConcatUrl(process.env.REACT_APP_BACKEND_ENDPOINT ?? '', 'openApi.json') as string
+const schemaUrl = safeConcatUrl(process.env.REACT_APP_BACKEND_ENDPOINT ?? '', 'api/openApi.json') as string
 
 const filterByTag = (tag: string) => {
   const matcher = (name: string, operationDefinition: any) => {
