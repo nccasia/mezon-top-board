@@ -47,7 +47,7 @@ function AddBotForm() {
       supportURL: '',
       tags: [],
       note: '',
-      linkType: ''
+      linkType: optionLinkType[0]
     },
     resolver: yupResolver(ADD_BOT_SCHEMA)
   })
@@ -190,7 +190,7 @@ function AddBotForm() {
                 {...field}
                 options={optionsLink}
                 placeholder='Link Types'
-                value={field.value || null}
+                value={field.value}
                 onChange={(value) => {
                   field.onChange(value)
                   handleSelectLink(value)
