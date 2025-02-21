@@ -1,6 +1,6 @@
 import { Divider, Flex, Pagination, Tag } from 'antd'
 import { ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import BotCard from '@app/components/BotCard/BotCard'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import Button from '@app/mtb-ui/Button'

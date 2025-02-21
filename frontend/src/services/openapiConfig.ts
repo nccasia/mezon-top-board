@@ -1,6 +1,6 @@
 import { safeConcatUrl } from '../utils/stringHelper'
 import type { ConfigFile } from '@rtk-query/codegen-openapi'
-import dotenv from 'dotenv'
+import * as dotenv from 'dotenv'
 
 dotenv.config({
   path: '../../.env'

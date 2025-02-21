@@ -1,4 +1,4 @@
-import { api } from '@/services/apiInstance'
+import { api } from '@app/services/apiInstance'
 
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
