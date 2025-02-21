@@ -25,6 +25,8 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: backend
+    volumes:
+      - ./backend/src:/app/src
     depends_on:
       postgres:
         condition: service_healthy
@@ -41,16 +43,6 @@ services:
     networks:
       - mezon-mtb-net
 
-  # frontend:    
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
-  #   container_name: frontend
-  #   environment:
-  #     REACT_APP_BACKEND_URL: ${REACT_APP_BACKEND_URL}
-  #   networks:
-  #     - mezon-mtb-net
-
   nginx:
     image: nginx:latest
     container_name: nginx
@@ -63,7 +55,6 @@ services:
       - 8778:8778
     depends_on:
       - backend
-      # - frontend
     networks:
       - mezon-mtb-net
 
