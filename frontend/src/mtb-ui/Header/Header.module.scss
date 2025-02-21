@@ -3,3 +3,9 @@
         flex-direction: row-reverse;
     }
 }
+
+.custom-switch {
+    :global(.ant-switch[aria-checked="true"]) {
+        background-color: #1E1E1E !important;
+    }
+}

@@ -4,13 +4,16 @@ import Button from '@app/mtb-ui/Button'
 import { useNavigate } from 'react-router-dom'
 import MtbTypography from '../Typography/Typography'
 import { useState } from 'react'
-import { MenuOutlined } from '@ant-design/icons'
-import { Drawer } from 'antd'
+import { MenuOutlined, MoonOutlined, SunOutlined } from '@ant-design/icons'
+import { Drawer, Switch } from 'antd'
 import styles from './Header.module.scss'
+import { useTheme } from '@app/hook/useTheme'
 
 function Header() {
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
+  // const { theme, setTheme } = useTheme()
+
   return (
     <div
       className={`flex bg-white z-9999 items-center justify-between py-5 px-20 border-t-1 border-b-1 border-gray-200 cursor-pointer sticky top-0`}
@@ -26,6 +29,15 @@ function Header() {
         </div>
       </div>
       <div className='flex items-center justify-between gap-12.5 max-lg:hidden max-2xl:hidden'>
+        {/* <div className={`flex items-center ${styles['custom-switch']}`}>
+          <Switch
+            checked={theme === 'dark'}
+            onChange={(checked) => setTheme(checked ? 'dark' : 'light')}
+            checkedChildren={<MoonOutlined />}
+            unCheckedChildren={<SunOutlined />}
+            className='!align-middle'
+          />
+        </div> */}
         <ul className='flex gap-10'>{renderMenu(true)}</ul>
         <div className='flex gap-2.5'>
           <Button color='primary' variant='solid' size='large'>
