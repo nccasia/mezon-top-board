@@ -8,7 +8,7 @@ dotenv.config({
 
 console.log('first', process.env.REACT_APP_BACKEND_ENDPOINT)
 
-const schemaUrl = safeConcatUrl(process.env.REACT_APP_BACKEND_ENDPOINT ?? '', 'docs/openApi.json') as string
+const schemaUrl = safeConcatUrl(process.env.REACT_APP_BACKEND_ENDPOINT ?? '', 'openApi.json') as string
 
 const filterByTag = (tag: string) => {
   const matcher = (name: string, operationDefinition: any) => {
@@ -26,9 +26,9 @@ const config: ConfigFile = {
   apiImport: 'api',
   useEnumType: true,
   outputFiles: {
-    './api/auth.ts': {
-      filterEndpoints: filterByTag('auth'),
-      exportName: 'authService'
+    './api/media/media.ts': {
+      filterEndpoints: filterByTag('Media'),
+      exportName: 'mediaService'
     }
   },
 

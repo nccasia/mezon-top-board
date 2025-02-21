@@ -19,12 +19,12 @@ const paramsSerializer = (params: Record<string, any>): string => {
 }
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: process.env.API_BASE_URL,
+  baseUrl: process.env.REACT_APP_BACKEND_ENDPOINT,
   prepareHeaders: async (headers) => {
-    const token = localStorage.getItem('accessToken')
-    if (token) {
-      headers.set('Authorization', `Bearer ${token}`)
-    }
+    // const token = localStorage.getItem('accessToken')
+    // if (token) {
+    //   headers.set('Authorization', `Bearer ${token}`)
+    // }
     return headers
   },
   paramsSerializer
