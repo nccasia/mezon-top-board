@@ -18,7 +18,7 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - mezon-mtb-net
+      - mezon_mtb_net
 
   backend:
     build:
@@ -41,7 +41,7 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_SCHEMA: ${POSTGRES_SCHEMA}
     networks:
-      - mezon-mtb-net
+      - mezon_mtb_net
 
   nginx:
     image: nginx:latest
@@ -56,10 +56,10 @@ services:
     depends_on:
       - backend
     networks:
-      - mezon-mtb-net
+      - mezon_mtb_net
 
 volumes:
   postgres_data:
 
 networks:
-  mezon-mtb-net:
+  mezon_mtb_net:

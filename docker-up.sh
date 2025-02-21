@@ -1,6 +1,6 @@
 #!/bin/bash
 touch backend/.env.local
-./build_fe.sh
+./docker-prepare-build-fe.sh
 
 # Check if the --build parameter is passed
 if [[ "$1" == "--build" ]]; then
