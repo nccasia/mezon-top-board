@@ -49,8 +49,6 @@ services:
     container_name: frontend
     environment:
       REACT_APP_BACKEND_URL: ${REACT_APP_BACKEND_URL}
-    depends_on:
-      - backend
     networks:
       - main_net
   
@@ -63,8 +61,6 @@ services:
       - 80:80
       - 443:443
       - 8778:8778
-    depends_on:
-      - backend
     networks:
       - main_net
 
