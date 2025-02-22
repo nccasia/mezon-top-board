@@ -1,26 +1,21 @@
-# Use the official Node.js image as the base image
-FROM node:22
+# Stage 1: Build Stage
+FROM node:22 AS build
 
-# Set the working directory inside the container
 WORKDIR /app
 
-# Copy the source code to the working directory
-COPY . .
-
-# Copy the package.json and yarn.lock files to the working directory
-COPY package.json yarn.lock ./
-
-# Install NestJS CLI globally
-RUN yarn global add @nestjs/cli
-
-# Install the dependencies using Yarn
+COPY package.json ./
+COPY yarn.lock ./
 RUN yarn
 
-# Build the NestJS application
+COPY . .
 RUN yarn build
 
-# Run migrations
-CMD ["yarn", "db:run"]
+# Stage 2: Runtime Stage
+FROM node:22-alpine
 
-# Start the NestJS application
-CMD ["yarn", "start:prod"]
+COPY --chown=node:node --from=build /app/node_modules ./node_modules
+COPY --chown=node:node --from=build /app/dist ./dist
+
+ENV ENV=prod
+
+CMD ["node", "dist/main.js"]

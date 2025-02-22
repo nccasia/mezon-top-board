@@ -1,0 +1,13 @@
+FROM node:22-alpine
+
+WORKDIR /app
+
+COPY . .
+
+RUN yarn global add @nestjs/cli
+
+RUN yarn
+
+EXPOSE 8123
+
+CMD ["yarn", "dev"]
