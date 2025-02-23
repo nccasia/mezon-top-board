@@ -14,7 +14,6 @@ export class FilterBotRequest extends PaginationQuery {
     @ApiProperty({ description: "A valid column of Bot (tags, ratings, socialLinks)" })
     @IsString()
     field: string;
-
     @ApiProperty({ description: "ID value of the field" })
     @IsUUID()
     fieldId: string;

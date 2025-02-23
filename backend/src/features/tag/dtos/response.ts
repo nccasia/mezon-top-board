@@ -6,7 +6,6 @@ export class TagInBotDetailResponse {
     @Expose()
     @ApiProperty()
     public id: string;
-
     @Expose()
     @ApiProperty()
     public name: string;

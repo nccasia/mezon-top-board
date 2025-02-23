@@ -21,7 +21,6 @@ export class BotService {
     private readonly userRepository: GenericRepository<User>;
     private readonly tagRepository: GenericRepository<Tag>;
 
-
     constructor(private manager: EntityManager) {
         this.appRepository = new GenericRepository(App, manager);
         this.userRepository = new GenericRepository(User, manager);

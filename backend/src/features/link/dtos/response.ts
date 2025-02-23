@@ -6,11 +6,9 @@ export class SocialLinkInBotDetailResponse {
     @Expose()
     @ApiProperty()
     public id: string;
-
     @Expose()
     @ApiProperty()
     public url: string;
-
     @Expose()
     @ApiProperty()
     public icon: string;

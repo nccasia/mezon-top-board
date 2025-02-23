@@ -6,7 +6,6 @@ export class OwnerInBotDetailResponse {
     @Expose()
     @ApiProperty()
     public id: string;
-
     @Expose()
     @ApiProperty()
     public name: string;
