@@ -1,29 +1,23 @@
-import { SearchOutlined } from '@ant-design/icons'
-import { Input, Button, Tag, Divider, Rate, Progress } from 'antd'
-import styles from './BotDetailPage.module.scss'
+import { Tag, Divider, Rate } from 'antd'
 import BotCard from '@app/components/BotCard/BotCard'
 import DetailCard from './components/DetailCard/DetailCard'
 import CompactBotCard from '@app/components/CompactBotCard/CompactBotCard'
-import { ratings } from '@app/constants/common.constant'
+import { ratings, searchOption } from '@app/constants/common.constant'
 import Comment from './components/Comment/Comment'
+import MtbProgress from '@app/mtb-ui/ProgressBar/ProgressBar'
+import MtbTypography from '@app/mtb-ui/Typography/Typography'
+import { TypographyStyle } from '@app/enums/typography.enum'
+import SearchBar from '@app/mtb-ui/SearchBar/SearchBar'
 function BotDetailPage() {
   return (
-    <div className={`m-auto pt-10 pb-10 ${styles.detail}`}>
-      <p className='text-4xl font-bold'>Explore milions of mezon bots</p>
-      <div className='flex gap-5 pt-5'>
-        <Input
-          placeholder='Search'
-          type='text'
-          prefix={<SearchOutlined />}
-          style={{ borderRadius: '50px', width: '40%' }}
-        ></Input>
-        <Button color='default' variant='solid' size='large'>
-          Search
-        </Button>
+    <div className='m-auto pt-10 pb-10 w-[75%]'>
+      <MtbTypography>Explore milions of mezon bots</MtbTypography>
+      <div className='pt-5'>
+        <SearchBar data={searchOption} onSearch={(val) => console.log('Search:', val)}></SearchBar>
       </div>
-      <div className={`pt-5 ${styles['detail-search-tag']}`}>
+      <div className='pt-5 cursor-pointer'>
         {Array.from({ length: 8 }, (_, index) => (
-          <Tag key={index} style={{ borderRadius: '10px' }} color='#999999'>
+          <Tag key={index} className='!rounded-[10px]' color='#999999'>
             Tag
           </Tag>
         ))}
@@ -31,7 +25,9 @@ function BotDetailPage() {
       <div className='pt-5 pb-5'>
         <BotCard readonly={true}></BotCard>
       </div>
-      <p className='underline font-bold text-2xl'>Overview</p>
+      <MtbTypography variant='h3' textStyle={[TypographyStyle.UNDERLINE]}>
+        Overview
+      </MtbTypography>
       <div className='flex gap-10 pt-5 pb-5'>
         <div className='flex-3'>
           <p className='text-justify'>
@@ -59,27 +55,27 @@ function BotDetailPage() {
             aperiam, soluta facilis nulla eum, alias beatae eaque repellat illum, eius dolore?
           </p>
           <div className='pt-5'>
-            <p className='text-2xl font-bold'>More like this</p>
-            <Divider></Divider>
-            <div className='flex justify-between'>
+            <MtbTypography variant='h3'>More like this</MtbTypography>
+            <Divider className='bg-gray-200'></Divider>
+            <div className='flex justify-between gap-10 items-center max-lg:text-center max-2xl:text-center max-lg:flex-wrap max-2xl:flex-wrap max-lg:justify-center max-2xl:justify-center'>
               {Array.from({ length: 5 }, (_, index) => (
                 <CompactBotCard key={index}></CompactBotCard>
               ))}
             </div>
           </div>
           <div className='pt-8'>
-            <p className='text-2xl font-bold'>Ratings & Reviews</p>
-            <Divider></Divider>
-            <div className='flex justify-between gap-4'>
+            <MtbTypography variant='h3'>Ratings & Reviews</MtbTypography>
+            <Divider className='bg-gray-200'></Divider>
+            <div className='flex justify-between gap-4 max-lg:flex-col max-2xl:flex-col'>
               <div className='flex-1'>
-                <div className='flex items-center gap-10'>
+                <div className='flex items-center gap-10 max-lg:justify-between max-2xl:justify-between'>
                   <p className='text-6xl'>4.54</p>
                   <div>
                     <Rate defaultValue={4.5} allowHalf disabled></Rate>
                     <p className='pt-2'>9,160 reviews</p>
                   </div>
                 </div>
-                <p className='pt-5'>
+                <p className='pt-5 max-lg:pt-7 max-2xl:pt-7'>
                   Reviews can be left only by registered users. All reviews are moderated by Top.gg moderators. Please
                   make sure to check our guidelines before posting.
                 </p>
@@ -88,15 +84,18 @@ function BotDetailPage() {
                 {ratings.map((rating) => (
                   <div key={rating.stars} className='flex items-center gap-2 pb-2'>
                     <p className='whitespace-nowrap'>{rating.stars} stars</p>
-                    <Progress percent={rating.percent} className='flex-1' />
+                    <MtbProgress percent={rating.percent} strokeColor={'red'} showInfo={false}></MtbProgress>
+                    <p className='align-middle'>{rating.value}</p>
                   </div>
                 ))}
               </div>
             </div>
-            <Divider></Divider>
-            {Array.from({ length: 5 }, (_, index) => (
-              <Comment></Comment>
-            ))}
+            <Divider className='bg-gray-200'></Divider>
+            <div className='flex flex-col gap-5'>
+              {Array.from({ length: 5 }, (_, index) => (
+                <Comment key={index}></Comment>
+              ))}
+            </div>
           </div>
         </div>
         <div className='flex-1'>

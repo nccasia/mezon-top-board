@@ -7,6 +7,9 @@ body {
 a {
     text-decoration: none;
 }
+.ant-divider .ant-divider-inner-text {
+    font-family: "Open Sans", sans-serif;
+}
 /* width */
 ::-webkit-scrollbar {
     width: 5px;

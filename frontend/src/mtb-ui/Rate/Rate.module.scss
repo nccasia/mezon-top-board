@@ -1,0 +1,6 @@
+.mtb-rate {
+    :global(.ant-rate) {
+        font-size: var(--rate-size);
+        color: var(--rate-color);
+    }
+}
