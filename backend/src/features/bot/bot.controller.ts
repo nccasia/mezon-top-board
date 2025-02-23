@@ -6,7 +6,7 @@ import { RequestWithId } from "@domain/common/dtos/request.dto";
 import { Logger } from "@libs/logger";
 
 import { BotService } from "./bot.service";
-import { GetBotsByTagRequest, SearchBotRequest } from "./dtos/request";
+import { FilterBotRequest, SearchBotRequest } from "./dtos/request";
 import { GetBotDetailsResponse, GetRelatedBotResponse } from "./dtos/response";
 
 
@@ -52,10 +52,10 @@ export class BotController {
     }
   }
 
-  @Get("get-by-tag")
-  getBotsByTag(@Query() query: GetBotsByTagRequest) {
+  @Get("filter")
+  filterBot(@Query() query: FilterBotRequest) {
     try {
-      return this.botService.getBotsByTag(query);
+      return this.botService.filterBot(query);
     } catch (error) {
       this.logger.error("An error occured", error);
       throw error;

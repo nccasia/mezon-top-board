@@ -10,9 +10,9 @@ import { App, Tag, User } from "@domain/entities";
 import { GenericRepository } from "@libs/repository/genericRepository";
 import { Mapper } from "@libs/utils/mapper";
 import { paginate } from "@libs/utils/paginate";
-import { searchBuilder } from "@libs/utils/searchBuilder";
+import { filterBuilder, searchBuilder } from "@libs/utils/queryBuilder";
 
-import { GetBotsByTagRequest, SearchBotRequest } from "./dtos/request";
+import { FilterBotRequest, SearchBotRequest } from "./dtos/request";
 import { GetBotDetailsResponse, GetRelatedBotResponse, SearchBotResponse } from "./dtos/response";
 
 @Injectable()
@@ -101,14 +101,16 @@ export class BotService {
         );
     }
 
-    async getBotsByTag(query: GetBotsByTagRequest) {
-        const tag = await this.tagRepository.findById(query.tagId, ["apps", "apps.ratings"])
-
-        if (!tag || tag.deletedAt || tag.apps.length === 0)
-            return new Result({ data: [] })
+    async filterBot(query: FilterBotRequest) {
+        const whereCondition = filterBuilder(this.appRepository.getRepository().metadata, query.field, query.fieldId)
 
         return paginate<App, SearchBotResponse>(
-            [tag.apps, tag.apps.length],
+            () => this.appRepository.findMany(
+                {
+                    ...query,
+                    relations: ["ratings"],
+                    where: () => whereCondition
+                }),
             query.pageSize,
             query.pageNumber,
             (entity) => {

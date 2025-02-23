@@ -1,6 +1,6 @@
 import { ApiPropertyOptional, ApiProperty } from "@nestjs/swagger";
 
-import { IsOptional, IsUUID } from "class-validator";
+import { IsOptional, IsString, IsUUID } from "class-validator";
 
 import { PaginationQuery } from "@domain/common/dtos/request.dto";
 
@@ -10,8 +10,12 @@ export class SearchBotRequest extends PaginationQuery {
     search: string;
 }
 
-export class GetBotsByTagRequest extends PaginationQuery {
-    @ApiProperty({ format: "uuid" })
+export class FilterBotRequest extends PaginationQuery {
+    @ApiProperty({ description: "A valid column of Bot (tags, ratings, socialLinks)" })
+    @IsString()
+    field: string;
+
+    @ApiProperty({ description: "ID value of the field" })
     @IsUUID()
-    tagId: string;
+    fieldId: string;
 }
