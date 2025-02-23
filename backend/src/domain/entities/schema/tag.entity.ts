@@ -12,6 +12,6 @@ export class Tag extends BaseSoftDelete {
     @Column()
     public slug: string;
 
-    @ManyToMany(() => App, (app) => app.socialLinks)
+    @ManyToMany(() => App, (app) => app.tags)
     public apps: App[];
 }

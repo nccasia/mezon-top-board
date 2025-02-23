@@ -5,6 +5,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { dataSourceOption } from "@config/data-source.config";
 import config, { envFilePath } from "@config/env.config";
 
+import { BotModule } from "@features/bot/bot.module";
 import { MediaModule } from "@features/media/media.module";
 
 import { LoggerModule } from "@libs/logger";
@@ -19,6 +20,7 @@ import { LoggerModule } from "@libs/logger";
     TypeOrmModule.forRoot(dataSourceOption),
     LoggerModule,
     MediaModule,
+    BotModule
   ],
   controllers: [],
   providers: [],

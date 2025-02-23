@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne } from "typeorm";
+import { Entity, Column, ManyToOne, JoinColumn } from "typeorm";
 
 import { App } from "@domain/entities";
 
@@ -19,5 +19,6 @@ export class AppReviewHistory extends BaseSoftDelete {
     public remark: string;
 
     @ManyToOne(() => App, (app) => app.id, { onDelete: "CASCADE" })
+    @JoinColumn({ name: "appId" })
     app: App;
 }
