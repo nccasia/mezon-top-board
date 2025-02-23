@@ -11,6 +11,9 @@ export const configSwagger = (app: INestApplication) => {
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup("api", app, document, {
-    swaggerOptions: { persistAuthorizationL: true },
+    swaggerOptions: { persistAuthorizationL: true, url: '/api/openApi.json', },
+  });
+  app.getHttpAdapter().get('/api/openApi.json', (req, res) => {
+    res.json(document);
   });
 };

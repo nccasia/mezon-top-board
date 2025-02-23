@@ -5,8 +5,10 @@ import SearchBar from '@app/mtb-ui/SearchBar/SearchBar'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import { Divider, Tag } from 'antd'
 import CardInfo from './components/CardInfo'
+import { useNavigate } from 'react-router-dom'
 
 function ProfilePage() {
+  const navigate = useNavigate();
   return (
     <div className='pt-8 pb-12 w-[75%] m-auto'>
       <MtbTypography variant='h1'>Explore millions of Mezon Bots</MtbTypography>
@@ -28,7 +30,7 @@ function ProfilePage() {
         <div className='flex-2'>
           <div className='flex justify-between items-center pb-10'>
             <MtbTypography variant='h2'>Welcome to your profile</MtbTypography>
-            <Button color='primary' size='large'>
+            <Button color='primary' size='large' onClick={() => navigate('/new-bot')}>
               Add new bot
             </Button>
           </div>
