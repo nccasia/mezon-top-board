@@ -7,6 +7,7 @@ import {
     ObjectLiteral,
     FindOptionsOrder,
     DeepPartial,
+    FindOptionsWhere,
 } from "typeorm";
 
 import { SortOrder } from "@domain/common/enum/sortOder";
@@ -28,26 +29,32 @@ export class GenericRepository<T extends ObjectLiteral> {
         pageSize: number;
         sortField: string;
         sortOrder: string;
-        filters?: object;
+        where?: () => FindOptionsWhere<T> | FindOptionsWhere<T>[]; // Accepts single or multiple conditions
+        relations?: string[]
     }): Promise<[T[], number]> {
         const {
             pageNumber,
             pageSize,
             sortField = "createdAt",
             sortOrder = SortOrder.ASC,
-            filters,
+            where,
+            relations
         } = req;
 
         return await this.repository.findAndCount({
             skip: (pageNumber - 1) * pageSize,
             take: pageSize,
-            where: filters,
+            where: where ? where() : {},
             order: { [sortField]: sortOrder } as FindOptionsOrder<T>,
+            relations
         });
     }
 
-    public async findById(id: string): Promise<T | null> {
-        return await this.repository.findOne({ where: { id } as any });
+    public async findById(id: string, relations?: string[]): Promise<T | null> {
+        return await this.repository.findOne({
+            where: { id } as any,
+            relations
+        });
     }
 
     public async create(data: DeepPartial<T>): Promise<T> {

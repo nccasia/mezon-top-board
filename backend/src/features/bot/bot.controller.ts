@@ -6,7 +6,7 @@ import { RequestWithId } from "@domain/common/dtos/request.dto";
 import { Logger } from "@libs/logger";
 
 import { BotService } from "./bot.service";
-import { SearchBotRequest } from "./dtos/request";
+import { GetBotsByTagRequest, SearchBotRequest } from "./dtos/request";
 import { GetBotDetailsResponse, GetRelatedBotResponse } from "./dtos/response";
 
 
@@ -46,6 +46,16 @@ export class BotController {
   searchBot(@Query() query: SearchBotRequest) {
     try {
       return this.botService.searchBot(query);
+    } catch (error) {
+      this.logger.error("An error occured", error);
+      throw error;
+    }
+  }
+
+  @Get("get-by-tag")
+  getBotsByTag(@Query() query: GetBotsByTagRequest) {
+    try {
+      return this.botService.getBotsByTag(query);
     } catch (error) {
       this.logger.error("An error occured", error);
       throw error;
