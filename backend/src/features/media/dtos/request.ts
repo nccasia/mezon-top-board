@@ -20,4 +20,3 @@ export class UpdateMediaRequest extends RequestWithId {
     @ApiProperty()
     name: string;
 }
-
