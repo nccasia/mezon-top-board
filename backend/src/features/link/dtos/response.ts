@@ -2,7 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 
 import { Expose } from "class-transformer";
 
-export class SocialLinkInBotDetailResponse {
+export class SocialLinkInMezonAppDetailResponse {
     @Expose()
     @ApiProperty()
     public id: string;

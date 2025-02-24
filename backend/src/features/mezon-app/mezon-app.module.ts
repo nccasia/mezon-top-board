@@ -3,14 +3,14 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { App, Link, LinkType, Rating, Tag, User } from "@domain/entities";
 
-import { BotController } from "./bot.controller";
-import { BotService } from "./bot.service";
+import { MezonAppController } from "./mezon-app.controller";
+import { MezonAppService } from "./mezon-app.service";
 
 
 @Module({
   imports: [TypeOrmModule.forFeature([App, Tag, User, Rating, Link, LinkType])],
-  providers: [BotService],
-  controllers: [BotController],
-  exports: [BotService],
+  providers: [MezonAppService],
+  controllers: [MezonAppController],
+  exports: [MezonAppService],
 })
-export class BotModule { }
+export class MezonAppModule { }

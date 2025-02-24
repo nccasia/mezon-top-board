@@ -2,11 +2,11 @@ import { ApiProperty } from "@nestjs/swagger";
 
 import { Expose } from "class-transformer";
 
-import { SocialLinkInBotDetailResponse } from "@features/link/dtos/response";
-import { TagInBotDetailResponse } from "@features/tag/dtos/response";
-import { OwnerInBotDetailResponse } from "@features/user/dtos/response";
+import { SocialLinkInMezonAppDetailResponse } from "@features/link/dtos/response";
+import { TagInMezonAppDetailResponse } from "@features/tag/dtos/response";
+import { OwnerInMezonAppDetailResponse } from "@features/user/dtos/response";
 
-export class GetBotDetailsResponse {
+export class GetMezonAppDetailsResponse {
     @Expose()
     @ApiProperty()
     public id: string;
@@ -23,20 +23,20 @@ export class GetBotDetailsResponse {
     @ApiProperty()
     public featuredImage: string;
     @Expose()
-    @ApiProperty({ type: () => OwnerInBotDetailResponse })
-    public owner: OwnerInBotDetailResponse;
+    @ApiProperty({ type: () => OwnerInMezonAppDetailResponse })
+    public owner: OwnerInMezonAppDetailResponse;
     @Expose()
-    @ApiProperty({ type: () => [TagInBotDetailResponse] })
-    public tags: TagInBotDetailResponse[];
+    @ApiProperty({ type: () => [TagInMezonAppDetailResponse] })
+    public tags: TagInMezonAppDetailResponse[];
     @Expose()
-    @ApiProperty({ type: () => [SocialLinkInBotDetailResponse] })
-    public socialLinks: SocialLinkInBotDetailResponse[];
+    @ApiProperty({ type: () => [SocialLinkInMezonAppDetailResponse] })
+    public socialLinks: SocialLinkInMezonAppDetailResponse[];
     @Expose()
     @ApiProperty()
     public rateScore: number;
 }
 
-export class GetRelatedBotResponse {
+export class GetRelatedMezonAppResponse {
     @Expose()
     @ApiProperty()
     public id: string;
@@ -51,7 +51,7 @@ export class GetRelatedBotResponse {
     public rateScore: number;
 }
 
-export class SearchBotResponse extends GetRelatedBotResponse {
+export class SearchMezonAppResponse extends GetRelatedMezonAppResponse {
     @Expose()
     @ApiProperty()
     public description: string;
