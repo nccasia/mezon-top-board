@@ -1,6 +1,6 @@
 import { Divider, Flex, Pagination, Tag } from 'antd'
 import { ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import BotCard from '@app/components/BotCard/BotCard'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import Button from '@app/mtb-ui/Button'
@@ -52,7 +52,7 @@ function Main() {
       </div>
       <div className={`pt-5 cursor-pointer`}>
         {Array.from({ length: 8 }, (_, index) => (
-          <Tag key={index} className='!rounded-[10px]' color='#999999'>
+          <Tag key={index} className='!rounded-[10px] !bg-gray-300'>
             Tag
           </Tag>
         ))}
