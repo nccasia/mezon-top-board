@@ -54,7 +54,7 @@ export class MezonAppController {
 
   @Delete()
   @ApiBody({ type: RequestWithId })
-  deleteMedia(@Body() body: RequestWithId) {
+  deleteMezonApp(@Body() body: RequestWithId) {
     try {
       return this.mezonAppService.deleteMezonApp(body);
     } catch (error) {
@@ -65,7 +65,7 @@ export class MezonAppController {
 
   @Post()
   @ApiBody({ type: CreateMezonAppRequest })
-  createMedia(@Body() body: CreateMezonAppRequest) {
+  createMezonApp(@Body() body: CreateMezonAppRequest) {
     try {
       return this.mezonAppService.createMezonApp(body);
     } catch (error) {
@@ -76,7 +76,7 @@ export class MezonAppController {
 
   @Put()
   @ApiBody({ type: UpdateMezonAppRequest })
-  updateMedia(@Body() body: UpdateMezonAppRequest) {
+  updateMezonApp(@Body() body: UpdateMezonAppRequest) {
     try {
       return this.mezonAppService.updateMezonApp(body);
     } catch (error) {
