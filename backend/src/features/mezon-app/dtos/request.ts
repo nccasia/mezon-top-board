@@ -1,6 +1,7 @@
 import { ApiPropertyOptional, ApiProperty, OmitType, PartialType, IntersectionType } from "@nestjs/swagger";
 
-import { IsBoolean, IsOptional, IsString, IsUUID } from "class-validator";
+import { Type } from "class-transformer";
+import { IsArray, IsBoolean, IsOptional, IsString, IsUUID, ValidateNested } from "class-validator";
 
 import { PaginationQuery, RequestWithId } from "@domain/common/dtos/request.dto";
 
@@ -16,6 +17,16 @@ export class SearchMezonAppRequest extends PaginationQuery {
     @IsUUID()
     @IsOptional()
     fieldId: string;
+}
+
+class SocialLinkDto {
+    @ApiPropertyOptional()
+    @IsString()
+    url: string;
+
+    @ApiPropertyOptional()
+    @IsUUID()
+    linkTypeId: string;
 }
 
 export class CreateMezonAppRequest {
@@ -72,10 +83,12 @@ export class CreateMezonAppRequest {
     @IsOptional()
     tagIds?: string[];
 
-    @ApiPropertyOptional()
-    @IsUUID()
+    @ApiPropertyOptional({ type: [SocialLinkDto] })
+    @IsArray()
     @IsOptional()
-    socialLinkIds?: string[];
+    @ValidateNested({ each: true })
+    @Type(() => SocialLinkDto)
+    socialLinks?: SocialLinkDto[];
 }
 
 export class UpdateMezonAppRequest extends IntersectionType(
