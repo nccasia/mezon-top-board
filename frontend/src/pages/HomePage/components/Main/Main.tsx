@@ -52,7 +52,7 @@ function Main() {
       </div>
       <div className={`pt-5 cursor-pointer`}>
         {Array.from({ length: 8 }, (_, index) => (
-          <Tag key={index} className='!rounded-[10px]' color='#999999'>
+          <Tag key={index} className='!rounded-[10px] !bg-gray-300'>
             Tag
           </Tag>
         ))}

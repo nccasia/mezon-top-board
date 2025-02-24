@@ -7,7 +7,6 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import Button from '@app/mtb-ui/Button'
 import { errorStatus } from '@app/constants/common.constant'
 import TextArea from 'antd/es/input/TextArea'
-import { ETag } from '@app/types/Tag.types'
 import { useMemo } from 'react'
 
 interface AddBotFormValues {
@@ -24,10 +23,6 @@ interface AddBotFormValues {
 }
 
 const optionTag = ['enhance', 'tool']
-const optionCustom: Record<string, string> = {
-  [ETag.ENHANCE]: '!bg-red-500',
-  [ETag.TOOL]: '!bg-green-500'
-}
 
 const optionLinkType = ['discord', 'telegram']
 
@@ -73,10 +68,10 @@ function AddBotForm() {
   }, [])
 
   const tagRender: SelectProps['tagRender'] = (props) => {
-    const { label, value, closable, onClose } = props
+    const { label, closable, onClose } = props
 
     return (
-      <div className={`px-2 rounded-md inline-flex items-center mr-2 text-white capitalize ${optionCustom[value]}`}>
+      <div className={`px-2 rounded-md inline-flex items-center mr-2 text-black capitalize !bg-gray-300`}>
         <span>{label}</span>
         {closable && (
           <span onClick={onClose} className='ml-2 cursor-pointer font-bold'>
