@@ -1,13 +1,13 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 
 import { EntityManager, In, Not } from "typeorm";
 
 import { RequestWithId } from "@domain/common/dtos/request.dto";
 import { Result } from "@domain/common/dtos/result.dto";
 import { AppStatus } from "@domain/common/enum/appStatus";
-import { App, Link, Tag, User } from "@domain/entities";
+import { App, Link, LinkType, Tag, User } from "@domain/entities";
 
-import { INVALID_LINKS, INVALID_TAGS, NOT_FOUND_MSG } from "@libs/constant/errorMsg";
+import { INVALID_LINK_TYPE, INVALID_TAGS, NOT_FOUND_MSG } from "@libs/constant/errorMsg";
 import { GenericRepository } from "@libs/repository/genericRepository";
 import { Mapper } from "@libs/utils/mapper";
 import { paginate } from "@libs/utils/paginate";
@@ -22,12 +22,14 @@ export class MezonAppService {
     private readonly userRepository: GenericRepository<User>;
     private readonly tagRepository: GenericRepository<Tag>;
     private readonly linkRepository: GenericRepository<Link>;
+    private readonly linkTypeRepository: GenericRepository<LinkType>;
 
     constructor(private manager: EntityManager) {
         this.appRepository = new GenericRepository(App, manager);
         this.userRepository = new GenericRepository(User, manager);
         this.tagRepository = new GenericRepository(Tag, manager);
         this.linkRepository = new GenericRepository(Link, manager);
+        this.linkTypeRepository = new GenericRepository(LinkType, manager);
     }
     /**
     *  Calculate the average rating and round to the nearest 0.1 increment
@@ -116,27 +118,39 @@ export class MezonAppService {
     }
 
     async createMezonApp(req: CreateMezonAppRequest) {
-        const { tagIds, socialLinkIds, ...appData } = req;
+        const { tagIds, socialLinks, ...appData } = req;
 
         // Fetch existing tags
         const existingTags = tagIds?.length ? await this.tagRepository.getRepository().findBy({ id: In(tagIds) }) : [];
         const missingTagIds = tagIds?.filter(id => !existingTags.some(tag => tag.id === id)) || [];
         if (missingTagIds.length)
-            throw new NotFoundException(INVALID_TAGS);
+            throw new BadRequestException(INVALID_TAGS);
 
-        // Fetch existing social links
-        const existingSocialLinks = socialLinkIds?.length ? await this.linkRepository.getRepository().findBy({ id: In(socialLinkIds) }) : [];
-        const missingLinkIds = socialLinkIds?.filter(id => !existingSocialLinks.some(link => link.id === id)) || [];
+        let links: Link[] = []
+        if (socialLinks && socialLinks.length > 0) {
+            links = await Promise.all(socialLinks.map(async (socialLink) => {
+                // Check if linkType exist.
+                const linkType = await this.linkTypeRepository.findById(socialLink.linkTypeId);
+                if (!linkType) throw new BadRequestException(INVALID_LINK_TYPE);
 
-        // If any IDs are missing, throw an error
-        if (missingLinkIds.length) {
-            throw new NotFoundException(INVALID_LINKS);
+                let existingLink = await this.linkRepository.getRepository().findOne({ where: { url: socialLink.url } });
+                // If url is not exist, create a new one.
+                if (!existingLink) {
+                    existingLink = await this.linkRepository.create({
+                        url: socialLink.url,
+                        type: linkType
+                    });
+                    await this.linkRepository.getRepository().save(existingLink);
+                }
+
+                return existingLink;
+            }));
         }
 
         const newApp = await this.appRepository.create({
             ...appData,
             tags: existingTags,
-            socialLinks: existingSocialLinks
+            socialLinks: links
         });
 
         return this.appRepository.getRepository().save(newApp);
@@ -146,37 +160,46 @@ export class MezonAppService {
         const app = await this.appRepository.findById(req.id, ["tags", "socialLinks"]);
 
         if (!app) {
-            throw new NotFoundException(NOT_FOUND_MSG);
+            throw new BadRequestException(NOT_FOUND_MSG);
         }
 
-        const { tagIds, socialLinkIds, ...updateData } = req;
+        const { tagIds, socialLinks ,...updateData } = req;
 
         let tags = app.tags;
-        let socialLinks = app.socialLinks;
+        let links = app.socialLinks;
 
         if (tagIds) {
             const existingTags = await this.tagRepository.getRepository().findBy({ id: In(tagIds) });
             const missingTagIds = tagIds.filter(id => !existingTags.some(tag => tag.id === id));
 
             if (missingTagIds.length) {
-                throw new NotFoundException(INVALID_TAGS);
+                throw new BadRequestException(INVALID_TAGS);
             }
 
             tags = existingTags;
         }
 
-        if (socialLinkIds) {
-            const existingSocialLinks = await this.linkRepository.getRepository().findBy({ id: In(socialLinkIds) });
-            const missingLinkIds = socialLinkIds.filter(id => !existingSocialLinks.some(link => link.id === id));
+        if (socialLinks && socialLinks.length > 0) {
+            links = await Promise.all(socialLinks.map(async (socialLink) => {
+                // Check if linkType exist.
+                const linkType = await this.linkTypeRepository.findById(socialLink.linkTypeId);
+                if (!linkType) throw new BadRequestException(INVALID_LINK_TYPE);
 
-            if (missingLinkIds.length) {
-                throw new NotFoundException(INVALID_LINKS);
-            }
+                let existingLink = await this.linkRepository.getRepository().findOne({ where: { url: socialLink.url } });
+                // If url is not exist, create a new one.
+                if (!existingLink) {
+                    existingLink = await this.linkRepository.create({
+                        url: socialLink.url,
+                        type: linkType
+                    });
+                    await this.linkRepository.getRepository().save(existingLink);
+                }
 
-            socialLinks = existingSocialLinks;
+                return existingLink;
+            }));
         }
 
-        this.appRepository.getRepository().merge(app, { ...updateData, tags, socialLinks });
+        this.appRepository.getRepository().merge(app, { ...updateData, tags, socialLinks: links });
 
         return this.appRepository.getRepository().save(app);
     }
