@@ -1,19 +1,42 @@
 import { Divider, Flex, Pagination, Tag } from 'antd'
 import { ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import BotCard from '@app/components/BotCard/BotCard'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import Button from '@app/mtb-ui/Button'
 import SingleSelect, { IOption } from '@app/mtb-ui/SingleSelect'
 import SearchBar from '@app/mtb-ui/SearchBar/SearchBar'
 import { searchOption } from '@app/constants/common.constant'
+import { useLazyTagControllerGetTagsQuery } from '@app/services/api/tag/tag'
+import { useSelector } from 'react-redux'
+import { RootState } from '@app/store'
+import { ITagStore } from '@app/store/tag'
+import { useLazyMezonAppControllerSearchMezonAppQuery } from '@app/services/api/mezonApp/mezonApp'
+import { IMezonAppStore } from '@app/store/mezonApp'
 
 const pageOptions = [5, 10, 15]
-const totals = 100
 function Main() {
   const [botPerPage, setBotPerPage] = useState<number>(pageOptions[0])
   const [page, setPage] = useState<number>(1)
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false)
+  const [getTagList] = useLazyTagControllerGetTagsQuery()
+  const [getBotList] = useLazyMezonAppControllerSearchMezonAppQuery()
+  const { tagList } = useSelector<RootState, ITagStore>((s) => s.tag)
+  const { botList } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
+  const totals = useMemo(() => botList.totalCount || 0, [botList])
+  useEffect(() => {
+    getTagList()
+  }, [])
+
+  useEffect(() => {
+    getBotList({
+      pageNumber: page,
+      pageSize: botPerPage,
+      sortField: 'createdAt',
+      sortOrder: 'DESC'
+    })
+  }, [page, botPerPage])
+
   const options = useMemo(() => {
     return pageOptions.map((value) => {
       return {
@@ -36,12 +59,6 @@ function Main() {
     }
   }
 
-  const botsToShow = useMemo(() => {
-    const startIndex = (page - 1) * botPerPage
-    const endIndex = Math.min(startIndex + botPerPage, totals)
-    return Array.from({ length: endIndex - startIndex }, (_, index) => startIndex + index + 1)
-  }, [page, botPerPage, totals])
-
   return (
     <div className={`flex flex-col justify-center pt-8 pb-12 w-[75%] m-auto`}>
       <Divider variant='solid' style={{ borderColor: 'gray' }}>
@@ -51,9 +68,9 @@ function Main() {
         <SearchBar data={searchOption} onSearch={(val) => console.log('Search:', val)}></SearchBar>
       </div>
       <div className={`pt-5 cursor-pointer`}>
-        {Array.from({ length: 8 }, (_, index) => (
-          <Tag key={index} className='!rounded-[10px] !bg-gray-300'>
-            Tag
+        {tagList?.data?.map((tag) => (
+          <Tag key={tag.id} className='!rounded-[10px] !bg-gray-300'>
+            {tag.name}
           </Tag>
         ))}
       </div>
@@ -62,7 +79,7 @@ function Main() {
           <div>
             <MtbTypography variant='h3'>Mezon Bots</MtbTypography>
             <MtbTypography variant='h5' weight='normal'>
-              Showing 1 of 100 page
+              Showing 1 of {botList.totalPages} page
             </MtbTypography>
           </div>
           <SingleSelect
@@ -79,9 +96,7 @@ function Main() {
         </Flex>
         <div>
           <div className='flex flex-col gap-4 pt-8'>
-            {botsToShow.map((botNumber) => (
-              <BotCard key={botNumber} number={botNumber} />
-            ))}
+            {botList?.data?.map((bot) => <BotCard key={bot.id} data={bot} />)}
           </div>
 
           <div className='flex flex-col items-center gap-5 pt-10'>
@@ -95,7 +110,13 @@ function Main() {
               />
 
               <div className='flex justify-between w-full max-w-xs mt-2 px-4 pt-5'>
-                <Button color='primary' variant='outlined' icon={<ArrowLeftOutlined />} disabled={page === 1} onClick={() => handlePageChange(1)}>
+                <Button
+                  color='primary'
+                  variant='outlined'
+                  icon={<ArrowLeftOutlined />}
+                  disabled={page === 1}
+                  onClick={() => handlePageChange(1)}
+                >
                   Older
                 </Button>
                 <Button color='primary' variant='solid' onClick={() => handlePageChange(page + 1)}>

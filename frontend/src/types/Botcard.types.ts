@@ -1,4 +1,6 @@
+import { GetMezonAppDetailsResponse } from '@app/services/api/mezonApp/mezonApp'
+
 export interface IBotCardProps {
   readonly?: boolean
-  number?: number
+  data?: GetMezonAppDetailsResponse
 }
