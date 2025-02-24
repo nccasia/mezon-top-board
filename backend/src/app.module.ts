@@ -5,8 +5,9 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { dataSourceOption } from "@config/data-source.config";
 import config, { envFilePath } from "@config/env.config";
 
-import { MezonAppModule } from "@features/mezon-app/mezon-app.module";
 import { MediaModule } from "@features/media/media.module";
+import { MezonAppModule } from "@features/mezon-app/mezon-app.module";
+import { TagModule } from "@features/tag/tag.module";
 
 import { LoggerModule } from "@libs/logger";
 
@@ -20,9 +21,10 @@ import { LoggerModule } from "@libs/logger";
     TypeOrmModule.forRoot(dataSourceOption),
     LoggerModule,
     MediaModule,
-    MezonAppModule
+    MezonAppModule,
+    TagModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule { }
+export class AppModule {}
