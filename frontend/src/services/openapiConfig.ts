@@ -26,14 +26,14 @@ const config: ConfigFile = {
   apiImport: 'api',
   useEnumType: true,
   outputFiles: {
-    // './api/media/media.ts': {
-    //   filterEndpoints: filterByTag('Media'),
-    //   exportName: 'mediaService'
-    // },
-    // './api/tag/tag.ts': {
-    //   filterEndpoints: filterByTag('Tag'),
-    //   exportName: 'tagService'
-    // },
+    './api/media/media.ts': {
+      filterEndpoints: filterByTag('Media'),
+      exportName: 'mediaService'
+    },
+    './api/tag/tag.ts': {
+      filterEndpoints: filterByTag('Tag'),
+      exportName: 'tagService'
+    },
     './api/mezonApp/mezonApp.ts': {
       filterEndpoints: filterByTag('MezonApp'),
       exportName: 'tagService'

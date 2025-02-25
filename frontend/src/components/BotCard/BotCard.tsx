@@ -11,7 +11,7 @@ function BotCard({ readonly = false, data }: IBotCardProps) {
   return (
     <div
       className='shadow-md pb-8 pt-8 px-8 border border-gray-300 relative rounded-xl cursor-pointer'
-      onClick={() => navigate('/detail')}
+      onClick={() => navigate(`/${data?.id}`)}
     >
       <div className='flex flex-col md:flex-row items-start gap-4'>
         <div className='w-32 md:w-48'>
@@ -29,11 +29,10 @@ function BotCard({ readonly = false, data }: IBotCardProps) {
               <MtbRate readonly={readonly} value={data?.rateScore}></MtbRate>
             </div>
             <div className='flex gap-2'>
-              <Tag color='#22c55e'>Enhance</Tag>
-              <Tag color='#ef4444'>Tool</Tag>
+              {data?.tags?.map((tag) => <Tag className='!text-gray-500' key={tag?.id}>{tag?.name}</Tag>)}
             </div>
             <p className='text-gray-700'>
-              {data?.description ||
+              {data?.headline ||
                 `Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ad voluptate enim delectus ipsam aperiam
               repudiandae dolores quod. Architecto earum, aliquam possimus, dolores eos alias molestiae reiciendis
               minima placeat, iusto exercitationem!`}

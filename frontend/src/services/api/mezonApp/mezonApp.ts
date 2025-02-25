@@ -95,7 +95,7 @@ export type MezonAppControllerSearchMezonAppApiArg = {
   pageSize: number
   pageNumber: number
   sortField: string
-  sortOrder: 'ASC' | 'DESC'
+  sortOrder: string
 }
 export type OwnerInMezonAppDetailResponse = {
   id: string

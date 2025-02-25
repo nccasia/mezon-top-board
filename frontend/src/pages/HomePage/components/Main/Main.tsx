@@ -6,36 +6,51 @@ import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import Button from '@app/mtb-ui/Button'
 import SingleSelect, { IOption } from '@app/mtb-ui/SingleSelect'
 import SearchBar from '@app/mtb-ui/SearchBar/SearchBar'
-import { searchOption } from '@app/constants/common.constant'
 import { useLazyTagControllerGetTagsQuery } from '@app/services/api/tag/tag'
 import { useSelector } from 'react-redux'
 import { RootState } from '@app/store'
-import { ITagStore } from '@app/store/tag'
 import { useLazyMezonAppControllerSearchMezonAppQuery } from '@app/services/api/mezonApp/mezonApp'
 import { IMezonAppStore } from '@app/store/mezonApp'
+import { useBotSearch } from '@app/hook/useSearch'
+import { useSearchParams } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import { ApiError } from '@app/types/API.types'
+import { IMainProps } from '@app/types/Main.type'
 
 const pageOptions = [5, 10, 15]
-function Main() {
+function Main({ isSearchPage = false }: IMainProps) {
   const [botPerPage, setBotPerPage] = useState<number>(pageOptions[0])
   const [page, setPage] = useState<number>(1)
   const [isOpen, setIsOpen] = useState<boolean>(false)
   const [getTagList] = useLazyTagControllerGetTagsQuery()
-  const [getBotList] = useLazyMezonAppControllerSearchMezonAppQuery()
-  const { tagList } = useSelector<RootState, ITagStore>((s) => s.tag)
-  const { botList } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
-  const totals = useMemo(() => botList.totalCount || 0, [botList])
+  const [getMezonApp, { isError, error }] = useLazyMezonAppControllerSearchMezonAppQuery()
+  const { mezonApp } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
+  const totals = useMemo(() => mezonApp.totalCount || 0, [mezonApp])
+  const { handleSearch } = useBotSearch(page, botPerPage)
+  const [searchParams] = useSearchParams()
+  const searchQuery = searchParams.get('q') || ''
+
   useEffect(() => {
     getTagList()
   }, [])
 
   useEffect(() => {
-    getBotList({
+    if (isError && error) {
+      const apiError = error as ApiError
+      toast.error(apiError?.data?.message[0])
+    }
+  }, [isError, error])
+
+  useEffect(() => {
+    getMezonApp({
+      search: isSearchPage ? searchQuery : undefined,
+      field: isSearchPage ? 'tags' : undefined,
       pageNumber: page,
       pageSize: botPerPage,
       sortField: 'createdAt',
       sortOrder: 'DESC'
     })
-  }, [page, botPerPage])
+  }, [page, botPerPage, searchQuery])
 
   const options = useMemo(() => {
     return pageOptions.map((value) => {
@@ -65,21 +80,18 @@ function Main() {
         <MtbTypography variant='h1'>Explore millions of Mezon Bots</MtbTypography>
       </Divider>
       <div className='pt-3'>
-        <SearchBar data={searchOption} onSearch={(val) => console.log('Search:', val)}></SearchBar>
-      </div>
-      <div className={`pt-5 cursor-pointer`}>
-        {tagList?.data?.map((tag) => (
-          <Tag key={tag.id} className='!rounded-[10px] !bg-gray-300'>
-            {tag.name}
-          </Tag>
-        ))}
+        <SearchBar
+          onSearch={(val, tagId) => handleSearch(val ?? '', tagId)}
+          defaultValue={searchQuery}
+          isResultPage={isSearchPage}
+        ></SearchBar>
       </div>
       <div className='pt-8'>
         <Flex justify='space-between'>
           <div>
             <MtbTypography variant='h3'>Mezon Bots</MtbTypography>
             <MtbTypography variant='h5' weight='normal'>
-              Showing 1 of {botList.totalPages} page
+              Showing 1 of {mezonApp.totalPages} page
             </MtbTypography>
           </div>
           <SingleSelect
@@ -95,10 +107,15 @@ function Main() {
           />
         </Flex>
         <div>
-          <div className='flex flex-col gap-4 pt-8'>
-            {botList?.data?.map((bot) => <BotCard key={bot.id} data={bot} />)}
-          </div>
-
+          {mezonApp?.data?.length !== 0 ? (
+            <div className='flex flex-col gap-4 pt-8'>
+              {mezonApp?.data?.map((bot) => <BotCard key={bot.id} data={bot} />)}
+            </div>
+          ) : (
+            <MtbTypography variant='h4' weight='normal' customClassName='!text-center !block !text-gray-500'>
+              No result
+            </MtbTypography>
+          )}
           <div className='flex flex-col items-center gap-5 pt-10'>
             <div className='flex flex-col items-center relative w-full'>
               <Pagination
@@ -106,7 +123,7 @@ function Main() {
                 pageSize={botPerPage}
                 showSizeChanger={false}
                 current={page}
-                total={totals}
+                total={mezonApp?.pageNumber}
               />
 
               <div className='flex justify-between w-full max-w-xs mt-2 px-4 pt-5'>
@@ -119,7 +136,12 @@ function Main() {
                 >
                   Older
                 </Button>
-                <Button color='primary' variant='solid' onClick={() => handlePageChange(page + 1)}>
+                <Button
+                  color='primary'
+                  variant='solid'
+                  onClick={() => handlePageChange(page + 1)}
+                  disabled={mezonApp.totalPages === 1}
+                >
                   Newer <ArrowRightOutlined />
                 </Button>
               </div>

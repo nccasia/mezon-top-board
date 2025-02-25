@@ -1,26 +1,29 @@
-import { MezonAppControllerSearchMezonAppApiResponse, mezonAppService } from '@app/services/api/mezonApp/mezonApp'
+import {
+  GetMezonAppDetailsResponse,
+  GetRelatedMezonAppResponse,
+  MezonAppControllerSearchMezonAppApiResponse,
+  mezonAppService
+} from '@app/services/api/mezonApp/mezonApp'
 import { createSlice } from '@reduxjs/toolkit'
+import { mezonAppExtraReducers } from './extraReducer'
 
 export interface IMezonAppStore {
-  botList: MezonAppControllerSearchMezonAppApiResponse
+  mezonApp: MezonAppControllerSearchMezonAppApiResponse
+  mezonAppDetail: GetMezonAppDetailsResponse
+  relatedMezonApp: GetRelatedMezonAppResponse[]
 }
 
 const initialState: IMezonAppStore = {
-  botList: {} as MezonAppControllerSearchMezonAppApiResponse
+  mezonApp: {} as MezonAppControllerSearchMezonAppApiResponse,
+  mezonAppDetail: {} as GetMezonAppDetailsResponse,
+  relatedMezonApp: [],
 }
 
 const mezonAppSlice = createSlice({
   name: 'mezonApp',
   initialState,
   reducers: {},
-  extraReducers(builder) {
-    builder.addMatcher(
-      mezonAppService.endpoints.mezonAppControllerSearchMezonApp.matchFulfilled,
-      (state, { payload }) => {
-        state.botList = payload
-      }
-    )
-  }
+  extraReducers: mezonAppExtraReducers
 })
 
 export const mezonAppReducer = mezonAppSlice.reducer

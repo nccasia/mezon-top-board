@@ -100,7 +100,7 @@ export class MezonAppService {
             () => this.appRepository.findMany(
                 {
                     ...query,
-                    relations: ["ratings"],
+                    relations: ["ratings","tags"],
                     where: () => whereCondition
                 }),
             query.pageSize,
@@ -108,6 +108,7 @@ export class MezonAppService {
             (entity) => {
                 const mappedMezonApp = Mapper(SearchMezonAppResponse, entity);
                 mappedMezonApp.rateScore = this.getAverageRating(entity);
+                mappedMezonApp.tags = entity.tags.map(tag => ({ id: tag.id, name: tag.name }))
                 return mappedMezonApp;
             },
         );

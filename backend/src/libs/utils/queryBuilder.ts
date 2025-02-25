@@ -1,6 +1,6 @@
 import { BadRequestException } from "@nestjs/common";
 
-import { EntityMetadata, FindOptionsWhere, In, Like } from "typeorm";
+import { EntityMetadata, FindOptionsWhere, ILike, In } from "typeorm";
 
 /**
  * Builds a where condition for keyword search.
@@ -13,7 +13,7 @@ export const searchBuilder = <T>(input: { keyword: string, fields: (keyof T)[] }
 
     if (!keyword) return [];
 
-    return fields.map(field => ({ [field]: Like(`%${keyword}%`) })) as FindOptionsWhere<T>[];
+    return fields.map(field => ({ [field]: ILike(`%${keyword}%`) })) as FindOptionsWhere<T>[];
 };
 
 /**

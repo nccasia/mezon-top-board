@@ -4,6 +4,7 @@ import LoginPage from '@app/pages/LoginPage/LoginPage'
 import NewBotPage from '@app/pages/NewBotPage/NewBotPage'
 import NotFoundPage from '@app/pages/NotFoundPage/NotFoundPage'
 import ProfilePage from '@app/pages/ProfilePage/ProfilePage'
+import SearchPage from '@app/pages/SearchPage/SearchPage'
 import { RoutePath } from '@app/types/RoutePath.types'
 
 export const routePaths: RoutePath[] = [
@@ -15,7 +16,7 @@ export const routePaths: RoutePath[] = [
     isShowMenu: true
   },
   {
-    path: '/detail',
+    path: '/:botId',
     element: <BotDetailPage />,
     label: '',
     isShowMenu: false
@@ -28,9 +29,15 @@ export const routePaths: RoutePath[] = [
   },
   {
     path: '/your-bots',
-    element: <></>,
+    element: <ProfilePage></ProfilePage>,
     label: 'Your Bots',
     isShowMenu: true
+  },
+  {
+    path: '/search',
+    element: <SearchPage></SearchPage>,
+    label: '',
+    isShowMenu: false
   },
   {
     path: '/terms',
@@ -43,12 +50,6 @@ export const routePaths: RoutePath[] = [
     element: <></>,
     label: 'Help',
     isShowMenu: true
-  },
-  {
-    path: '/my-profile',
-    element: <ProfilePage></ProfilePage>,
-    label: '',
-    isShowMenu: false
   },
   {
     path: 'new-bot',

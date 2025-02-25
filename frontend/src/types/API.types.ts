@@ -17,3 +17,8 @@ export type HttpError = {
   message: string | string[]
   errors?: any
 }
+
+export type ApiError = {
+  status: number
+  data: HttpError
+}
