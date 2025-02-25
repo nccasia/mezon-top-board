@@ -1,7 +1,5 @@
 name: Deploy to Development Server
 
-runs-on: self-hosted
-
 on:
   push:
     branches:
@@ -9,7 +7,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
     - name: Checkout code
