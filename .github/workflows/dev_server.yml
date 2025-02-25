@@ -1,0 +1,27 @@
+name: Deploy to Development Server
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    environment: development
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: SSH into server and deploy application
+      uses: appleboy/ssh-action@v1.2.1
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USER }}
+        password: ${{ secrets.SERVER_PASSWORD }}
+        port: 22
+        script: |
+          cd ~/mezon-top-board
+          git pull origin dev
+          ./docker-up.sh --build --core
+          docker system prune -f
