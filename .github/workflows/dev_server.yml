@@ -12,16 +12,16 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-      
+
     - name: SSH into server and deploy application
-      env:
-        SERVER_PASSWORD: ${{ secrets.Development.SERVER_PASSWORD }}
-        SERVER_USER: ${{ secrets.Development.SERVER_USER }}
-        SERVER_HOST: ${{ secrets.Development.SERVER_HOST }}
-      run: |
-        sshpass -p "${SERVER_PASSWORD}" ssh -o StrictHostKeyChecking=no ${SERVER_USER}@${SERVER_HOST} << EOF
+      uses: appleboy/ssh-action@v1.2.1
+      with:
+        host: ${{ secrets.Development.SERVER_HOST }}
+        username: ${{ secrets.Development.SERVER_USER }}
+        password: ${{ secrets.Development.SERVER_PASSWORD }}
+        port: 22
+        script: |
           cd ~/mezon-top-board
           git pull origin dev
           ./docker-up.sh --build --core
           docker system prune -f
-        EOF
