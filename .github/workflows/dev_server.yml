@@ -16,9 +16,9 @@ jobs:
     - name: SSH into server and deploy application
       uses: appleboy/ssh-action@v1.2.1
       with:
-        host: ${{ secrets.Development.SERVER_HOST }}
-        username: ${{ secrets.Development.SERVER_USER }}
-        password: ${{ secrets.Development.SERVER_PASSWORD }}
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USER }}
+        password: ${{ secrets.SERVER_PASSWORD }}
         port: 22
         script: |
           cd ~/mezon-top-board
