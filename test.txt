@@ -1,0 +1,12 @@
+# BACKEND
+NODE_ENV=local
+
+## Exposed port postgres
+POSTGRES_PORT=5439
+POSTGRES_USERNAME=mtb_dev
+POSTGRES_PASSWORD=YouCannotGuessThisPassword123qwe
+POSTGRES_DB=mezon_top_board
+POSTGRES_SCHEMA=public
+
+# FRONTEND
+REACT_APP_BACKEND_URL=http://localhost:8778
