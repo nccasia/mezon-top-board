@@ -1,5 +1,4 @@
 import CompactBotCard from '@app/components/CompactBotCard/CompactBotCard'
-import { searchOption } from '@app/constants/common.constant'
 import Button from '@app/mtb-ui/Button'
 import SearchBar from '@app/mtb-ui/SearchBar/SearchBar'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
@@ -8,12 +7,12 @@ import CardInfo from './components/CardInfo'
 import { useNavigate } from 'react-router-dom'
 import { useLazyTagControllerGetTagsQuery } from '@app/services/api/tag/tag'
 import { useEffect } from 'react'
-import { useBotSearch } from '@app/hook/useSearch'
+import { useMezonAppSearch } from '@app/hook/useSearch'
 
 function ProfilePage() {
   const navigate = useNavigate()
   const [getTagList] = useLazyTagControllerGetTagsQuery()
-  const { handleSearch } = useBotSearch(1, 5)
+  const { handleSearch } = useMezonAppSearch(1, 5)
 
   useEffect(() => {
     getTagList()

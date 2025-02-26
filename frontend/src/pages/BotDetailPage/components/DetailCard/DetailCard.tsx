@@ -1,10 +1,4 @@
-import {
-  DollarOutlined,
-  InfoCircleOutlined,
-  RiseOutlined,
-  TagOutlined,
-  UserOutlined
-} from '@ant-design/icons'
+import { DollarOutlined, InfoCircleOutlined, RiseOutlined, TagOutlined, UserOutlined } from '@ant-design/icons'
 import { Tag } from 'antd'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import avatar from '@app/assets/images/0e54d87446f106d1fd58385295ae9deb.png'
@@ -13,7 +7,7 @@ import { RootState } from '@app/store'
 import { IMezonAppStore } from '@app/store/mezonApp'
 
 function DetailCard() {
-  const { botDetail } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
+  const { mezonAppDetail } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
   return (
     <div className='shadow-sm rounded-2xl bg-white p-4'>
       <div className='pb-4'>
@@ -37,7 +31,7 @@ function DetailCard() {
           Socials
         </MtbTypography>
         <div>
-          {botDetail?.socialLinks?.map((link) => (
+          {mezonAppDetail?.socialLinks?.map((link) => (
             <MtbTypography key={link.id} variant='h5' weight='normal' label={link.icon}>
               <a href={link.url} target='_blank' rel='noopener noreferrer' className='!text-black'>
                 {link.url}
@@ -50,11 +44,7 @@ function DetailCard() {
         <MtbTypography variant='h5' label={<TagOutlined />}>
           Categories
         </MtbTypography>
-        <div className='pt-1'>
-          {botDetail?.tags?.map((tag) => (
-            <Tag key={tag.id}>{tag?.name}</Tag>
-          ))}
-        </div>
+        <div className='pt-1'>{mezonAppDetail?.tags?.map((tag) => <Tag key={tag.id} className='!cursor-pointer'>{tag?.name}</Tag>)}</div>
       </div>
       <div className='pb-4'>
         <MtbTypography variant='h5' label={<UserOutlined />}>
@@ -66,7 +56,7 @@ function DetailCard() {
               <div className='w-[50px]'>
                 <img src={avatar} alt='' className='rounded-full' />
               </div>
-              <MtbTypography variant='p'>{botDetail?.owner?.name}</MtbTypography>
+              <MtbTypography variant='p'>{mezonAppDetail?.owner?.name}</MtbTypography>
             </div>
           </Tag>
         </div>

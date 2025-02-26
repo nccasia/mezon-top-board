@@ -8,6 +8,12 @@ import { useNavigate } from 'react-router-dom'
 
 function BotCard({ readonly = false, data }: IBotCardProps) {
   const navigate = useNavigate()
+  const handleInvite = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation()
+  }
+  const handleShare = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation()
+  }
   return (
     <div
       className='shadow-md pb-8 pt-8 px-8 border border-gray-300 relative rounded-xl cursor-pointer'
@@ -29,22 +35,21 @@ function BotCard({ readonly = false, data }: IBotCardProps) {
               <MtbRate readonly={readonly} value={data?.rateScore}></MtbRate>
             </div>
             <div className='flex gap-2'>
-              {data?.tags?.map((tag) => <Tag className='!text-gray-500' key={tag?.id}>{tag?.name}</Tag>)}
+              {data?.tags?.map((tag) => (
+                <Tag className='!text-gray-500' key={tag?.id}>
+                  {tag?.name}
+                </Tag>
+              ))}
             </div>
-            <p className='text-gray-700'>
-              {data?.headline ||
-                `Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ad voluptate enim delectus ipsam aperiam
-              repudiandae dolores quod. Architecto earum, aliquam possimus, dolores eos alias molestiae reiciendis
-              minima placeat, iusto exercitationem!`}
-            </p>
+            <p className='text-gray-700'>{data?.headline}</p>
           </div>
         </div>
       </div>
       <div className='absolute top-2 right-2 flex gap-3'>
-        <Button variant='solid' color='secondary' size='large'>
+        <Button variant='solid' color='secondary' size='large' onClick={handleInvite}>
           Invite
         </Button>
-        <Button size='large' color='default' icon={<UploadOutlined />} />
+        <Button size='large' color='default' icon={<UploadOutlined />} onClick={handleShare} />
       </div>
     </div>
   )

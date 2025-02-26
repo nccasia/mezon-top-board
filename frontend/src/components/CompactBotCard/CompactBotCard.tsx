@@ -6,9 +6,14 @@ interface ICompactBotCardProps {
   data?: GetRelatedMezonAppResponse
 }
 function CompactBotCard({ data }: ICompactBotCardProps) {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
+  const handleNavigateDetail = () => {
+    if (data?.id) {
+      navigate(`/${data?.id}`)
+    }
+  }
   return (
-    <div className='shadow-sm rounded-2xl p-4 bg-white cursor-pointer' onClick={() => navigate(`/${data?.id}`)}>
+    <div className='shadow-sm rounded-2xl p-4 bg-white cursor-pointer' onClick={handleNavigateDetail}>
       <div className='pl-10 pr-10 rounded-2xl bg-red-300'>
         <div className='w-20 m-auto'>
           <img src={data?.featuredImage || avatar} alt='' className='rounded-full object-cover w-full' width={'100%'} />
@@ -17,7 +22,7 @@ function CompactBotCard({ data }: ICompactBotCardProps) {
       <p className='pt-3 pb-3'>{data?.name || 'Name'}</p>
       <div className='flex justify-between items-center'>
         <p>
-          <StarOutlined /> {data?.rateScore || 4.1}
+          <StarOutlined /> {data?.rateScore || 0}
         </p>
         <p>
           <RiseOutlined /> 841,600

@@ -1,6 +1,6 @@
 import { useLazyMezonAppControllerSearchMezonAppQuery } from '@app/services/api/mezonApp/mezonApp'
 
-export const useBotSearch = (page: number, botPerPage: number) => {
+export const useMezonAppSearch = (page: number, botPerPage: number) => {
   const [getBotList] = useLazyMezonAppControllerSearchMezonAppQuery()
 
   const handleSearch = (text: string, fieldId?: string) => {

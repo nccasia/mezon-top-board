@@ -1,9 +1,7 @@
-import { Divider, Flex, Pagination, Tag } from 'antd'
-import { ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons'
+import { Divider, Flex, Pagination } from 'antd'
 import { useEffect, useMemo, useState } from 'react'
 import BotCard from '@app/components/BotCard/BotCard'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
-import Button from '@app/mtb-ui/Button'
 import SingleSelect, { IOption } from '@app/mtb-ui/SingleSelect'
 import SearchBar from '@app/mtb-ui/SearchBar/SearchBar'
 import { useLazyTagControllerGetTagsQuery } from '@app/services/api/tag/tag'
@@ -11,7 +9,7 @@ import { useSelector } from 'react-redux'
 import { RootState } from '@app/store'
 import { useLazyMezonAppControllerSearchMezonAppQuery } from '@app/services/api/mezonApp/mezonApp'
 import { IMezonAppStore } from '@app/store/mezonApp'
-import { useBotSearch } from '@app/hook/useSearch'
+import { useMezonAppSearch } from '@app/hook/useSearch'
 import { useSearchParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { ApiError } from '@app/types/API.types'
@@ -26,7 +24,7 @@ function Main({ isSearchPage = false }: IMainProps) {
   const [getMezonApp, { isError, error }] = useLazyMezonAppControllerSearchMezonAppQuery()
   const { mezonApp } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
   const totals = useMemo(() => mezonApp.totalCount || 0, [mezonApp])
-  const { handleSearch } = useBotSearch(page, botPerPage)
+  const { handleSearch } = useMezonAppSearch(page, botPerPage)
   const [searchParams] = useSearchParams()
   const searchQuery = searchParams.get('q') || ''
 
@@ -123,28 +121,8 @@ function Main({ isSearchPage = false }: IMainProps) {
                 pageSize={botPerPage}
                 showSizeChanger={false}
                 current={page}
-                total={mezonApp?.pageNumber}
+                total={totals}
               />
-
-              <div className='flex justify-between w-full max-w-xs mt-2 px-4 pt-5'>
-                <Button
-                  color='primary'
-                  variant='outlined'
-                  icon={<ArrowLeftOutlined />}
-                  disabled={page === 1}
-                  onClick={() => handlePageChange(1)}
-                >
-                  Older
-                </Button>
-                <Button
-                  color='primary'
-                  variant='solid'
-                  onClick={() => handlePageChange(page + 1)}
-                  disabled={mezonApp.totalPages === 1}
-                >
-                  Newer <ArrowRightOutlined />
-                </Button>
-              </div>
             </div>
           </div>
         </div>

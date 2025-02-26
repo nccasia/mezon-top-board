@@ -20,7 +20,7 @@ import { IMezonAppStore } from '@app/store/mezonApp'
 import MtbRate from '@app/mtb-ui/Rate/Rate'
 import { ITagStore } from '@app/store/tag'
 import { useLazyTagControllerGetTagsQuery } from '@app/services/api/tag/tag'
-import { useBotSearch } from '@app/hook/useSearch'
+import { useMezonAppSearch } from '@app/hook/useSearch'
 import { ApiError } from '@app/types/API.types'
 import { toast } from 'react-toastify'
 function BotDetailPage() {
@@ -31,7 +31,7 @@ function BotDetailPage() {
   const { botId } = useParams()
   const { mezonAppDetail, relatedMezonApp } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
   const { tagList } = useSelector<RootState, ITagStore>((s) => s.tag)
-  const { handleSearch } = useBotSearch(1, 5)
+  const { handleSearch } = useMezonAppSearch(1, 5)
   const [searchParams] = useSearchParams()
   const searchQuery = searchParams.get('q') || ''
   useEffect(() => {

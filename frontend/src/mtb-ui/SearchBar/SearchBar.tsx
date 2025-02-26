@@ -5,10 +5,13 @@ import { Controller, useForm } from 'react-hook-form'
 import { SEARCH_SCHEMA } from '@app/validations/search.validations'
 import { yupResolver } from '@hookform/resolvers/yup'
 import Button from '../Button'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { RootState } from '@app/store'
 import { ITagStore } from '@app/store/tag'
+import { useState } from 'react'
+
+const MAX_VISIBLE_TAGS = 10
 
 const SearchBar = ({
   placeholder = 'Search',
@@ -23,8 +26,10 @@ const SearchBar = ({
     resolver: yupResolver(SEARCH_SCHEMA),
     defaultValues: { search: searchParams.get('q') || '' }
   })
+  const [showAllTags, setShowAllTags] = useState(false)
   const { tagList } = useSelector<RootState, ITagStore>((s) => s.tag)
   const navigate = useNavigate()
+  const { pathname } = useLocation()
 
   const handleClear = () => {
     setValue('search', '')
@@ -39,12 +44,14 @@ const SearchBar = ({
       navigate(`/search?q=${encodeURIComponent(searchText)}`)
     }
   }
-
   const handleSearchTag = (tagId: string) => {
-    if (isResultPage) {
+    if (isResultPage || pathname === '/') {
       onSearch('', tagId)
     }
   }
+
+  const totalTags = tagList?.data?.length || 0
+  const hiddenTagsCount = totalTags - MAX_VISIBLE_TAGS
 
   return (
     <>
@@ -79,11 +86,16 @@ const SearchBar = ({
         )}
       </div>
       <div className={`pt-5 cursor-pointer`}>
-        {tagList?.data?.map((tag) => (
+        {tagList?.data?.slice(0, showAllTags ? totalTags : MAX_VISIBLE_TAGS).map((tag) => (
           <Tag key={tag.id} className='!rounded-[10px] !bg-gray-300' onClick={() => handleSearchTag(tag?.id)}>
             {tag.name}
           </Tag>
         ))}
+        {!showAllTags && totalTags > 10 && (
+          <Tag className='!rounded-[10px] !bg-gray-300 !mb-2' onClick={() => setShowAllTags(true)}>
+            +{hiddenTagsCount}
+          </Tag>
+        )}
       </div>
     </>
   )
