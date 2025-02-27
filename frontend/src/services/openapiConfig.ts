@@ -30,6 +30,10 @@ const config: ConfigFile = {
       filterEndpoints: filterByTag('Media'),
       exportName: 'mediaService'
     },
+    './api/auth/auth.ts': {
+      filterEndpoints: filterByTag('Auth'),
+      exportName: 'authService'
+    },
     './api/tag/tag.ts': {
       filterEndpoints: filterByTag('Tag'),
       exportName: 'tagService'

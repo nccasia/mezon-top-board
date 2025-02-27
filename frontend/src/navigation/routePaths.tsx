@@ -3,6 +3,7 @@ import BotDetailPage from '@app/pages/BotDetailPage/BotDetailPage'
 import HelpPage from '@app/pages/HelpPage/HelpPage'
 import HomePage from '@app/pages/HomePage/HomePage'
 import LoginPage from '@app/pages/LoginPage/LoginPage'
+import { LoginRedirectPage } from '@app/pages/LoginRedirectPage'
 import NewBotPage from '@app/pages/NewBotPage/NewBotPage'
 import NotFoundPage from '@app/pages/NotFoundPage/NotFoundPage'
 import ProfilePage from '@app/pages/ProfilePage/ProfilePage'
@@ -17,6 +18,11 @@ export const routePaths: RoutePath[] = [
     element: <HomePage />,
     label: 'Home',
     isShowMenu: true
+  },
+  {
+    path: 'callbacks',
+    element: <LoginRedirectPage />,
+    isShowMenu: false
   },
   {
     path: '/:botId',

@@ -1,18 +1,20 @@
+import { MenuOutlined } from '@ant-design/icons'
 import logo from '@app/assets/images/topLogo.png'
-import { renderMenu } from '@app/navigation/router'
 import Button from '@app/mtb-ui/Button'
+import { renderMenu } from '@app/navigation/router'
+import { redirectToOAuth } from '@app/utils/auth'
+import { Drawer } from 'antd'
+import { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import MtbTypography from '../Typography/Typography'
-import { useState } from 'react'
-import { MenuOutlined, MoonOutlined, SunOutlined } from '@ant-design/icons'
-import { Drawer, Switch } from 'antd'
 import styles from './Header.module.scss'
-import { useTheme } from '@app/hook/useTheme'
 
 function Header() {
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   // const { theme, setTheme } = useTheme()
+
+  const handleLogin = useCallback(() => redirectToOAuth(), [])
 
   return (
     <div
@@ -43,7 +45,7 @@ function Header() {
           <Button color='primary' variant='solid' size='large'>
             Sign Up
           </Button>
-          <Button color='default' variant='outlined' size='large'>
+          <Button color='default' variant='outlined' size='large' onClick={handleLogin}>
             Log in
           </Button>
         </div>
@@ -69,7 +71,7 @@ function Header() {
           <Button color='primary' variant='solid' size='large' block>
             Sign Up
           </Button>
-          <Button color='default' variant='outlined' size='large' block>
+          <Button color='default' variant='outlined' size='large' block onClick={handleLogin}>
             Log in
           </Button>
         </div>
