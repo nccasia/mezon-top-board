@@ -2,25 +2,26 @@ import { getToken } from '@app/utils/storage'
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 const paramsSerializer = (params: Record<string, any>): string => {
-  const searchParams = new URLSearchParams()
+  const searchParams = new URLSearchParams();
 
   for (const key in params) {
-    const value = params[key]
+    const value = params[key];
+
+    if (value === undefined || value === null) continue;
 
     if (Array.isArray(value)) {
-      value.forEach((item) => {
-        searchParams.append(`${key}`, item)
-      })
+      value.forEach((item) => searchParams.append(`${key}`, String(item)));
     } else {
-      searchParams.append(key, value)
+      searchParams.append(key, String(value));
     }
   }
 
-  return searchParams.toString()
-}
+  return searchParams.toString();
+};
+
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: process.env.REACT_APP_BACKEND_ENDPOINT,
+  baseUrl: process.env.REACT_APP_BACKEND_URL,
   prepareHeaders: async (headers) => {
     const token = getToken('AccessToken')
     if (token) {

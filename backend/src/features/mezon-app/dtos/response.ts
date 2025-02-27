@@ -58,5 +58,8 @@ export class SearchMezonAppResponse extends GetRelatedMezonAppResponse {
     @Expose()
     @ApiProperty()
     public headline: string;
+    @Expose()
+    @ApiProperty({ type: () => [TagInMezonAppDetailResponse] })
+    public tags: TagInMezonAppDetailResponse[];
 }
 
