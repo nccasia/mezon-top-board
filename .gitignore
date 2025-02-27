@@ -1,1 +1,4 @@
 .env
+certbot/*
+!certbot/options-ssl-nginx.conf
+!certbot/ssl-dhparams.pem
