@@ -8,6 +8,7 @@ import {
     FindOptionsOrder,
     DeepPartial,
     FindOptionsWhere,
+    FindOneOptions,
 } from "typeorm";
 
 import { SortOrder } from "@domain/common/enum/sortOder";
@@ -55,6 +56,10 @@ export class GenericRepository<T extends ObjectLiteral> {
             where: { id } as any,
             relations
         });
+    }
+
+    public async findOne(options: FindOneOptions<T>): Promise<T | null> {
+        return await this.repository.findOne(options);
     }
 
     public async create(data: DeepPartial<T>): Promise<T> {

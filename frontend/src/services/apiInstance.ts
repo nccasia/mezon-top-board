@@ -1,4 +1,5 @@
-import { BaseQueryFn, createApi, FetchArgs, fetchBaseQuery, FetchBaseQueryError } from '@reduxjs/toolkit/query/react'
+import { getToken } from '@app/utils/storage'
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 const paramsSerializer = (params: Record<string, any>): string => {
   const searchParams = new URLSearchParams()
@@ -21,10 +22,10 @@ const paramsSerializer = (params: Record<string, any>): string => {
 const baseQuery = fetchBaseQuery({
   baseUrl: process.env.REACT_APP_BACKEND_ENDPOINT,
   prepareHeaders: async (headers) => {
-    // const token = localStorage.getItem('accessToken')
-    // if (token) {
-    //   headers.set('Authorization', `Bearer ${token}`)
-    // }
+    const token = getToken('AccessToken')
+    if (token) {
+      headers.set('Authorization', `Bearer ${token}`)
+    }
     return headers
   },
   paramsSerializer

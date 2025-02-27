@@ -29,6 +29,10 @@ const config: ConfigFile = {
     './api/media/media.ts': {
       filterEndpoints: filterByTag('Media'),
       exportName: 'mediaService'
+    },
+    './api/auth/auth.ts': {
+      filterEndpoints: filterByTag('Auth'),
+      exportName: 'authService'
     }
   },
 

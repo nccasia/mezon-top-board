@@ -1,6 +1,7 @@
 import { User, App, Link, Tag, Rating, LinkType } from "@domain/entities";
 
 import AppDataSource from "@config/data-source.config";
+import { Role } from "@domain/common/enum/role";
 
 const seed = async () => {
     await AppDataSource.initialize();
@@ -15,12 +16,12 @@ const seed = async () => {
 
     // Create Users
     const users = await userRepo.save([
-        { name: "admin", email: "admin@example.com", password: "password123", bio: "Super admin", role: 0 },
-        { name: "Alice", email: "alice@example.com", password: "password123", bio: "Software Engineer", role: 1 },
-        { name: "Bob", email: "bob@example.com", password: "password123", bio: "Tech Enthusiast", role: 1 },
-        { name: "Charlie", email: "charlie@example.com", password: "password123", bio: "App Developer", role: 1 },
-        { name: "David", email: "david@example.com", password: "password123", bio: "Gamer & Streamer", role: 1 },
-        { name: "Eve", email: "eve@example.com", password: "password123", bio: "Entrepreneur", role: 1 },
+        { name: "admin", email: "admin@example.com", password: "password123", bio: "Super admin", role: Role.ADMIN },
+        { name: "Alice", email: "alice@example.com", password: "password123", bio: "Software Engineer", role: Role.DEVELOPER },
+        { name: "Bob", email: "bob@example.com", password: "password123", bio: "Tech Enthusiast", role: Role.DEVELOPER },
+        { name: "Charlie", email: "charlie@example.com", password: "password123", bio: "App Developer", role: Role.DEVELOPER },
+        { name: "David", email: "david@example.com", password: "password123", bio: "Gamer & Streamer", role: Role.DEVELOPER },
+        { name: "Eve", email: "eve@example.com", password: "password123", bio: "Entrepreneur", role: Role.DEVELOPER },
     ]);
 
     // Create Link Types
