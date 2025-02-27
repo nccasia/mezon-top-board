@@ -1,1 +1,3 @@
 .env
+certbot/*
+!certbot/.gitkeep
