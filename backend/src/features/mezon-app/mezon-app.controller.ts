@@ -8,6 +8,7 @@ import { Logger } from "@libs/logger";
 import { CreateMezonAppRequest, SearchMezonAppRequest, UpdateMezonAppRequest } from "./dtos/request";
 import { GetMezonAppDetailsResponse, GetRelatedMezonAppResponse } from "./dtos/response";
 import { MezonAppService } from "./mezon-app.service";
+import { Public } from "@libs/decorator/authorization.decorator";
 
 
 @Controller("mezon-app")
@@ -20,6 +21,7 @@ export class MezonAppController {
     this.logger.setContext(MezonAppController.name);
   }
 
+  @Public()
   @Get()
   @ApiResponse({ type: GetMezonAppDetailsResponse })
   getMezonAppDetail(@Query() query: RequestWithId) {
@@ -31,6 +33,7 @@ export class MezonAppController {
     }
   }
 
+  @Public()
   @Get("related-app")
   @ApiResponse({ type: GetRelatedMezonAppResponse, isArray: true })
   getRelatedMezonApp(@Query() query: RequestWithId) {
@@ -42,6 +45,7 @@ export class MezonAppController {
     }
   }
 
+  @Public()
   @Get("search")
   searchMezonApp(@Query() query: SearchMezonAppRequest) {
     try {
