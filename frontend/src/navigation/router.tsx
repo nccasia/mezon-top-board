@@ -1,6 +1,8 @@
 import RootLayout from '@app/components/layouts/RootLayout'
 import { Route, useLocation } from 'react-router'
 import { routePaths } from './routePaths'
+import { adminRoutePaths } from './adminRoutePaths'
+import AdminLayout from '@app/components/layouts/AdminLayout'
 
 export const renderRoutes = () => {
   return (
@@ -14,6 +16,16 @@ export const renderRoutes = () => {
               ))}
           </Route>
         ))}
+      </Route>
+      <Route path="/admin" element={<AdminLayout />}>
+        {adminRoutePaths.map((route) => (
+            <Route key={route.path} path={route.path} element={route.element}>
+              {route.children &&
+                route.children.map((childRoute, idx) => (
+                  <Route key={`${route.path}-${idx}`} path={childRoute.path} element={childRoute.element} />
+                ))}
+            </Route>
+          ))}
       </Route>
     </>
   )
