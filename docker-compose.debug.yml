@@ -52,29 +52,29 @@ services:
       JWT_ACCESS_TOKEN_EXPIRES_IN_MINUTES: ${JWT_ACCESS_TOKEN_EXPIRES_IN_MINUTES}
       JWT_REFRESH_TOKEN_EXPIRES_IN_MINUTES: ${JWT_REFRESH_TOKEN_EXPIRES_IN_MINUTES}
     ports:
-      - "8123:8123"
+      - "8125:8123"
     networks:
       - main_net
 
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.debug
-    container_name: frontend
-    volumes:
-      - ./frontend:/app
-      - fe_node_modules:/app/node_modules
-    environment:
-      REACT_APP_BACKEND_URL: ${REACT_APP_BACKEND_URL}
-      REACT_APP_OAUTH2_CLIENT_ID: ${REACT_APP_OAUTH2_CLIENT_ID}
-      REACT_APP_OAUTH2_REDIRECT_URI: ${REACT_APP_OAUTH2_REDIRECT_URI}
-      REACT_APP_OAUTH2_AUTHORIZE_URL: ${REACT_APP_OAUTH2_AUTHORIZE_URL}
-      REACT_APP_OAUTH2_RESPONSE_TYPE: ${REACT_APP_OAUTH2_RESPONSE_TYPE}
-      REACT_APP_OAUTH2_SCOPE: ${REACT_APP_OAUTH2_SCOPE}
-    ports:
-      - "3000:3000"
-    networks:
-      - main_net
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile.debug
+  #   container_name: frontend
+  #   volumes:
+  #     - ./frontend:/app
+  #     - fe_node_modules:/app/node_modules
+  #   environment:
+  #     REACT_APP_BACKEND_URL: ${REACT_APP_BACKEND_URL}
+  #     REACT_APP_OAUTH2_CLIENT_ID: ${REACT_APP_OAUTH2_CLIENT_ID}
+  #     REACT_APP_OAUTH2_REDIRECT_URI: ${REACT_APP_OAUTH2_REDIRECT_URI}
+  #     REACT_APP_OAUTH2_AUTHORIZE_URL: ${REACT_APP_OAUTH2_AUTHORIZE_URL}
+  #     REACT_APP_OAUTH2_RESPONSE_TYPE: ${REACT_APP_OAUTH2_RESPONSE_TYPE}
+  #     REACT_APP_OAUTH2_SCOPE: ${REACT_APP_OAUTH2_SCOPE}
+  #   ports:
+  #     - "3000:3000"
+  #   networks:
+  #     - main_net
 
 volumes:
   postgres_data:
