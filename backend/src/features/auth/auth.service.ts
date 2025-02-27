@@ -15,11 +15,12 @@ import { GenericRepository } from "@libs/repository/genericRepository";
 import { JwtService } from "@nestjs/jwt";
 import { isEmail } from "class-validator";
 import * as crypto from "crypto";
-import * as moment from 'moment';
+import * as moment from "moment";
 import { OAuth2Request } from "./dtos/request";
 import { JwtPayload } from "./dtos/response";
 import { OAuth2Service } from "./oauth2.service";
 import { Role } from "@domain/common/enum/role";
+import { EXPIRED_REFRESH_TOKEN } from "@libs/constant/errorMsg";
 
 @Injectable()
 export class AuthService {
@@ -138,9 +139,7 @@ export class AuthService {
         isNaN(expireDate.getTime()) ||
         now > expireDate.getTime()
       ) {
-        throw new ForbiddenException(
-          "Your session has expired. Please log in again to continue.",
-        );
+        throw new ForbiddenException(EXPIRED_REFRESH_TOKEN);
       }
 
       const tokens = await this.generateAccessAndRefreshTokens(

@@ -25,7 +25,6 @@ export const routePaths: RoutePath[] = [
     isShowMenu: false
   },
   {
-    path: '/detail',
     path: '/:botId',
     element: <BotDetailPage />,
     label: '',

@@ -33,14 +33,8 @@ export class OAuth2ORYTokenPayload {
 }
 
 export class JwtPayload {
-  @IsEmail()
   email: string;
-
-  @IsNumber()
   iat: number;
-
   sessionToken: string;
-
-  @IsDate()
   expireTime?: string | Date;
 }
