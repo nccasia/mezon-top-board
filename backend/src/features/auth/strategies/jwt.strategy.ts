@@ -14,7 +14,6 @@ import config from "@config/env.config";
 export class JwtStrategy extends PassportStrategy(Strategy, "jwt") {
   constructor(
     private readonly authService: AuthService,
-    private readonly cls: ClsService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -43,7 +42,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, "jwt") {
       throw new UnauthorizedException("JWT token is expired");
     }
 
-    this.cls.set(USER_TOKEN, user);
     request.sessionToken = sessionToken;
     return user;
   }

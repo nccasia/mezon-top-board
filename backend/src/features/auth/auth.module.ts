@@ -15,7 +15,6 @@ import { OAuth2Service } from "./oauth2.service";
     TypeOrmModule.forFeature([User]),
     JwtModule.register({}),
     PassportModule,
-    ClsModule,
   ],
   providers: [AuthService, JwtStrategy, OAuth2Service],
   controllers: [AuthController],
