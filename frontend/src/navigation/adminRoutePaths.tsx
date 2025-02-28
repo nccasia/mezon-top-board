@@ -1,14 +1,14 @@
 // src/routes/adminRoutePaths.ts
 
 import { AppstoreAddOutlined, SettingOutlined, UserOutlined } from "@ant-design/icons";
-import MezonApps from "@app/pages/AdminPage/MezonApps";
+import MezonAppsContainer from "@app/pages/AdminPage/MezonAppsContainer";
 import { RoutePath } from "@app/types/RoutePath.types";
 
 
 export const adminRoutePaths: RoutePath[] = [
   {
     path: "apps",
-    element: <MezonApps />, // Default page when accessing /admin
+    element: <MezonAppsContainer />, // Default page when accessing /admin
     label: "Apps",
     icon: <AppstoreAddOutlined/>
   },
