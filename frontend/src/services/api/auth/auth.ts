@@ -1,5 +1,5 @@
-import { IBaseResponse } from '@app/types/base.type'
 import { api } from '../../apiInstance'
+import { HttpResponse } from '@app/types/API.types'
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
     authControllerVerifyOAuth2: build.mutation<AuthControllerVerifyOAuth2ApiResponse, AuthControllerVerifyOAuth2ApiArg>(
@@ -11,7 +11,7 @@ const injectedRtkApi = api.injectEndpoints({
   overrideExisting: false
 })
 export { injectedRtkApi as authService }
-export type AuthControllerVerifyOAuth2ApiResponse = IBaseResponse<{
+export type AuthControllerVerifyOAuth2ApiResponse = HttpResponse<{
   accessToken: string
   refreshToken: string
 }>

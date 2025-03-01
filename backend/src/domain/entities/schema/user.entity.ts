@@ -2,13 +2,12 @@ import {
   Column,
   Entity,
   JoinTable,
-  ManyToMany,
   OneToMany,
   Unique,
 } from "typeorm";
 
 import { Role } from "@domain/common/enum/role";
-import { Link, Rating } from "@domain/entities";
+import { App, Link, Rating } from "@domain/entities";
 
 import { BaseSoftDelete } from "../base";
 
@@ -27,13 +26,16 @@ export class User extends BaseSoftDelete {
     @Column({ type: "enum", enum: Object.keys(Role), default: Role.DEVELOPER })
     public role: Role;
 
-    @OneToMany(() => Rating, (rating) => rating.user)
-    public ratings: Rating[];
-
     @Column({ nullable: true, default: null })
     public bio: string;
 
-    @ManyToMany(() => Link, (link) => link.devs)
+    @OneToMany(() => Rating, (rating) => rating.user)
+    public ratings: Rating[];
+
+    @OneToMany(() => App, (app) => app.owner)
+    public apps: App[];
+
+    @OneToMany(() => Link, (link) => link.owner)
     @JoinTable()
-    public socialLinks: Link[];
+    public links: Link[];
 }

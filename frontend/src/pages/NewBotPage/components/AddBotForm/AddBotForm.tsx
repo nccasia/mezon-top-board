@@ -1,6 +1,6 @@
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import { Checkbox, Form, Input, Select, SelectProps } from 'antd'
-import FormField from '../FormField/FormField'
+import FormField from '@app/components/FormField/FormField'
 import { Controller, useForm } from 'react-hook-form'
 import { ADD_BOT_SCHEMA } from '@app/validations/addBot.validations'
 import { yupResolver } from '@hookform/resolvers/yup'

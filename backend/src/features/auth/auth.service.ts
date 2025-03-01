@@ -4,23 +4,22 @@ import {
   Injectable,
   UnauthorizedException,
 } from "@nestjs/common";
-
-import { EntityManager } from "typeorm";
-
-import { Result } from "@domain/common/dtos/result.dto";
-import { User } from "@domain/entities";
-
-import config from "@config/env.config";
-import { GenericRepository } from "@libs/repository/genericRepository";
 import { JwtService } from "@nestjs/jwt";
 import { isEmail } from "class-validator";
 import * as crypto from "crypto";
 import * as moment from "moment";
-import { OAuth2Request } from "./dtos/request";
-import { JwtPayload } from "./dtos/response";
-import { OAuth2Service } from "./oauth2.service";
+import { EntityManager } from "typeorm";
+
+import config from "@config/env.config";
+import { Result } from "@domain/common/dtos/result.dto";
 import { Role } from "@domain/common/enum/role";
-import { EXPIRED_REFRESH_TOKEN } from "@libs/constant/errorMsg";
+import { User } from "@domain/entities";
+import { ErrorMessages } from "@libs/constant/errorMsg";
+import { GenericRepository } from "@libs/repository/genericRepository";
+
+import { OAuth2Request } from "./dtos/request";
+import { OAuth2Service } from "./oauth2.service";
+import { JwtPayload } from "@libs/guard/jwt.types";
 
 @Injectable()
 export class AuthService {
@@ -42,7 +41,7 @@ export class AuthService {
       );
 
       if (!isEmail(oryInfo.sub)) {
-        throw new BadRequestException();
+        throw new BadRequestException(ErrorMessages.INVALID_EMAIL);
       }
 
       const user = await this.findUserByEmail(oryInfo.sub);
@@ -59,7 +58,11 @@ export class AuthService {
       const tokens = await this.generateAccessAndRefreshTokens(newUser);
       return new Result({ data: tokens });
     } catch (error) {
-      throw error;
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+
+      throw new BadRequestException();
     }
   }
 
@@ -83,14 +86,13 @@ export class AuthService {
   ) {
     const { email } = user;
     const {
-      JWT_ACCESS_TOKEN_SECRET: secret,
+      JWT_ACCESS_TOKEN_SECRET: jwtSecret,
       JWT_REFRESH_TOKEN_SECRET: refreshSecret,
       JWT_ACCESS_TOKEN_EXPIRES_IN_MINUTES: accessTokenExpiration,
       JWT_REFRESH_TOKEN_EXPIRES_IN_MINUTES: refreshTokenExpiration,
     } = config();
 
-    const sessionToken =
-      providedSessionToken ?? crypto.randomBytes(5).toString("hex");
+    const sessionToken = providedSessionToken ?? crypto.randomBytes(5).toString("hex");
 
     const expireTime = moment().add(accessTokenExpiration, "minutes").toDate();
     const refreshTokenExpireTime = moment()
@@ -100,7 +102,7 @@ export class AuthService {
     const accessToken = this.jwtService.sign(
       { email, sessionToken, expireTime },
       {
-        secret: secret,
+        secret: jwtSecret,
       },
     );
 
@@ -122,24 +124,20 @@ export class AuthService {
       const { sessionToken, email, expireTime } = payload;
 
       if (!isEmail(email)) {
-        throw new UnauthorizedException();
+        throw new UnauthorizedException(ErrorMessages.INVALID_EMAIL);
       }
 
       const user = await this.findUserByEmail(email);
 
       if (!user) {
-        throw new UnauthorizedException();
+        throw new UnauthorizedException(ErrorMessages.NOT_FOUND_MSG);
       }
 
-      const expireDate = new Date(expireTime);
-      const now = new Date().getTime();
+      const now = moment();
+      const expireDate = moment(expireTime);
 
-      if (
-        !expireTime ||
-        isNaN(expireDate.getTime()) ||
-        now > expireDate.getTime()
-      ) {
-        throw new ForbiddenException(EXPIRED_REFRESH_TOKEN);
+      if (!expireTime || !expireDate.isValid() || now.isAfter(expireDate)) {
+        throw new ForbiddenException(ErrorMessages.TOKEN_EXPIRED);
       }
 
       const tokens = await this.generateAccessAndRefreshTokens(
@@ -156,7 +154,7 @@ export class AuthService {
         throw error;
       }
 
-      throw new UnauthorizedException();
+      throw new BadRequestException();
     }
   }
 }

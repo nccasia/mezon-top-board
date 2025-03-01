@@ -1,4 +1,4 @@
-export enum ECookieStorageKey {
-  AccessToken = 'accessToken',
-  RefreshToken = 'refreshToken'
+export enum EStorageKey {
+  AccessToken = '@mtb/accessToken',
+  RefreshToken = '@mtb/refreshToken'
 }

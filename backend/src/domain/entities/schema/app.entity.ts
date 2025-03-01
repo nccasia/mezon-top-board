@@ -1,15 +1,17 @@
-import { Column, Entity, JoinTable, ManyToMany, OneToMany, Unique } from "typeorm";
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, Unique } from "typeorm";
 
 import { AppStatus } from "@domain/common/enum/appStatus";
-import { Link, AppReviewHistory, Rating, Tag } from "@domain/entities";
+import { Link, AppReviewHistory, Rating, Tag, User } from "@domain/entities";
 
 import { BaseSoftDelete } from "../base";
 
 @Entity()
-@Unique(["name"])
 export class App extends BaseSoftDelete {
     @Column()
     public name: string;
+
+    @Column()
+    public ownerId: string;
 
     @Column({
         type: "enum",
@@ -36,9 +38,6 @@ export class App extends BaseSoftDelete {
     @Column({ nullable: true })
     public featuredImage: string;
 
-    @Column()
-    public ownerId: string;
-
     @Column({ nullable: true })
     public supportUrl: string;
 
@@ -58,4 +57,8 @@ export class App extends BaseSoftDelete {
 
     @OneToMany(() => Rating, (rating) => rating.app)
     ratings: Rating[];
+
+    @ManyToOne(() => User, (user) => user.apps, { onDelete: "CASCADE" })
+    @JoinColumn({ name: "ownerId" })
+    owner: User;
 }

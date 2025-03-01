@@ -8,9 +8,6 @@ export const ratings = [
   { stars: 1, percent: 10, value: 10000 }
 ]
 
-export const searchOption = ['Apple', 'Banana', 'Cherry']
-export const tagOption = ['Enhance', 'Tool']
-
 export const REQUIRED_ERROR_FIELD = () => `This field is required`
 export const errorStatus = (field: FieldError | undefined) => (field?.message ? 'error' : '')
 export const URL_REGEX = /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/

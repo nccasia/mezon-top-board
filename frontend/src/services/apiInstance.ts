@@ -1,4 +1,3 @@
-import { getToken } from '@app/utils/storage'
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 const paramsSerializer = (params: Record<string, any>): string => {
@@ -23,7 +22,7 @@ const paramsSerializer = (params: Record<string, any>): string => {
 const baseQuery = fetchBaseQuery({
   baseUrl: process.env.REACT_APP_BACKEND_URL,
   prepareHeaders: async (headers) => {
-    const token = getToken('AccessToken')
+    const token = localStorage.getItem('accessToken')
     if (token) {
       headers.set('Authorization', `Bearer ${token}`)
     }

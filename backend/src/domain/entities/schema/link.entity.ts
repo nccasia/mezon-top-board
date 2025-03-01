@@ -10,6 +10,12 @@ export class Link extends BaseSoftDelete {
     public url: string;
 
     @Column()
+    public ownerId: string;
+
+    @Column({ default: false })
+    public showOnProfile: boolean;
+
+    @Column()
     public linkTypeId: string;
 
     @ManyToOne(() => LinkType, (linkType) => linkType.links)
@@ -19,7 +25,7 @@ export class Link extends BaseSoftDelete {
     @ManyToMany(() => App, (app) => app.socialLinks)
     public apps: App[];
 
-    @ManyToMany(() => User, (dev) => dev.socialLinks)
-    public devs: User[];
+    @ManyToOne(() => User, (user) => user.links)
+    public owner: User;
 }
 

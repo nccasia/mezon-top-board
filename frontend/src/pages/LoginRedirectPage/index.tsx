@@ -1,7 +1,7 @@
 import { useAuthControllerVerifyOAuth2Mutation } from '@app/services/api/auth/auth'
 import { storeAccessTokens } from '@app/utils/storage'
 import { Flex, Spin } from 'antd'
-import { useCallback, useEffect, useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
@@ -30,7 +30,8 @@ export const LoginRedirectPage = () => {
     try {
       const { data } = await verifyOauth2Service({ oAuth2Request: { code, scope } })
       if (!data) {
-        return toast.error('Login failed!')
+        toast.error('Login failed!')
+        return;
       }
       storeAccessTokens(data.data)
       toast.success('Login successfully!')
