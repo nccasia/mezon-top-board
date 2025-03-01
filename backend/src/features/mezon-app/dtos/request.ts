@@ -81,7 +81,6 @@ export class CreateMezonAppRequest {
     remark?: string;
 
     @ApiPropertyOptional()
-    @IsUUID()
     @IsOptional()
     tagIds?: string[];
 

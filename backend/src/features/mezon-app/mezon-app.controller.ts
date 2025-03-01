@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Post, Put, Query } from "@nestjs/common";
-import { ApiBody, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiBody, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import { RequestWithId } from "@domain/common/dtos/request.dto";
 
@@ -56,6 +56,7 @@ export class MezonAppController {
     }
   }
 
+  @ApiBearerAuth()
   @Delete()
   @ApiBody({ type: RequestWithId })
   deleteMezonApp(@Body() body: RequestWithId) {
@@ -67,6 +68,7 @@ export class MezonAppController {
     }
   }
 
+  @ApiBearerAuth()
   @Post()
   @ApiBody({ type: CreateMezonAppRequest })
   createMezonApp(@Body() body: CreateMezonAppRequest) {
@@ -78,6 +80,7 @@ export class MezonAppController {
     }
   }
 
+  @ApiBearerAuth()
   @Put()
   @ApiBody({ type: UpdateMezonAppRequest })
   updateMezonApp(@Body() body: UpdateMezonAppRequest) {

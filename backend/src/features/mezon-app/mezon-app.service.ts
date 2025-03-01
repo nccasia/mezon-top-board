@@ -120,7 +120,7 @@ export class MezonAppService {
             },
         );
     }
-    
+
     async deleteMezonApp(req: RequestWithId) {
         await this.appRepository.softDelete(req.id)
         return new Result({})
@@ -141,18 +141,22 @@ export class MezonAppService {
                 // Check if linkType exist.
                 const linkType = await this.linkTypeRepository.findById(socialLink.linkTypeId);
                 if (!linkType) throw new BadRequestException(ErrorMessages.INVALID_LINK_TYPE);
-                
-                const dataLinkObj = { 
-                    url: socialLink.url,
-                    type: linkType,
-                    ownerId: appData.ownerId
-                };
 
-                let existingLink = await this.linkRepository.getRepository().findOne({ where: dataLinkObj });
+                let existingLink = await this.linkRepository.getRepository().findOne({
+                    where: {
+                        url: socialLink.url,
+                        linkTypeId: socialLink.linkTypeId,
+                        ownerId: appData.ownerId
+                    }
+                });
 
                 // If url is not exist, create a new one.
                 if (!existingLink) {
-                    existingLink = await this.linkRepository.create(dataLinkObj);
+                    existingLink = await this.linkRepository.create({
+                        url: socialLink.url,
+                        type: linkType,
+                        ownerId: appData.ownerId
+                    });
                 }
 
                 return existingLink;
@@ -195,16 +199,20 @@ export class MezonAppService {
                 const linkType = await this.linkTypeRepository.findById(socialLink.linkTypeId);
                 if (!linkType) throw new BadRequestException(ErrorMessages.INVALID_LINK_TYPE);
 
-                const dataLinkObj = { 
-                    url: socialLink.url,
-                    type: linkType,
-                    ownerId: app.ownerId
-                };
-
-                let existingLink = await this.linkRepository.getRepository().findOne({ where: dataLinkObj });
+                let existingLink = await this.linkRepository.getRepository().findOne({
+                    where: {
+                        url: socialLink.url,
+                        linkTypeId: socialLink.linkTypeId,
+                        ownerId: app.ownerId
+                    }
+                });
                 // If url is not exist, create a new one.
                 if (!existingLink) {
-                    existingLink = await this.linkRepository.create(dataLinkObj);
+                    existingLink = await this.linkRepository.create({
+                        url: socialLink.url,
+                        type: linkType,
+                        ownerId: app.ownerId
+                    });
                 }
 
                 return existingLink;
