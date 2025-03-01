@@ -16,12 +16,12 @@ const seed = async () => {
 
     // Create Users
     const users = await userRepo.save([
-        { name: "admin", email: "admin@example.com", password: "password123", bio: "Super admin", role: Role.ADMIN },
-        { name: "Alice", email: "alice@example.com", password: "password123", bio: "Software Engineer", role: Role.DEVELOPER },
-        { name: "Bob", email: "bob@example.com", password: "password123", bio: "Tech Enthusiast", role: Role.DEVELOPER },
-        { name: "Charlie", email: "charlie@example.com", password: "password123", bio: "App Developer", role: Role.DEVELOPER },
-        { name: "David", email: "david@example.com", password: "password123", bio: "Gamer & Streamer", role: Role.DEVELOPER },
-        { name: "Eve", email: "eve@example.com", password: "password123", bio: "Entrepreneur", role: Role.DEVELOPER },
+        { name: "admin", email: "admin@example.com", bio: "Super admin", role: Role.ADMIN },
+        { name: "Alice", email: "alice@example.com", bio: "Software Engineer", role: Role.DEVELOPER },
+        { name: "Bob", email: "bob@example.com", bio: "Tech Enthusiast", role: Role.DEVELOPER },
+        { name: "Charlie", email: "charlie@example.com", bio: "App Developer", role: Role.DEVELOPER },
+        { name: "David", email: "david@example.com", bio: "Gamer & Streamer", role: Role.DEVELOPER },
+        { name: "Eve", email: "eve@example.com", bio: "Entrepreneur", role: Role.DEVELOPER },
     ]);
 
     // Create Link Types
@@ -34,17 +34,8 @@ const seed = async () => {
 
     // Create Links
     const links = await linkRepo.save([
-        { url: "https://github.com/alice", linkTypeId: linkTypes[1].id },
-        { url: "https://twitter.com/alice", linkTypeId: linkTypes[2].id },
-        { url: "https://linkedin.com/in/alice", linkTypeId: linkTypes[3].id },
-        { url: "https://github.com/bob", linkTypeId: linkTypes[1].id },
-        { url: "https://twitter.com/bob", linkTypeId: linkTypes[2].id },
-        { url: "https://github.com/charlie", linkTypeId: linkTypes[1].id },
-        { url: "https://twitter.com/charlie", linkTypeId: linkTypes[2].id },
-        { url: "https://github.com/david", linkTypeId: linkTypes[1].id },
-        { url: "https://twitter.com/david", linkTypeId: linkTypes[2].id },
-        { url: "https://github.com/eve", linkTypeId: linkTypes[1].id },
-        { url: "https://twitter.com/eve", linkTypeId: linkTypes[2].id },
+        { url: "https://github.com/alice", linkTypeId: linkTypes[1].id, ownerId: users[0].id },
+        { url: "https://twitter.com/alice", linkTypeId: linkTypes[2].id, ownerId: users[0].id },
     ]);
 
     // Create Tags

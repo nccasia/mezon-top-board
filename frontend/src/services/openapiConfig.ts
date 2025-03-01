@@ -6,8 +6,6 @@ dotenv.config({
   path: '../../.env'
 })
 
-console.log('first', process.env.REACT_APP_BACKEND_URL)
-
 const schemaUrl = safeConcatUrl(process.env.REACT_APP_BACKEND_URL ?? '', 'api/openApi.json') as string
 
 const filterByTag = (tag: string) => {
@@ -26,22 +24,24 @@ const config: ConfigFile = {
   apiImport: 'api',
   useEnumType: true,
   outputFiles: {
-    './api/media/media.ts': {
-      filterEndpoints: filterByTag('Media'),
-      exportName: 'mediaService'
-    },
-    './api/auth/auth.ts': {
-      filterEndpoints: filterByTag('Auth'),
-      exportName: 'authService'
-    },
-    './api/tag/tag.ts': {
-      filterEndpoints: filterByTag('Tag'),
-      exportName: 'tagService'
-    },
-    './api/mezonApp/mezonApp.ts': {
-      filterEndpoints: filterByTag('MezonApp'),
-      exportName: 'tagService'
-    }
+    // UNCOMMENT TO ENABLE SERVICE GENERATION
+
+    // './api/media/media.ts': {
+    //   filterEndpoints: filterByTag('Media'),
+    //   exportName: 'mediaService'
+    // },
+    // './api/auth/auth.ts': {
+    //   filterEndpoints: filterByTag('Auth'),
+    //   exportName: 'authService'
+    // },
+    // './api/tag/tag.ts': {
+    //   filterEndpoints: filterByTag('Tag'),
+    //   exportName: 'tagService'
+    // },
+    // './api/mezonApp/mezonApp.ts': {
+    //   filterEndpoints: filterByTag('MezonApp'),
+    //   exportName: 'tagService'
+    // }
   },
 
   hooks: {

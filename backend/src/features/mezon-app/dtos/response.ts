@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, OmitType, PartialType } from "@nestjs/swagger";
 
 import { Expose } from "class-transformer";
 
@@ -10,56 +10,71 @@ export class GetMezonAppDetailsResponse {
     @Expose()
     @ApiProperty()
     public id: string;
+
     @Expose()
     @ApiProperty()
     public name: string;
+
     @Expose()
     @ApiProperty()
     public description: string;
+
     @Expose()
     @ApiProperty()
     public headline: string;
+
     @Expose()
     @ApiProperty()
     public featuredImage: string;
+
     @Expose()
     @ApiProperty({ type: () => OwnerInMezonAppDetailResponse })
     public owner: OwnerInMezonAppDetailResponse;
+
     @Expose()
     @ApiProperty({ type: () => [TagInMezonAppDetailResponse] })
     public tags: TagInMezonAppDetailResponse[];
+
     @Expose()
     @ApiProperty({ type: () => [SocialLinkInMezonAppDetailResponse] })
     public socialLinks: SocialLinkInMezonAppDetailResponse[];
+
     @Expose()
     @ApiProperty()
     public rateScore: number;
 }
 
-export class GetRelatedMezonAppResponse {
+export class SearchMezonAppResponse {
     @Expose()
     @ApiProperty()
     public id: string;
+
     @Expose()
     @ApiProperty()
     public name: string;
+
     @Expose()
     @ApiProperty()
     public featuredImage: string;
+
     @Expose()
     @ApiProperty()
     public rateScore: number;
-}
 
-export class SearchMezonAppResponse extends GetRelatedMezonAppResponse {
     @Expose()
     @ApiProperty()
     public description: string;
+
     @Expose()
     @ApiProperty()
     public headline: string;
+
     @Expose()
     @ApiProperty({ type: () => [TagInMezonAppDetailResponse] })
     public tags: TagInMezonAppDetailResponse[];
 }
+
+export class GetRelatedMezonAppResponse extends OmitType(SearchMezonAppResponse, ["description", "tags", "headline"]) {
+}
+
 

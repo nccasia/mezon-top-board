@@ -7,7 +7,7 @@ import { Result } from "@domain/common/dtos/result.dto";
 import { AppStatus } from "@domain/common/enum/appStatus";
 import { App, Link, LinkType, Tag, User } from "@domain/entities";
 
-import { INVALID_LINK_TYPE, INVALID_TAGS, NOT_FOUND_MSG } from "@libs/constant/errorMsg";
+import { ErrorMessages } from "@libs/constant/errorMsg";
 import { GenericRepository } from "@libs/repository/genericRepository";
 import { Mapper } from "@libs/utils/mapper";
 import { paginate } from "@libs/utils/paginate";
@@ -31,49 +31,56 @@ export class MezonAppService {
         this.linkRepository = new GenericRepository(Link, manager);
         this.linkTypeRepository = new GenericRepository(LinkType, manager);
     }
+
     /**
-    *  Calculate the average rating and round to the nearest 0.1 increment
-    */
-    private getAverageRating(mezonApp: App) {
-        return mezonApp.ratings.length
-            ? Math.round((mezonApp.ratings.reduce((sum, rating) => sum + rating.score, 0) / mezonApp.ratings.length) * 10) / 10
-            : 0;
+     *  Calculate the average rating and round to the nearest 0.5 increment
+     */
+    private getAverageRating(mezonApp: App): number {
+        if (!mezonApp.ratings.length) return 0;
+
+        const totalScore = mezonApp.ratings.reduce((sum, rating) => sum + rating.score, 0);
+        const averageScore = totalScore / mezonApp.ratings.length;
+
+        return Math.round(averageScore * 2) / 2;
     }
 
     async getMezonAppDetail(query: RequestWithId) {
         const mezonApp = await this.appRepository.findById(query.id, ["tags", "socialLinks", "socialLinks.type", "ratings"])
-        if (!mezonApp || mezonApp.status !== AppStatus.PUBLISHED)
+
+        if (!mezonApp || mezonApp.status !== AppStatus.PUBLISHED) {
             return new Result({ data: {} })
-        else {
-            const owner = await this.userRepository.findById(mezonApp.ownerId);
-
-            const detail = Mapper(GetMezonAppDetailsResponse, mezonApp);
-
-            detail.rateScore = this.getAverageRating(mezonApp)
-            detail.owner = {
-                id: owner.id,
-                name: owner.name,
-            }
-            detail.tags = mezonApp.tags.map(tag => ({ id: tag.id, name: tag.name }))
-            detail.socialLinks = mezonApp.socialLinks.map(link => ({ id: link.id, url: link.url, icon: link.type.icon ?? "" }))
-
-            return new Result({
-                data: detail,
-            });
         }
+
+        const owner = await this.userRepository.findById(mezonApp.ownerId);
+
+        const detail = Mapper(GetMezonAppDetailsResponse, mezonApp);
+
+        detail.rateScore = this.getAverageRating(mezonApp)
+        detail.owner = {
+            id: owner.id,
+            name: owner.name,
+        }
+        detail.tags = mezonApp.tags.map(tag => ({ id: tag.id, name: tag.name }))
+        detail.socialLinks = mezonApp.socialLinks.map(link => ({ id: link.id, url: link.url, icon: link.type.icon ?? "" }))
+
+        return new Result({
+            data: detail,
+        });
     }
 
     async getRelatedMezonApp(query: RequestWithId) {
         const mezonApp = await this.appRepository.findById(query.id, ["tags"]);
 
-        if (!mezonApp || mezonApp.status !== AppStatus.PUBLISHED)
+        if (!mezonApp || mezonApp.status !== AppStatus.PUBLISHED) {
             return new Result({ data: [] });
+        }
 
         const tagIds = mezonApp.tags.map(tag => tag.id);
         if (tagIds.length === 0) return new Result({ data: [] });
 
         const relatedMezonApps = await this.appRepository.getRepository().find({
             where: { tags: { id: In(tagIds) }, id: Not(query.id) },
+            withDeleted: false,
             relations: ["tags", "ratings"],
             take: 5,
         });
@@ -100,7 +107,7 @@ export class MezonAppService {
             () => this.appRepository.findMany(
                 {
                     ...query,
-                    relations: ["ratings","tags"],
+                    relations: ["ratings", "tags"],
                     where: () => whereCondition
                 }),
             query.pageSize,
@@ -113,6 +120,7 @@ export class MezonAppService {
             },
         );
     }
+    
     async deleteMezonApp(req: RequestWithId) {
         await this.appRepository.softDelete(req.id)
         return new Result({})
@@ -125,46 +133,47 @@ export class MezonAppService {
         const existingTags = tagIds?.length ? await this.tagRepository.getRepository().findBy({ id: In(tagIds) }) : [];
         const missingTagIds = tagIds?.filter(id => !existingTags.some(tag => tag.id === id)) || [];
         if (missingTagIds.length)
-            throw new BadRequestException(INVALID_TAGS);
+            throw new BadRequestException(ErrorMessages.INVALID_TAGS);
 
         let links: Link[] = []
         if (socialLinks && socialLinks.length > 0) {
             links = await Promise.all(socialLinks.map(async (socialLink) => {
                 // Check if linkType exist.
                 const linkType = await this.linkTypeRepository.findById(socialLink.linkTypeId);
-                if (!linkType) throw new BadRequestException(INVALID_LINK_TYPE);
+                if (!linkType) throw new BadRequestException(ErrorMessages.INVALID_LINK_TYPE);
+                
+                const dataLinkObj = { 
+                    url: socialLink.url,
+                    type: linkType,
+                    ownerId: appData.ownerId
+                };
 
-                let existingLink = await this.linkRepository.getRepository().findOne({ where: { url: socialLink.url } });
+                let existingLink = await this.linkRepository.getRepository().findOne({ where: dataLinkObj });
+
                 // If url is not exist, create a new one.
                 if (!existingLink) {
-                    existingLink = await this.linkRepository.create({
-                        url: socialLink.url,
-                        type: linkType
-                    });
-                    await this.linkRepository.getRepository().save(existingLink);
+                    existingLink = await this.linkRepository.create(dataLinkObj);
                 }
 
                 return existingLink;
             }));
         }
 
-        const newApp = await this.appRepository.create({
+        return await this.appRepository.create({
             ...appData,
             tags: existingTags,
             socialLinks: links
         });
-
-        return this.appRepository.getRepository().save(newApp);
     }
 
     async updateMezonApp(req: UpdateMezonAppRequest) {
         const app = await this.appRepository.findById(req.id, ["tags", "socialLinks"]);
 
         if (!app) {
-            throw new BadRequestException(NOT_FOUND_MSG);
+            throw new BadRequestException(ErrorMessages.NOT_FOUND_MSG);
         }
 
-        const { tagIds, socialLinks ,...updateData } = req;
+        const { tagIds, socialLinks, ...updateData } = req;
 
         let tags = app.tags;
         let links = app.socialLinks;
@@ -174,7 +183,7 @@ export class MezonAppService {
             const missingTagIds = tagIds.filter(id => !existingTags.some(tag => tag.id === id));
 
             if (missingTagIds.length) {
-                throw new BadRequestException(INVALID_TAGS);
+                throw new BadRequestException(ErrorMessages.INVALID_TAGS);
             }
 
             tags = existingTags;
@@ -184,16 +193,18 @@ export class MezonAppService {
             links = await Promise.all(socialLinks.map(async (socialLink) => {
                 // Check if linkType exist.
                 const linkType = await this.linkTypeRepository.findById(socialLink.linkTypeId);
-                if (!linkType) throw new BadRequestException(INVALID_LINK_TYPE);
+                if (!linkType) throw new BadRequestException(ErrorMessages.INVALID_LINK_TYPE);
 
-                let existingLink = await this.linkRepository.getRepository().findOne({ where: { url: socialLink.url } });
+                const dataLinkObj = { 
+                    url: socialLink.url,
+                    type: linkType,
+                    ownerId: app.ownerId
+                };
+
+                let existingLink = await this.linkRepository.getRepository().findOne({ where: dataLinkObj });
                 // If url is not exist, create a new one.
                 if (!existingLink) {
-                    existingLink = await this.linkRepository.create({
-                        url: socialLink.url,
-                        type: linkType
-                    });
-                    await this.linkRepository.getRepository().save(existingLink);
+                    existingLink = await this.linkRepository.create(dataLinkObj);
                 }
 
                 return existingLink;

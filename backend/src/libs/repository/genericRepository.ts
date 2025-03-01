@@ -9,11 +9,12 @@ import {
     DeepPartial,
     FindOptionsWhere,
     FindOneOptions,
+    FindManyOptions,
 } from "typeorm";
 
 import { SortOrder } from "@domain/common/enum/sortOder";
 
-import { NOT_FOUND_MSG } from "@libs/constant/errorMsg";
+import { ErrorMessages } from "@libs/constant/errorMsg";
 
 export class GenericRepository<T extends ObjectLiteral> {
     private repository: Repository<T>;
@@ -46,6 +47,7 @@ export class GenericRepository<T extends ObjectLiteral> {
             skip: (pageNumber - 1) * pageSize,
             take: pageSize,
             where: where ? where() : {},
+            withDeleted: false,
             order: { [sortField]: sortOrder } as FindOptionsOrder<T>,
             relations
         });
@@ -54,6 +56,7 @@ export class GenericRepository<T extends ObjectLiteral> {
     public async findById(id: string, relations?: string[]): Promise<T | null> {
         return await this.repository.findOne({
             where: { id } as any,
+            withDeleted: false,
             relations
         });
     }
@@ -62,26 +65,30 @@ export class GenericRepository<T extends ObjectLiteral> {
         return await this.repository.findOne(options);
     }
 
+    public async find(options: FindManyOptions<T>): Promise<T[]> {
+        return await this.repository.find(options);
+    }
+
     public async create(data: DeepPartial<T>): Promise<T> {
         const entity = this.repository.create(data);
         return await this.repository.save(entity);
     }
 
-    public async update(id: string, data: Partial<T>, msg: string = NOT_FOUND_MSG): Promise<void> {
+    public async update(id: string, data: Partial<T>, msg: string = ErrorMessages.NOT_FOUND_MSG): Promise<void> {
         const entity = await this.findById(id);
         if (!entity)
             throw new NotFoundException(msg)
         await this.repository.update(id, data);
     }
 
-    public async delete(id: string, msg: string = NOT_FOUND_MSG): Promise<void> {
+    public async delete(id: string, msg: string = ErrorMessages.NOT_FOUND_MSG): Promise<void> {
         const entity = await this.findById(id);
         if (!entity)
             throw new NotFoundException(msg)
         await this.repository.delete(id);
     }
 
-    public async softDelete(id: string, msg: string = NOT_FOUND_MSG): Promise<void> {
+    public async softDelete(id: string, msg: string = ErrorMessages.NOT_FOUND_MSG): Promise<void> {
         const entity = await this.findById(id);
         if (!entity)
             throw new NotFoundException(msg)

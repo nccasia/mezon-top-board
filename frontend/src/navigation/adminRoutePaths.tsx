@@ -7,21 +7,25 @@ import { RoutePath } from "@app/types/RoutePath.types";
 
 export const adminRoutePaths: RoutePath[] = [
   {
-    path: "apps",
+    index: true,
+    path: "/manage/apps",
     element: <MezonAppsContainer />, // Default page when accessing /admin
     label: "Apps",
-    icon: <AppstoreAddOutlined/>
+    icon: <AppstoreAddOutlined/>,
+    isShowMenu: true
   },
   {
-    path: "users",
+    path: "/manage/users",
     element: <h1>Users</h1>,
     label: "Users",
-    icon: <UserOutlined/>
+    icon: <UserOutlined/>,
+    isShowMenu: true
   },
   {
-    path: "settings",
+    path: "/manage/settings",
     element: <h1>Settings</h1>,
     label: "Settings",
-    icon: <SettingOutlined/>
+    icon: <SettingOutlined/>,
+    isShowMenu: true
   },
 ];

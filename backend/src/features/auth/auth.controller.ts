@@ -1,11 +1,13 @@
-import { Body, Controller, Post, Req } from "@nestjs/common";
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { Body, Controller, Get, Post, Query, Req, Res } from "@nestjs/common";
+import { ApiBody, ApiOperation, ApiQuery, ApiTags } from "@nestjs/swagger";
 
 import { Logger } from "@libs/logger";
 
 import { Public } from "@libs/decorator/authorization.decorator";
 import { AuthService } from "./auth.service";
 import { OAuth2Request, RefreshTokenDto } from "./dtos/request";
+
+import config from "@config/env.config";
 
 @Controller("auth")
 @ApiTags("Auth")
@@ -18,15 +20,23 @@ export class AuthController {
   }
 
   @Public()
+  @Get("redirect")
+  @ApiQuery({ name: "state", required: true })
+  async redirect(@Req() req, @Res() res, @Query('state') state: any) {
+    const OAUTH2_API_URL = config().OAUTH2_API_URL || ''
+    const CLIENT_ID = config().OAUTH2_CLIENT_ID
+    const REDIRECT_URI = config().OAUTH2_REDIRECT_URI || ''
+    const STATE = state || Math.random().toString(36).substring(2, 15)
+
+    const authUrl = `${OAUTH2_API_URL}/oauth2/auth?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=openid+offline&state=${STATE}`
+    return res.redirect(authUrl);
+  }
+
+  @Public()
   @Post("verify-oauth2")
   @ApiBody({ type: OAuth2Request })
   async verifyOAuth2(@Body() body: OAuth2Request) {
-    try {
-      return await this.authService.verifyOAuth2(body);
-    } catch (error) {
-      this.logger.error("An error occured", error);
-      throw error;
-    }
+    return await this.authService.verifyOAuth2(body);
   }
 
   @Public()

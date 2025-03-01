@@ -9,10 +9,12 @@ export class SearchMezonAppRequest extends PaginationQuery {
     @ApiPropertyOptional({ description: "Keyword to search mezonApps by name or headline" })
     @IsOptional()
     search: string;
+
     @ApiPropertyOptional({ description: "A valid column of MezonApp (tags, ratings, socialLinks)" })
     @IsString()
     @IsOptional()
     field: string;
+    
     @ApiPropertyOptional({ description: "ID value of the field" })
     @IsUUID()
     @IsOptional()

@@ -1,0 +1,46 @@
+.admin-layout {
+  min-height: 100vh;
+}
+
+.sider {
+  background: #001529;
+  color: white;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  height: 64px;
+  /* Default Ant Design Header height */
+  background: #fff;
+  padding: 0 20px;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.breadcrumbContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.activeBreadcrumb {
+  font-weight: bold;
+  color: #001529;
+  /* Ant Design primary blue */
+}
+
+.content {
+  padding: 20px;
+  background: #f0f2f5;
+  min-height: calc(100vh - 64px - 70px);
+}
+
+.footer {
+  text-align: center;
+  background: #fff;
+  padding: 20px 50px;
+  border-top: 1px solid #ddd;
+}

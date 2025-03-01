@@ -1,14 +1,13 @@
-import { USER_TOKEN } from "@libs/constant/meta-key.constant";
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { isEmail } from "class-validator";
-import { ClsService } from "nestjs-cls";
 import { ExtractJwt, Strategy } from "passport-jwt";
-import { AuthService } from "../auth.service";
-import { ValidateJwtRequest } from "../dtos/request";
-import { JwtPayload } from "../dtos/response";
+import { AuthService } from "@features/auth/auth.service";
 
 import config from "@config/env.config";
+import * as moment from "moment";
+import { ErrorMessages } from "@libs/constant/errorMsg";
+import { JwtPayload, ValidateJwtRequest } from "@libs/guard/jwt.types";
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, "jwt") {
@@ -27,19 +26,19 @@ export class JwtStrategy extends PassportStrategy(Strategy, "jwt") {
     const { email, expireTime, sessionToken } = payload;
 
     if (!isEmail(email)) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(ErrorMessages.INVALID_EMAIL);
     }
 
     const user = await this.authService.findUserByEmail(email);
     if (!user) {
-      throw new UnauthorizedException(`User ${email} does not found`);
+      throw new UnauthorizedException(ErrorMessages.NOT_FOUND_MSG);
     }
 
-    const now = new Date().getTime();
-    const expireDate = new Date(expireTime);
+    const now = moment();
+    const expireDate = moment(expireTime);
 
-    if (isNaN(expireDate.getTime()) || now > expireDate.getTime()) {
-      throw new UnauthorizedException("JWT token is expired");
+    if (!expireDate.isValid() || now.isAfter(expireDate)) {
+      throw new UnauthorizedException(ErrorMessages.TOKEN_EXPIRED);
     }
 
     request.sessionToken = sessionToken;

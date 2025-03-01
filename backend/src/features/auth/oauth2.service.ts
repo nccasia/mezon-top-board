@@ -1,5 +1,5 @@
-import { Injectable } from "@nestjs/common";
 import config from "@config/env.config";
+import { Injectable } from "@nestjs/common";
 import { OAuth2Request } from "./dtos/request";
 
 @Injectable()
@@ -8,6 +8,7 @@ export class OAuth2Service {
   private CLIENT_SECRET = config().OAUTH2_CLIENT_SECRET;
   private OAUTH2_URL = config().OAUTH2_API_URL;
   private REDIRECT_URI = config().OAUTH2_REDIRECT_URI;
+  
   private async callOAuth2Api(
     path: string,
     body: Record<string, any>,
@@ -35,7 +36,7 @@ export class OAuth2Service {
       ...payload,
     };
     return await this.callOAuth2Api(
-      config().OAUTH2_URL_TOKEN_PATH,
+      '/oauth2/token',
       body,
       "POST",
     );
@@ -44,7 +45,7 @@ export class OAuth2Service {
   async decodeORYTokenOAuth2(accessToken: string) {
     const body = { access_token: accessToken };
     return await this.callOAuth2Api(
-      config().OAUTH2_URL_DECODE_PATH,
+      '/userinfo',
       body,
       "POST",
     );
