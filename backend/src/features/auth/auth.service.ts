@@ -34,16 +34,11 @@ export class AuthService {
 
   async verifyOAuth2(payload: OAuth2Request): Promise<Result> {
     try {
-      console.log(payload)
       const data = await this.oauth2Service.getOAuth2Token(payload);
-
-      console.log(data);
 
       const oryInfo = await this.oauth2Service.decodeORYTokenOAuth2(
         data.access_token,
       );
-
-      console.log(oryInfo);
 
       if (!isEmail(oryInfo.sub)) {
         throw new BadRequestException(ErrorMessages.INVALID_EMAIL);
