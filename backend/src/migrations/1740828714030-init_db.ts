@@ -5,13 +5,15 @@ export class InitDb1740828714030 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TABLE "media" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "name" character varying NOT NULL, CONSTRAINT "UQ_f603fc24759b12726df73c1ad46" UNIQUE ("name"), CONSTRAINT "PK_f4e0fcac36e050de337b670d8bd" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TYPE "public"."app_status_enum" AS ENUM('0', '1', '2', '3')`);
         await queryRunner.query(`CREATE TABLE "app" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "name" character varying NOT NULL, "ownerId" uuid NOT NULL, "status" "public"."app_status_enum" NOT NULL DEFAULT '0', "isAutoPublished" boolean NOT NULL DEFAULT false, "installLink" character varying, "headline" character varying, "description" character varying, "prefix" character varying, "featuredImage" character varying, "supportUrl" character varying, "remark" character varying, CONSTRAINT "PK_9478629fc093d229df09e560aea" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "app_review_history" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "appId" uuid NOT NULL, "reviewer" character varying NOT NULL, "reviewedAt" TIMESTAMP NOT NULL, "remark" character varying NOT NULL, CONSTRAINT "PK_ff9f0951d9b39ef7b9ee408d3a9" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "link" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "url" character varying NOT NULL, "ownerId" uuid NOT NULL, "showOnProfile" boolean NOT NULL DEFAULT false, "linkTypeId" uuid NOT NULL, CONSTRAINT "PK_26206fb7186da72fbb9eaa3fac9" PRIMARY KEY ("id"))`);
-        await queryRunner.query(`CREATE TABLE "link_type" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "name" character varying NOT NULL, "icon" character varying NOT NULL, CONSTRAINT "PK_24d980df1508b0877217e3781e9" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "rating" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "appId" uuid NOT NULL, "userId" uuid NOT NULL, "score" integer NOT NULL, "comment" character varying, CONSTRAINT "PK_ecda8ad32645327e4765b43649e" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "tag" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "name" character varying NOT NULL, "slug" character varying NOT NULL, CONSTRAINT "PK_8e4052373c579afc1471f526760" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TYPE "public"."user_role_enum" AS ENUM('0', '1', 'ADMIN', 'DEVELOPER')`);
         await queryRunner.query(`CREATE TABLE "user" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "name" character varying DEFAULT '', "email" character varying NOT NULL, "password" character varying, "role" "public"."user_role_enum" NOT NULL DEFAULT '1', "bio" character varying, CONSTRAINT "UQ_e12875dfb3b1d92d7d7c5377e22" UNIQUE ("email"), CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "link_type" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "name" character varying NOT NULL, "icon" character varying NOT NULL, CONSTRAINT "PK_24d980df1508b0877217e3781e9" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "app_tags_tag" ("appId" uuid NOT NULL, "tagId" uuid NOT NULL, CONSTRAINT "PK_f81f81878b47d7c61860ba131f4" PRIMARY KEY ("appId", "tagId"))`);
         await queryRunner.query(`CREATE INDEX "IDX_42bef85ef6e9d912c70d52a1b5" ON "app_tags_tag" ("appId") `);
         await queryRunner.query(`CREATE INDEX "IDX_a503480e477add36ec17a998fb" ON "app_tags_tag" ("tagId") `);
@@ -47,13 +49,15 @@ export class InitDb1740828714030 implements MigrationInterface {
         await queryRunner.query(`DROP INDEX "public"."IDX_a503480e477add36ec17a998fb"`);
         await queryRunner.query(`DROP INDEX "public"."IDX_42bef85ef6e9d912c70d52a1b5"`);
         await queryRunner.query(`DROP TABLE "app_tags_tag"`);
+        await queryRunner.query(`DROP TABLE "link_type"`);
         await queryRunner.query(`DROP TABLE "user"`);
+        await queryRunner.query(`DROP TYPE "public"."user_role_enum"`);
         await queryRunner.query(`DROP TABLE "tag"`);
         await queryRunner.query(`DROP TABLE "rating"`);
-        await queryRunner.query(`DROP TABLE "link_type"`);
         await queryRunner.query(`DROP TABLE "link"`);
         await queryRunner.query(`DROP TABLE "app_review_history"`);
         await queryRunner.query(`DROP TABLE "app"`);
+        await queryRunner.query(`DROP TYPE "public"."app_status_enum"`);
         await queryRunner.query(`DROP TABLE "media"`);
     }
 
