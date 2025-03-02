@@ -1,5 +1,6 @@
-import { User } from "@domain/entities";
 import { Request } from "express";
+
+import { User } from "@domain/entities";
 
 export class JwtPayload {
     email: string;

@@ -5,11 +5,11 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { dataSourceOption } from "@config/data-source.config";
 import config, { envFilePath } from "@config/env.config";
 
+import { AuthModule } from "@features/auth/auth.module";
 import { MediaModule } from "@features/media/media.module";
 import { MezonAppModule } from "@features/mezon-app/mezon-app.module";
 import { TagModule } from "@features/tag/tag.module";
 
-import { AuthModule } from "@features/auth/auth.module";
 import { GuardModule } from "@libs/guard/guard.module";
 import { LoggerModule } from "@libs/logger";
 
