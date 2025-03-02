@@ -1,11 +1,14 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
+
 import { isEmail } from "class-validator";
+import * as moment from "moment";
 import { ExtractJwt, Strategy } from "passport-jwt";
-import { AuthService } from "@features/auth/auth.service";
 
 import config from "@config/env.config";
-import * as moment from "moment";
+
+import { AuthService } from "@features/auth/auth.service";
+
 import { ErrorMessages } from "@libs/constant/errorMsg";
 import { JwtPayload, ValidateJwtRequest } from "@libs/guard/jwt.types";
 
