@@ -21,12 +21,11 @@ export class AuthController {
 
   @Public()
   @Get("redirect")
-  @ApiQuery({ name: "state", required: true })
-  async redirect(@Req() req, @Res() res, @Query('state') state: any) {
+  async redirect(@Req() req, @Res() res) {
     const OAUTH2_API_URL = config().OAUTH2_API_URL || ''
     const CLIENT_ID = config().OAUTH2_CLIENT_ID
     const REDIRECT_URI = config().OAUTH2_REDIRECT_URI || ''
-    const STATE = state || Math.random().toString(36).substring(2, 15)
+    const STATE = Math.random().toString(36).substring(2, 15)
 
     const authUrl = `${OAUTH2_API_URL}/oauth2/auth?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=openid+offline&state=${STATE}`
     return res.redirect(authUrl);
