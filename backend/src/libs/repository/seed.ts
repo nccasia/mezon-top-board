@@ -1,7 +1,7 @@
+import { Role } from "@domain/common/enum/role";
 import { User, App, Link, Tag, Rating, LinkType } from "@domain/entities";
 
 import AppDataSource from "@config/data-source.config";
-import { Role } from "@domain/common/enum/role";
 
 const seed = async () => {
     await AppDataSource.initialize();
