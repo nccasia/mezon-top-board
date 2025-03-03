@@ -7,7 +7,7 @@ import { User } from "@domain/entities";
 import { GetUserFromHeader } from "@libs/decorator/getUserFromHeader.decorator";
 import { Logger } from "@libs/logger";
 
-import { SearchUserRequest, UpdateUserRequest } from "./dtos/request";
+import { SearchUserRequest, SelfUpdateUserRequest, UpdateUserRequest } from "./dtos/request";
 import { GetUserDetailsResponse, SearchUserResponse } from "./dtos/response";
 import { UserService } from "./user.service";
 
@@ -37,13 +37,19 @@ export class UserController {
 
     @Put()
     @ApiBearerAuth()
-    async updateUser(@Body() body: UpdateUserRequest) {
-        return this.userService.updateUser(body);
+    async updateUser(@GetUserFromHeader() user: User, @Body() body: UpdateUserRequest) {
+        return this.userService.updateUser(user.id, body);
+    }
+
+    @Put("self-update")
+    @ApiBearerAuth()
+    async selfUpdateUser(@GetUserFromHeader() user: User, @Body() body: SelfUpdateUserRequest) {
+        return this.userService.seflUpdateUser(user.id, body);
     }
 
     @Delete()
     @ApiBearerAuth()
-    async deleteUser(@Body() body: RequestWithId) {
-        return this.userService.deleteUser(body);
+    async deleteUser(@GetUserFromHeader() user: User, @Body() body: RequestWithId) {
+        return this.userService.deleteUser(user.id, body);
     }
 }

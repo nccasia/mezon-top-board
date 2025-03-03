@@ -1,4 +1,4 @@
-import { ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiPropertyOptional, OmitType } from "@nestjs/swagger";
 
 import { IsOptional } from "class-validator";
 
@@ -19,3 +19,4 @@ export class UpdateUserRequest extends RequestWithId {
     bio: string;
 }
 
+export class SelfUpdateUserRequest extends OmitType(UpdateUserRequest, ["id"]) { }
