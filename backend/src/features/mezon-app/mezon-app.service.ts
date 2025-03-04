@@ -133,7 +133,7 @@ export class MezonAppService {
         return new Result({})
     }
 
-    async createMezonApp(req: CreateMezonAppRequest) {
+    async createMezonApp(ownerId: string, req: CreateMezonAppRequest) {
         const { tagIds, socialLinks, ...appData } = req;
 
         // Fetch existing tags
@@ -153,7 +153,7 @@ export class MezonAppService {
                     where: {
                         url: socialLink.url,
                         linkTypeId: socialLink.linkTypeId,
-                        ownerId: appData.ownerId
+                        ownerId: ownerId
                     }
                 });
 
@@ -162,7 +162,7 @@ export class MezonAppService {
                     existingLink = await this.linkRepository.create({
                         url: socialLink.url,
                         type: linkType,
-                        ownerId: appData.ownerId
+                        ownerId: ownerId
                     });
                 }
 
