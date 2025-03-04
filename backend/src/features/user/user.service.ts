@@ -7,7 +7,7 @@ import { Result } from "@domain/common/dtos/result.dto";
 import { Role } from "@domain/common/enum/role";
 import { User } from "@domain/entities";
 
-import { ErrorMessages } from "@libs/constant/errorMsg";
+import { ErrorMessages } from "@libs/constant/messages";
 import { GenericRepository } from "@libs/repository/genericRepository";
 import { Mapper } from "@libs/utils/mapper";
 import { paginate } from "@libs/utils/paginate";

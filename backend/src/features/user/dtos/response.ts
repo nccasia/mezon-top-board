@@ -29,5 +29,20 @@ export class SearchUserResponse {
     public role: string;
 }
 
+export class ReviewerResponse {
+    @Expose()
+    @ApiProperty()
+    public id: string;
+    @Expose()
+    @ApiProperty()
+    public name: string;
+    @Expose()
+    @ApiProperty()
+    public email: string;
+    @Expose()
+    @ApiProperty()
+    public role: string;
+}
+
 export class GetUserDetailsResponse extends OmitType(SearchUserResponse, ["role"]) {
 }

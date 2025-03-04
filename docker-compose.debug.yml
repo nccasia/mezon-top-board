@@ -28,6 +28,7 @@ services:
     container_name: backend
     volumes:
       - ./backend:/app
+      - be_node_modules:/app/node_modules
     depends_on:
       postgres:
         condition: service_healthy
@@ -72,6 +73,7 @@ services:
 volumes:
   postgres_data:
   fe_node_modules:
+  be_node_modules:
 
 networks:
   main_net:

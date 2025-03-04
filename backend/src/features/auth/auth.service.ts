@@ -1,3 +1,10 @@
+import config from "@config/env.config";
+import { Result } from "@domain/common/dtos/result.dto";
+import { Role } from "@domain/common/enum/role";
+import { User } from "@domain/entities";
+import { ErrorMessages } from "@libs/constant/messages";
+import { JwtPayload } from "@libs/guard/jwt.types";
+import { GenericRepository } from "@libs/repository/genericRepository";
 import {
   BadRequestException,
   ForbiddenException,
@@ -5,21 +12,13 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
+import * as bcrypt from "bcrypt";
 import { isEmail } from "class-validator";
 import * as crypto from "crypto";
 import * as moment from "moment";
 import { EntityManager } from "typeorm";
-
-import config from "@config/env.config";
-import { Result } from "@domain/common/dtos/result.dto";
-import { Role } from "@domain/common/enum/role";
-import { User } from "@domain/entities";
-import { ErrorMessages } from "@libs/constant/errorMsg";
-import { GenericRepository } from "@libs/repository/genericRepository";
-
-import { OAuth2Request } from "./dtos/request";
+import { BasicAuthRequest, OAuth2Request } from "./dtos/request";
 import { OAuth2Service } from "./oauth2.service";
-import { JwtPayload } from "@libs/guard/jwt.types";
 
 @Injectable()
 export class AuthService {
@@ -156,5 +155,30 @@ export class AuthService {
 
       throw new BadRequestException();
     }
+  }
+
+  async loginByBasicAuth(data: BasicAuthRequest) {
+    const { email, password } = data;
+
+    const user = await this.userRepository.findOne({
+      where: {
+        email,
+        deletedAt: null,
+      },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException(ErrorMessages.INVALID_EMAIL);
+    }
+
+    const isPasswordMatch = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordMatch) {
+      throw new UnauthorizedException(ErrorMessages.INVALID_PASSWORD);
+    }
+
+    const tokens = await this.generateAccessAndRefreshTokens(user);
+
+    return new Result({ data: tokens });
   }
 }

@@ -14,7 +14,7 @@ import {
 
 import { SortOrder } from "@domain/common/enum/sortOder";
 
-import { ErrorMessages } from "@libs/constant/errorMsg";
+import { ErrorMessages } from "@libs/constant/messages";
 
 export class GenericRepository<T extends ObjectLiteral> {
     private repository: Repository<T>;

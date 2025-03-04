@@ -9,6 +9,8 @@ import { CreateMezonAppRequest, SearchMezonAppRequest, UpdateMezonAppRequest } f
 import { GetMezonAppDetailsResponse, GetRelatedMezonAppResponse } from "./dtos/response";
 import { MezonAppService } from "./mezon-app.service";
 import { Public } from "@libs/decorator/authorization.decorator";
+import { RoleRequired } from "@libs/decorator/roles.decorator";
+import { Role } from "@domain/common/enum/role";
 
 
 @Controller("mezon-app")
@@ -19,6 +21,18 @@ export class MezonAppController {
     private readonly logger: Logger,
   ) {
     this.logger.setContext(MezonAppController.name);
+  }
+
+  @Get("admin-all")
+  @ApiBearerAuth()
+  @RoleRequired([Role.ADMIN])
+  listAdminMezonApp(@Query() query: SearchMezonAppRequest) {
+    try {
+      return this.mezonAppService.listAdminMezonApp(query);
+    } catch (error) {
+      this.logger.error("An error occured", error);
+      throw error;
+    }
   }
 
   @Public()
