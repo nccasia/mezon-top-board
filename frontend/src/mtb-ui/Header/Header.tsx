@@ -1,24 +1,44 @@
-import { MenuOutlined } from '@ant-design/icons'
+import { DownOutlined, MenuOutlined } from '@ant-design/icons'
 import logo from '@app/assets/images/topLogo.png'
 import Button from '@app/mtb-ui/Button'
 import { renderMenu } from '@app/navigation/router'
 import { redirectToOAuth } from '@app/utils/auth'
-import { Drawer } from 'antd'
+import { Drawer, Dropdown, MenuProps, Space } from 'antd'
 import { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import MtbTypography from '../Typography/Typography'
 import styles from './Header.module.scss'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '@app/store'
+import { IUserStore } from '@app/store/user'
+import { removeAccessTokens } from '@app/utils/storage'
+import { IAuthStore, setLogIn } from '@app/store/auth'
 
 function Header() {
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   // const { theme, setTheme } = useTheme()
+  const { userInfo } = useSelector<RootState, IUserStore>((s) => s.user)
+  const { isLogin } = useSelector<RootState, IAuthStore>((s) => s.auth)
+  const dispatch = useDispatch()
 
   const handleLogin = useCallback(() => redirectToOAuth(), [])
+  const handleLogout = () => {
+    removeAccessTokens()
+    dispatch(setLogIn(false))
+  }
+
+  const itemsDropdown: MenuProps['items'] = [
+    {
+      key: '1',
+      label: 'Logout',
+      onClick: handleLogout
+    }
+  ]
 
   return (
     <div
-      className={`flex bg-white z-9999 items-center justify-between py-5 px-20 border-t-1 border-b-1 border-gray-200 cursor-pointer sticky top-0`}
+      className={`flex bg-white z-1 items-center justify-between py-5 px-20 border-t-1 border-b-1 border-gray-200 cursor-pointer sticky top-0`}
     >
       <div className='flex items-center gap-3' onClick={() => navigate('/')}>
         <div className='w-10'>
@@ -41,13 +61,21 @@ function Header() {
           />
         </div> */}
         <ul className='flex gap-10'>{renderMenu(true)}</ul>
-        <div className='flex gap-2.5'>
-          <Button color='primary' variant='solid' size='large'>
-            Sign Up
-          </Button>
-          <Button color='default' variant='outlined' size='large' onClick={handleLogin}>
-            Log in
-          </Button>
+        <div>
+          {isLogin ? (
+            <Dropdown menu={{ items: itemsDropdown }} className='z-2'>
+              <a onClick={(e) => e.preventDefault()}>
+                <Space>
+                  Welcome, {userInfo?.name}
+                  <DownOutlined />
+                </Space>
+              </a>
+            </Dropdown>
+          ) : (
+            <Button color='primary' size='large' onClick={handleLogin}>
+              Log in
+            </Button>
+          )}
         </div>
       </div>
       <div className='2xl:hidden'>

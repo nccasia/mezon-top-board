@@ -1,7 +1,9 @@
 import { useAuthControllerVerifyOAuth2Mutation } from '@app/services/api/auth/auth'
+import { setLogIn } from '@app/store/auth'
 import { storeAccessTokens } from '@app/utils/storage'
 import { Flex, Spin } from 'antd'
 import { useEffect, useMemo } from 'react'
+import { useDispatch } from 'react-redux'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
@@ -9,6 +11,8 @@ export const LoginRedirectPage = () => {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const [verifyOauth2Service] = useAuthControllerVerifyOAuth2Mutation()
+
+  const dispatch = useDispatch()
 
   const urlParams = useMemo(
     () => ({
@@ -31,9 +35,10 @@ export const LoginRedirectPage = () => {
       const { data } = await verifyOauth2Service({ oAuth2Request: { code, scope } })
       if (!data) {
         toast.error('Login failed!')
-        return;
+        return
       }
       storeAccessTokens(data.data)
+      dispatch(setLogIn(true))
       toast.success('Login successfully!')
     } catch (_) {
       toast.error('Login failed!')

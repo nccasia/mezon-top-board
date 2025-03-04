@@ -2,7 +2,7 @@ import { ApiProperty, OmitType, PickType } from "@nestjs/swagger";
 
 import { Expose, Transform } from "class-transformer";
 
-import { SocialLinkInMezonAppDetailResponse } from "@features/link/dtos/response";
+import { SocialLinkInMezonAppDetailResponse } from "@features/linkType/dtos/response";
 import { TagInMezonAppDetailResponse } from "@features/tag/dtos/response";
 import { OwnerInMezonAppDetailResponse } from "@features/user/dtos/response";
 import { AppStatus } from "@domain/common/enum/appStatus";

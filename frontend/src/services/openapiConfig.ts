@@ -25,7 +25,6 @@ const config: ConfigFile = {
   useEnumType: true,
   outputFiles: {
     // UNCOMMENT TO ENABLE SERVICE GENERATION
-
     // './api/media/media.ts': {
     //   filterEndpoints: filterByTag('Media'),
     //   exportName: 'mediaService'
@@ -41,7 +40,15 @@ const config: ConfigFile = {
     // './api/mezonApp/mezonApp.ts': {
     //   filterEndpoints: filterByTag('MezonApp'),
     //   exportName: 'tagService'
-    // }
+    // },
+    // './api/linkType/linkType.ts': {
+    //   filterEndpoints: filterByTag('LinkType'),
+    //   exportName: 'linkTypeService'
+    // },
+    // './api/user/user.ts': {
+    //   filterEndpoints: filterByTag('User'),
+    //   exportName: 'userService'
+    // },
   },
 
   hooks: {
