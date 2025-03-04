@@ -41,9 +41,9 @@ const config: ConfigFile = {
     //   filterEndpoints: filterByTag('MezonApp'),
     //   exportName: 'tagService'
     // },
-    // './api/link/link.ts': {
-    //   filterEndpoints: filterByTag('Link'),
-    //   exportName: 'linkService'
+    // './api/linkType/linkType.ts': {
+    //   filterEndpoints: filterByTag('LinkType'),
+    //   exportName: 'linkTypeService'
     // },
     // './api/user/user.ts': {
     //   filterEndpoints: filterByTag('User'),

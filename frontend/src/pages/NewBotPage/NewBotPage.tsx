@@ -6,7 +6,6 @@ import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import AddBotForm from './components/AddBotForm/AddBotForm'
 import { useLazyTagControllerGetTagsQuery } from '@app/services/api/tag/tag'
-import { useLazyLinkControllerGetAllLinksQuery } from '@app/services/api/link/link'
 import { FormProvider, useForm } from 'react-hook-form'
 import { CreateMezonAppRequest } from '@app/services/api/mezonApp/mezonApp'
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -17,6 +16,7 @@ import { IUserStore } from '@app/store/user'
 import { useLazyUserControllerGetUserDetailsQuery } from '@app/services/api/user/user'
 import { isEmpty } from 'lodash'
 import { ITagStore } from '@app/store/tag'
+import { useLazyLinkTypeControllerGetAllLinksQuery } from '@app/services/api/linkType/linkType'
 function NewBotPage() {
   const [avatar, setAvatar] = useState<string>(avatarDefault)
   const { userInfo } = useSelector<RootState, IUserStore>((s) => s.user)
@@ -34,7 +34,7 @@ function NewBotPage() {
   const { setValue } = methods
 
   const [getTagList] = useLazyTagControllerGetTagsQuery()
-  const [getSocialLink] = useLazyLinkControllerGetAllLinksQuery()
+  const [getSocialLink] = useLazyLinkTypeControllerGetAllLinksQuery()
   const [getUserInfo] = useLazyUserControllerGetUserDetailsQuery()
 
   useEffect(() => {

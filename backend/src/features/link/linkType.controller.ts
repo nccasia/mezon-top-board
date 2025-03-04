@@ -5,16 +5,16 @@ import { Public } from "@libs/decorator/authorization.decorator";
 import { Logger } from "@libs/logger";
 
 import { SocialLinkInMezonAppDetailResponse } from "./dtos/response";
-import { LinkService } from "./link.service";
+import { LinkTypeService } from "./linkType.service";
 
-@Controller("link")
-@ApiTags("Link")
-export class LinkController {
+@Controller("link-type")
+@ApiTags("LinkType")
+export class LinkTypeController {
   constructor(
-    private readonly linkService: LinkService,
+    private readonly linkService: LinkTypeService,
     private readonly logger: Logger,
   ) {
-    this.logger.setContext(LinkController.name);
+    this.logger.setContext(LinkTypeController.name);
   }
 
   @Public()

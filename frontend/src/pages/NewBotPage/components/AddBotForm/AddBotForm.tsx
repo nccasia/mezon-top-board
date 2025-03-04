@@ -10,7 +10,7 @@ import { CreateMezonAppRequest, useMezonAppControllerCreateMezonAppMutation } fr
 import { useSelector } from 'react-redux'
 import { RootState } from '@app/store'
 import { ITagStore } from '@app/store/tag'
-import { ILinkStore } from '@app/store/link'
+import { ILinkTypeStore } from '@app/store/linkType'
 function AddBotForm() {
   const {
     control,
@@ -22,7 +22,7 @@ function AddBotForm() {
   } = useFormContext<CreateMezonAppRequest>()
   const [addBot] = useMezonAppControllerCreateMezonAppMutation()
   const { tagList } = useSelector<RootState, ITagStore>((s) => s.tag)
-  const { linkList } = useSelector<RootState, ILinkStore>((s) => s.link)
+  const { linkTypeList } = useSelector<RootState, ILinkTypeStore>((s) => s.link)
   const selectedSocialLink = watch('socialLinkIds')
   const [socialLinks, setSocialLinks] = useState<{ icon: string; name: string; url: string; id: string }[]>([])
 
@@ -55,12 +55,12 @@ function AddBotForm() {
   }, [tagList])
 
   const optionsLink = useMemo(() => {
-    return linkList?.map((item) => ({
+    return linkTypeList?.map((item) => ({
       label: `${item.icon} ${item.name}`,
       value: item.id,
       icon: item.icon
     }))
-  }, [linkList])
+  }, [linkTypeList])
 
   const addNewLink = () => {
     if (selectedSocialLink?.length === 0) return
