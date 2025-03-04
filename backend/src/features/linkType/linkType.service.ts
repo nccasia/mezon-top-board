@@ -6,6 +6,9 @@ import { Result } from "@domain/common/dtos/result.dto";
 import { LinkType } from "@domain/entities";
 
 import { GenericRepository } from "@libs/repository/genericRepository";
+import { Mapper } from "@libs/utils/mapper";
+
+import { SocialLinkWithNameResponse } from "./dtos/response";
 
 @Injectable()
 export class LinkTypeService {
@@ -16,11 +19,10 @@ export class LinkTypeService {
   }
 
   async getAllSocialLinks() {
-    const socialLinks = await this.linkTypeRepository.getRepository().find({
-      select: ["id", "name", "icon"],
-    });
+    const socialLinks = await this.linkTypeRepository.getRepository().find();
+
     return new Result({
-      data: socialLinks,
+      data: Mapper(SocialLinkWithNameResponse, socialLinks),
     });
   }
 }
