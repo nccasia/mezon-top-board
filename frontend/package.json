@@ -21,6 +21,7 @@
     "@rtk-query/codegen-openapi": "^2.0.0",
     "@tailwindcss/vite": "^4.0.6",
     "antd": "^5.24.0",
+    "axios": "^1.8.1",
     "dotenv": "^16.4.7",
     "lodash": "^4.17.21",
     "react": "18.2.0",

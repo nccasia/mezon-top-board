@@ -11,12 +11,14 @@ export interface IMezonAppStore {
   mezonApp: MezonAppControllerSearchMezonAppApiResponse
   mezonAppDetail: GetMezonAppDetailsResponse
   relatedMezonApp: GetRelatedMezonAppResponse[]
+  mezonAppOfUser: MezonAppControllerSearchMezonAppApiResponse
 }
 
 const initialState: IMezonAppStore = {
   mezonApp: {} as MezonAppControllerSearchMezonAppApiResponse,
   mezonAppDetail: {} as GetMezonAppDetailsResponse,
   relatedMezonApp: [],
+  mezonAppOfUser: {} as MezonAppControllerSearchMezonAppApiResponse
 }
 
 const mezonAppSlice = createSlice({

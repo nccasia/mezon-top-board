@@ -6,6 +6,7 @@ import { dataSourceOption } from "@config/data-source.config";
 import config, { envFilePath } from "@config/env.config";
 
 import { AuthModule } from "@features/auth/auth.module";
+import { LinkModule } from "@features/link/link.module";
 import { MediaModule } from "@features/media/media.module";
 import { MezonAppModule } from "@features/mezon-app/mezon-app.module";
 import { ReviewHistoryModule } from "@features/review-history/review-history.module";
@@ -30,7 +31,8 @@ import { LoggerModule } from "@libs/logger";
     GuardModule,
     TagModule,
     ReviewHistoryModule,
-    UserModule
+    UserModule,
+    LinkModule
   ],
   controllers: [],
   providers: [],

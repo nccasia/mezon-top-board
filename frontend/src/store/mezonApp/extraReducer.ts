@@ -5,6 +5,7 @@ export const mezonAppExtraReducers = (builder: ActionReducerMapBuilder<any>) => 
   builder
     .addMatcher(mezonAppService.endpoints.mezonAppControllerSearchMezonApp.matchFulfilled, (state, { payload }) => {
       state.mezonApp = payload
+      state.mezonAppOfUser = payload
     })
     .addMatcher(mezonAppService.endpoints.mezonAppControllerGetMezonAppDetail.matchFulfilled, (state, { payload }) => {
       state.mezonAppDetail = payload.data

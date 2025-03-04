@@ -1,71 +1,87 @@
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import { Checkbox, Form, Input, Select, SelectProps } from 'antd'
 import FormField from '@app/components/FormField/FormField'
-import { Controller, useForm } from 'react-hook-form'
-import { ADD_BOT_SCHEMA } from '@app/validations/addBot.validations'
-import { yupResolver } from '@hookform/resolvers/yup'
+import { Controller, useFormContext } from 'react-hook-form'
 import Button from '@app/mtb-ui/Button'
 import { errorStatus } from '@app/constants/common.constant'
 import TextArea from 'antd/es/input/TextArea'
-import { useMemo } from 'react'
-
-interface AddBotFormValues {
-  name: string
-  headline: string
-  description: string
-  autoPublish?: boolean
-  installLink: string
-  prefix: string
-  supportURL: string
-  tags: string[]
-  note: string
-  linkType?: string
-}
-
-const optionTag = ['enhance', 'tool']
-
-const optionLinkType = ['discord', 'telegram']
-
+import { useEffect, useMemo, useState } from 'react'
+import { CreateMezonAppRequest, useMezonAppControllerCreateMezonAppMutation } from '@app/services/api/mezonApp/mezonApp'
+import { useSelector } from 'react-redux'
+import { RootState } from '@app/store'
+import { ITagStore } from '@app/store/tag'
+import { ILinkStore } from '@app/store/link'
 function AddBotForm() {
   const {
     control,
     handleSubmit,
+    watch,
+    setValue,
+    reset,
     formState: { errors }
-  } = useForm<AddBotFormValues>({
-    defaultValues: {
-      name: '',
-      headline: '',
-      description: '',
-      autoPublish: false,
-      installLink: '',
-      prefix: '',
-      supportURL: '',
-      tags: [],
-      note: '',
-      linkType: optionLinkType[0]
-    },
-    resolver: yupResolver(ADD_BOT_SCHEMA)
-  })
+  } = useFormContext<CreateMezonAppRequest>()
+  const [addBot] = useMezonAppControllerCreateMezonAppMutation()
+  const { tagList } = useSelector<RootState, ITagStore>((s) => s.tag)
+  const { linkList } = useSelector<RootState, ILinkStore>((s) => s.link)
+  const selectedSocialLink = watch('socialLinkIds')
+  const [socialLinks, setSocialLinks] = useState<{ icon: string; name: string; url: string; id: string }[]>([])
 
-  const onSubmit = (data: AddBotFormValues) => {
-    console.log(data)
+  useEffect(() => {
+    setValue('socialLinkIds', [])
+  }, [socialLinks, setValue])
+
+  const onSubmit = (data: CreateMezonAppRequest) => {
+    const formattedSocialLinks = socialLinks.map((link) => ({
+      url: link.url,
+      linkTypeId: link.id
+    }))
+
+    const { socialLinkIds, ...restData } = data
+
+    const addBotData = {
+      ...restData,
+      socialLinks: formattedSocialLinks
+    }
+
+    addBot({ createMezonAppRequest: addBotData })
+    reset()
   }
 
   const options = useMemo(() => {
-    return optionTag.map((tag) => ({
-      label: tag.replace(tag[0], tag[0].toUpperCase()),
-      value: tag.toLowerCase()
+    return tagList?.data?.map((tag) => ({
+      label: tag.name,
+      value: tag.id
     }))
-  }, [])
+  }, [tagList])
 
   const optionsLink = useMemo(() => {
-    return optionLinkType.map((value) => {
-      return {
-        value,
-        label: value.replace(value[0], value[0].toUpperCase())
-      }
-    })
-  }, [])
+    return linkList?.map((item) => ({
+      label: `${item.icon} ${item.name}`,
+      value: item.id,
+      icon: item.icon
+    }))
+  }, [linkList])
+
+  const addNewLink = () => {
+    if (selectedSocialLink?.length === 0) return
+    const selectedSocialLinkValue = Array.isArray(selectedSocialLink) ? selectedSocialLink[0] : selectedSocialLink
+    const selectedLink = optionsLink?.find((item) => item.value === selectedSocialLinkValue)
+
+    if (socialLinks.some((link) => link.name === selectedLink?.label)) return
+
+    const defaultSocialLink = {
+      icon: selectedLink?.icon || '',
+      name: selectedLink?.label || '',
+      url: '',
+      id: selectedLink?.value || ''
+    }
+
+    setSocialLinks([...socialLinks, defaultSocialLink])
+  }
+
+  const removeLink = (id: string) => {
+    setSocialLinks(socialLinks.filter((link) => link.id !== id))
+  }
 
   const tagRender: SelectProps['tagRender'] = (props) => {
     const { label, closable, onClose } = props
@@ -82,11 +98,20 @@ function AddBotForm() {
     )
   }
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>, id: string) => {
+    const index = socialLinks.findIndex((link) => link.id === id)
+    if (index === -1) return
+
+    const newLinks = [...socialLinks]
+    newLinks[index].url = e.target.value
+    setSocialLinks(newLinks)
+  }
+
   const handleSelectTag = (value: string[]) => {
     console.log(`selected ${value}`)
   }
 
-  const handleSelectLink = (value: string) => {
+  const handleSelectLink = (value: string[]) => {
     console.log(`Link ${value}`)
   }
 
@@ -118,7 +143,7 @@ function AddBotForm() {
           />
         </FormField>
         <FormField label='Auto-publish?' customClass='!items-center'>
-          <Controller control={control} name='autoPublish' render={({ field }) => <Checkbox {...field} />} />
+          <Controller control={control} name='isAutoPublished' render={({ field }) => <Checkbox {...field} />} />
         </FormField>
         <FormField label='Install Link' errorText={errors.installLink?.message}>
           <Controller
@@ -136,10 +161,10 @@ function AddBotForm() {
             render={({ field }) => <Input {...field} placeholder='Prefix' status={errorStatus(errors.prefix)} />}
           />
         </FormField>
-        <FormField label='Tags' errorText={errors.tags?.message}>
+        <FormField label='Tags' errorText={errors.tagIds?.message}>
           <Controller
             control={control}
-            name='tags'
+            name='tagIds'
             render={({ field }) => (
               <Select
                 {...field}
@@ -149,7 +174,7 @@ function AddBotForm() {
                 options={options}
                 placeholder='Tags'
                 tagRender={tagRender}
-                status={errors.tags?.message ? 'error' : ''}
+                status={errors?.tagIds?.message ? 'error' : ''}
                 onChange={(value) => {
                   field.onChange(value)
                   handleSelectTag(value)
@@ -158,43 +183,68 @@ function AddBotForm() {
             )}
           />
         </FormField>
-        <FormField label='Support URL' errorText={errors.supportURL?.message}>
+        <FormField label='Support URL' errorText={errors.supportUrl?.message}>
           <Controller
             control={control}
-            name='supportURL'
+            name='supportUrl'
             render={({ field }) => (
-              <Input {...field} placeholder='Support URL' status={errorStatus(errors.supportURL)} />
+              <Input {...field} placeholder='Support URL' status={errorStatus(errors.supportUrl)} />
             )}
           />
         </FormField>
-        <FormField label='Note' errorText={errors.note?.message}>
+        <FormField label='Note' errorText={errors.remark?.message}>
           <Controller
             control={control}
-            name='note'
+            name='remark'
             render={({ field }) => (
-              <TextArea {...field} rows={4} placeholder='Note' status={errorStatus(errors.note)} />
+              <TextArea {...field} rows={4} placeholder='Note' status={errorStatus(errors.remark)} />
             )}
           />
         </FormField>
-        <FormField label='Link Type'>
-          <Controller
-            control={control}
-            name='linkType'
-            render={({ field }) => (
-              <Select
-                {...field}
-                options={optionsLink}
-                placeholder='Link Types'
-                value={field.value}
-                onChange={(value) => {
-                  field.onChange(value)
-                  handleSelectLink(value)
-                }}
+        <FormField label='Social Links'>
+          <div className='flex items-center gap-4 w-full'>
+            <div className='flex-1'>
+              <Controller
+                control={control}
+                name='socialLinkIds'
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    options={optionsLink}
+                    placeholder='Link Types'
+                    className='w-full'
+                    value={field.value}
+                    onChange={(value) => {
+                      field.onChange(value)
+                      handleSelectLink(value)
+                    }}
+                  />
+                )}
               />
-            )}
-          />
+            </div>
+            <div className='flex justify-end'>
+              <Button onClick={addNewLink} customClassName='!w-[70px]'>
+                Add
+              </Button>
+            </div>
+          </div>
+          {!!socialLinks.length &&
+            socialLinks.map((link, index) => (
+              <div key={index} className='mt-4 flex gap-4'>
+                <Input
+                  className='flex-1 border p-2 rounded'
+                  value={link.url}
+                  placeholder='Enter link'
+                  prefix={link?.icon}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(e, link?.id)}
+                />
+                <Button onClick={() => removeLink(link?.id)} customClassName='!w-[70px]'>
+                  Delete
+                </Button>
+              </div>
+            ))}
         </FormField>
-        <div className='flex justify-end pt-8 gap-4 items-center'>
+        <div className='flex !justify-end pt-8 gap-4 items-center'>
           <Button color='default' customClassName='w-[200px] !text-blue-500'>
             Preview
           </Button>
