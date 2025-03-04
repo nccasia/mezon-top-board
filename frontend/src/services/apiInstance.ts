@@ -54,5 +54,5 @@ const baseQuery = fetchBaseQuery({
 
 export const api = createApi({
   baseQuery: baseQuery,
-  endpoints: () => ({})
+  endpoints: () => ({}),
 })

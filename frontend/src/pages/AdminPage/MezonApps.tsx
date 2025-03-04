@@ -1,11 +1,10 @@
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { useMezonAppControllerDeleteMezonAppMutation, useMezonAppControllerSearchMezonAppQuery } from "@app/services/api/mezonApp/mezonApp";
-import { Button, Spin, Table, Tooltip, Image, Popconfirm } from "antd";
-import { useEffect } from "react";
+import { Button, Spin, Table, Tooltip, Popconfirm } from "antd";
 import { toast } from "react-toastify";
 
 const MezonApps = ({ onEdit }: { onEdit: (app: any) => void }) => {
-    const { data: apps, error, isLoading, refetch } = useMezonAppControllerSearchMezonAppQuery({
+    const { data: apps, error, isLoading } = useMezonAppControllerSearchMezonAppQuery({
       pageSize: 10,
       pageNumber: 1,
       sortField: "createdAt",
@@ -16,10 +15,8 @@ const MezonApps = ({ onEdit }: { onEdit: (app: any) => void }) => {
       try {
         await deleteMezonApp({ requestWithId: { id: appId } }).unwrap();
         toast.success("App deleted successfully");
-        refetch(); // Refresh the table
       } catch (error: any) {
         toast.error(error?.data?.message || "Failed to delete app");
-        console.error("Delete error:", error);
       }
     };
   
@@ -28,6 +25,17 @@ const MezonApps = ({ onEdit }: { onEdit: (app: any) => void }) => {
         title: "Name",
         dataIndex: "name",
         key: "name",
+      },
+      {
+        title: "Headline",
+        dataIndex: "headline",
+        key: "headline",
+      },
+      {
+        title: "Description",
+        dataIndex: "description",
+        key: "description",
+        ellipsis: true, // Truncate long text
       },
       {
         title: "Actions",
@@ -51,7 +59,6 @@ const MezonApps = ({ onEdit }: { onEdit: (app: any) => void }) => {
         ),
       },
     ];
-  
     return isLoading ? (
       <Spin size="large" style={{ textAlign: "center", marginTop: "20px" }} />
     ) : (
