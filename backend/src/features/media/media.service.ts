@@ -10,8 +10,13 @@ import { GenericRepository } from "@libs/repository/genericRepository";
 import { Mapper } from "@libs/utils/mapper";
 import { paginate } from "@libs/utils/paginate";
 
-import { CreateMediaRequest, DeleteMediaRequest, GetMediaRequest, UpdateMediaRequest } from "./dtos/request";
+import { uploadDir } from "@config/files.config";
+import { createUploadPath } from "@libs/utils/file";
+import { existsSync, unlinkSync } from "fs";
+import { CreateMediaRequest, DeleteMediaRequest, GetMediaRequest } from "./dtos/request";
 import { GetMediaResponse } from "./dtos/response";
+import { ErrorMessages } from "@libs/constant/messages";
+import envConfig from "@config/env.config";
 
 @Injectable()
 export class MediaService {
@@ -35,23 +40,30 @@ export class MediaService {
     return new Result({ data: media })
   }
 
-  async createMedia(req: CreateMediaRequest) {
-    const { name } = req;
-    const media = await this.mediaRepository.getRepository().findOneBy({ name });
-    if (media)
-      throw new BadRequestException("This name is already existed.");
-    await this.mediaRepository.create({ name })
+  async createMedia(ownerId: string, req: CreateMediaRequest, file: Express.Multer.File) {
+    const data = {
+      fileName: file.filename,
+      mimeType: file.mimetype,
+      filePath: `/${createUploadPath(envConfig().UPLOAD_RELATIVE_DIR)}/${file.filename}`,
+      ownerId,
+    }
 
-    return new Result({})
+    const media = await this.mediaRepository.create(data)
+    return new Result({ data: media })
   }
 
   async deleteMedia(req: DeleteMediaRequest) {
-    await this.mediaRepository.softDelete(req.id)
-    return new Result({})
-  }
+    // Remove file from disk
+    const media = await this.mediaRepository.findById(req.id)
+    if (!media) {
+      throw new BadRequestException(ErrorMessages.NOT_FOUND_MSG)
+    }
 
-  async update(req: UpdateMediaRequest) {
-    await this.mediaRepository.update(req.id, { name: req.name })
+    const filePath = `${uploadDir}${media.filePath}`
+    if (existsSync(filePath)) {
+      unlinkSync(filePath)
+    }
+    await this.mediaRepository.delete(req.id)
     return new Result({})
   }
 }

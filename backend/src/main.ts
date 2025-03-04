@@ -5,6 +5,7 @@ import config from "@config/env.config";
 import { configSwagger } from "@config/swagger.config";
 
 import { AppModule } from "./app.module";
+import { configStaticFiles } from "@config/files.config";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,6 +19,7 @@ async function bootstrap() {
     }),
   );
   configSwagger(app);
+  configStaticFiles(app);
 
   await app.listen(config().PORT);
   console.log(`Server is running on http://localhost:${config().PORT}/api`);

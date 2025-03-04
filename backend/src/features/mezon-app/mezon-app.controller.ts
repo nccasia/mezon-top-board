@@ -11,6 +11,8 @@ import { MezonAppService } from "./mezon-app.service";
 import { Public } from "@libs/decorator/authorization.decorator";
 import { RoleRequired } from "@libs/decorator/roles.decorator";
 import { Role } from "@domain/common/enum/role";
+import { GetUserFromHeader } from "@libs/decorator/getUserFromHeader.decorator";
+import { User } from "@domain/entities";
 
 
 @Controller("mezon-app")
@@ -85,9 +87,9 @@ export class MezonAppController {
   @ApiBearerAuth()
   @Post()
   @ApiBody({ type: CreateMezonAppRequest })
-  createMezonApp(@Body() body: CreateMezonAppRequest) {
+  createMezonApp(@GetUserFromHeader() user: User, @Body() body: CreateMezonAppRequest) {
     try {
-      return this.mezonAppService.createMezonApp(body);
+      return this.mezonAppService.createMezonApp(user.id, body);
     } catch (error) {
       this.logger.error("An error occured", error);
       throw error;
