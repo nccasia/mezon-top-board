@@ -7,7 +7,7 @@ import { Result } from "@domain/common/dtos/result.dto";
 import { AppStatus } from "@domain/common/enum/appStatus";
 import { App, AppReviewHistory, Rating, User } from "@domain/entities";
 
-import { ErrorMessages } from "@libs/constant/errorMsg";
+import { ErrorMessages, SuccessMessages } from "@libs/constant/messages";
 import { GenericRepository } from "@libs/repository/genericRepository";
 import { Mapper } from "@libs/utils/mapper";
 import { paginate } from "@libs/utils/paginate";
@@ -29,79 +29,71 @@ export class ReviewHistoryService {
         this.ratingRepository = new GenericRepository(Rating, manager);
     }
 
-    async createAppReview(userId: string, body: CreateAppReviewRequest) {
+    async createAppReview(reviewer: User, body: CreateAppReviewRequest) {
         const mezonApp = await this.appRepository.findById(body.appId)
-        if (!mezonApp || mezonApp.status !== AppStatus.PUBLISHED)
+        if (!mezonApp || mezonApp.status !== AppStatus.PENDING) {
             throw new BadRequestException(ErrorMessages.INVALID_APP);
+        }
 
-        const user = await this.userRepository.findById(userId)
-        if (!user)
-            throw new BadRequestException(ErrorMessages.INVALID_USER);
+        const newStatus = body.isApproved ? AppStatus.PUBLISHED : AppStatus.REJECTED;
+        await this.appRepository.update(body.appId, { status: newStatus });
 
-        await this.appReviewRepository.create({ ...body, reviewer: userId });
-        return new Result()
+        const data = await this.appReviewRepository.create({ ...body, reviewerId: reviewer.id });
+        return new Result({
+            data: Mapper(AppReviewResponse, data)
+        })
     }
 
-    async updateAppReview(userId: string, req: UpdateAppReviewRequest) {
+    async updateAppReview(req: UpdateAppReviewRequest) {
         const review = await this.appReviewRepository.findById(req.id)
         if (!review)
             throw new BadRequestException(ErrorMessages.NOT_FOUND_MSG);
 
-        const mezonApp = await this.appRepository.findById(req.appId)
-        if (!mezonApp || mezonApp.status !== AppStatus.PUBLISHED)
-            throw new BadRequestException(ErrorMessages.INVALID_APP);
+        await this.appReviewRepository.update(req.id, {
+            remark: req.remark
+        });
 
-        const user = await this.userRepository.findById(userId)
-        if (!user)
-            throw new BadRequestException(ErrorMessages.INVALID_USER);
-
-        if (review.reviewer !== userId)
-            throw new BadRequestException(ErrorMessages.MODIFY_REVIEW_RESTRICTION);
-
-        await this.appReviewRepository.update(req.id, { ...req, reviewer: userId });
-        return new Result()
+        return new Result({
+            message: SuccessMessages.UPDATE_SUCCESS,
+        })
     }
 
-    async deleteAppReview(userId: string, req: RequestWithId) {
+    async deleteAppReview(req: RequestWithId) {
         const review = await this.appReviewRepository.findById(req.id)
         if (!review)
             throw new BadRequestException(ErrorMessages.NOT_FOUND_MSG);
-
-        if (review.reviewer !== userId)
-            throw new BadRequestException(ErrorMessages.MODIFY_REVIEW_RESTRICTION);
 
         await this.appReviewRepository.softDelete(req.id);
-        return new Result()
+        return new Result({
+            message: SuccessMessages.DELETE_SUCCESS,
+        })
     }
 
     async getAppReviews(query: GetAppReviewRequest) {
-        const mezonApp = await this.appRepository.findById(query.appId)
-        if (!mezonApp || mezonApp.status !== AppStatus.PUBLISHED)
-            throw new BadRequestException(ErrorMessages.INVALID_APP);
+        let whereBuilder = {};
+
+        if (query.appId) {
+            const app = await this.appRepository.findById(query.appId);
+            if (!app) {
+                throw new BadRequestException(ErrorMessages.INVALID_APP);
+            }
+
+            whereBuilder = {
+                appId: query.appId
+            }
+        }
 
         return paginate<AppReviewHistory, AppReviewResponse>(
             () => this.appReviewRepository.findMany(
                 {
                     ...query,
-                    where: () => ({ appId: query.appId })
+                    where: () => whereBuilder,
+                    relations: ["app", "reviewer"],
                 }),
             query.pageSize,
             query.pageNumber,
             async (entity) => {
                 const mappedReviewHistory = Mapper(AppReviewResponse, entity);
-
-                const user = await this.userRepository.findById(entity.reviewer)
-
-                const rating = await this.ratingRepository.getRepository().findOne({
-                    where: {
-                        appId: query.appId,
-                        userId: entity.reviewer
-                    },
-                })
-
-                mappedReviewHistory.reviewerName = user.name.length > 0 ? user.name : user.email
-                mappedReviewHistory.rateScore = rating ? rating.score : 0
-
                 return mappedReviewHistory;
             },
         );

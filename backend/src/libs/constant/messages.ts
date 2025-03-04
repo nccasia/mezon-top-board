@@ -10,3 +10,8 @@ export enum ErrorMessages {
     MODIFY_REVIEW_RESTRICTION = 'Only the review owner is permitted to update or delete it.',
     PERMISSION_DENIED = 'You do not have permission.',
 }
+
+export enum SuccessMessages {
+    UPDATE_SUCCESS = 'Update successfully',
+    DELETE_SUCCESS = 'Delete successfully',
+}

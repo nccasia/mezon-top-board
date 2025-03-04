@@ -10,6 +10,8 @@ import { Logger } from "@libs/logger";
 import { SearchUserRequest, SelfUpdateUserRequest, UpdateUserRequest } from "./dtos/request";
 import { GetUserDetailsResponse, SearchUserResponse } from "./dtos/response";
 import { UserService } from "./user.service";
+import { RoleRequired } from "@libs/decorator/roles.decorator";
+import { Role } from "@domain/common/enum/role";
 
 @Controller("user")
 @ApiTags("User")
@@ -21,8 +23,9 @@ export class UserController {
         this.logger.setContext(UserController.name);
     }
 
-    @ApiBearerAuth()
     @Get()
+    @ApiBearerAuth()
+    @RoleRequired([Role.ADMIN])
     @ApiResponse({ type: SearchUserResponse })
     async searchUser(@Query() query: SearchUserRequest) {
         return this.userService.searchUser(query);
@@ -37,6 +40,7 @@ export class UserController {
 
     @Put()
     @ApiBearerAuth()
+    @RoleRequired([Role.ADMIN])
     async updateUser(@GetUserFromHeader() user: User, @Body() body: UpdateUserRequest) {
         return this.userService.updateUser(user.id, body);
     }
@@ -49,6 +53,7 @@ export class UserController {
 
     @Delete()
     @ApiBearerAuth()
+    @RoleRequired([Role.ADMIN])
     async deleteUser(@GetUserFromHeader() user: User, @Body() body: RequestWithId) {
         return this.userService.deleteUser(user.id, body);
     }

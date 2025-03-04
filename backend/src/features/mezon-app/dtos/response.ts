@@ -1,10 +1,11 @@
-import { ApiProperty, OmitType } from "@nestjs/swagger";
+import { ApiProperty, OmitType, PickType } from "@nestjs/swagger";
 
-import { Expose } from "class-transformer";
+import { Expose, Transform } from "class-transformer";
 
 import { SocialLinkInMezonAppDetailResponse } from "@features/link/dtos/response";
 import { TagInMezonAppDetailResponse } from "@features/tag/dtos/response";
 import { OwnerInMezonAppDetailResponse } from "@features/user/dtos/response";
+import { AppStatus } from "@domain/common/enum/appStatus";
 
 export class GetMezonAppDetailsResponse {
     @Expose()
@@ -55,6 +56,10 @@ export class SearchMezonAppResponse {
 
     @Expose()
     @ApiProperty()
+    public status: string;
+
+    @Expose()
+    @ApiProperty()
     public featuredImage: string;
 
     @Expose()
@@ -77,4 +82,12 @@ export class SearchMezonAppResponse {
 export class GetRelatedMezonAppResponse extends OmitType(SearchMezonAppResponse, ["description", "tags", "headline"]) {
 }
 
-
+export class MezonAppInAppReviewResponse extends PickType(GetMezonAppDetailsResponse, [
+    "id",
+    "name",
+    "description",
+    "headline",
+    "featuredImage",
+    "rateScore",
+]) {
+}

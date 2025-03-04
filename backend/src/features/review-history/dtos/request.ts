@@ -1,6 +1,6 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
-import { IsString } from "class-validator";
+import { IsBoolean, IsOptional, IsString } from "class-validator";
 
 import { PaginationQuery, RequestWithId } from "@domain/common/dtos/request.dto";
 
@@ -10,6 +10,10 @@ export class CreateAppReviewRequest {
     appId: string;
 
     @ApiProperty()
+    @IsBoolean()
+    isApproved: boolean;
+
+    @ApiProperty()
     @IsString()
     remark: string;
 }
@@ -17,15 +21,12 @@ export class CreateAppReviewRequest {
 export class UpdateAppReviewRequest extends RequestWithId {
     @ApiProperty()
     @IsString()
-    appId: string;
-
-    @ApiProperty()
-    @IsString()
     remark: string;
 }
 
 export class GetAppReviewRequest extends PaginationQuery {
-    @ApiProperty()
+    @ApiPropertyOptional()
+    @IsOptional()
     @IsString()
-    appId: string;
+    appId?: string;
 }

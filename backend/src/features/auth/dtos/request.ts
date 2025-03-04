@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsEmail, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 export class OAuth2Request {
   @ApiProperty()
@@ -19,7 +19,20 @@ export class OAuth2Request {
 }
 
 export class RefreshTokenDto {
+  @ApiProperty()
   @IsNotEmpty()
   @IsString()
   refreshToken: string;
+}
+
+export class BasicAuthRequest {
+  @ApiProperty({ example: 'admin@example.com' })
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  password: string;
 }

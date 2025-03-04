@@ -5,7 +5,7 @@ import { Logger } from "@libs/logger";
 
 import { Public } from "@libs/decorator/authorization.decorator";
 import { AuthService } from "./auth.service";
-import { OAuth2Request, RefreshTokenDto } from "./dtos/request";
+import { BasicAuthRequest, OAuth2Request, RefreshTokenDto } from "./dtos/request";
 
 import config from "@config/env.config";
 
@@ -29,6 +29,12 @@ export class AuthController {
 
     const authUrl = `${OAUTH2_API_URL}/oauth2/auth?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=openid+offline&state=${STATE}`
     return res.redirect(authUrl);
+  }
+
+  @Public()
+  @Post("basic")
+  async loginBasic(@Body() body: BasicAuthRequest) {
+    return await this.authService.loginByBasicAuth(body);
   }
 
   @Public()

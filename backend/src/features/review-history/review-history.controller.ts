@@ -1,13 +1,12 @@
-import { Body, Controller, Delete, Get, Post, Put, Query } from "@nestjs/common";
-import { ApiBearerAuth, ApiBody, ApiTags } from "@nestjs/swagger";
-
 import { RequestWithId } from "@domain/common/dtos/request.dto";
+import { Role } from "@domain/common/enum/role";
 import { User } from "@domain/entities";
-
 import { Public } from "@libs/decorator/authorization.decorator";
 import { GetUserFromHeader } from "@libs/decorator/getUserFromHeader.decorator";
+import { RoleRequired } from "@libs/decorator/roles.decorator";
 import { Logger } from "@libs/logger";
-
+import { Body, Controller, Delete, Get, Post, Put, Query } from "@nestjs/common";
+import { ApiBearerAuth, ApiBody, ApiTags } from "@nestjs/swagger";
 import { CreateAppReviewRequest, GetAppReviewRequest, UpdateAppReviewRequest } from "./dtos/request";
 import { ReviewHistoryService } from "./review-history.service";
 
@@ -21,30 +20,34 @@ export class ReviewHistoryController {
         this.logger.setContext(ReviewHistoryController.name);
     }
 
-    @ApiBearerAuth()
-    @Post()
-    @ApiBody({ type: CreateAppReviewRequest })
-    async createAppReview(@GetUserFromHeader() user: User, @Body() body: CreateAppReviewRequest) {
-        return this.appReviewService.createAppReview(user.id, body);
-    }
-
-    @ApiBearerAuth()
-    @Put()
-    @ApiBody({ type: UpdateAppReviewRequest })
-    async updateAppReview(@GetUserFromHeader() user: User, @Body() body: UpdateAppReviewRequest) {
-        return this.appReviewService.updateAppReview(user.id, body);
-    }
-
-    @ApiBearerAuth()
-    @Delete()
-    @ApiBody({ type: RequestWithId })
-    async deleteAppReview(@GetUserFromHeader() user: User, @Body() body: RequestWithId) {
-        return this.appReviewService.deleteAppReview(user.id, body);
-    }
-
+    
     @Public()
     @Get()
     async getAppReviews(@Query() query: GetAppReviewRequest) {
         return this.appReviewService.getAppReviews(query);
+    }
+
+    @Post()
+    @ApiBearerAuth()
+    @RoleRequired([Role.ADMIN])
+    @ApiBody({ type: CreateAppReviewRequest })
+    async createAppReview(@GetUserFromHeader() user: User, @Body() body: CreateAppReviewRequest) {
+        return this.appReviewService.createAppReview(user, body);
+    }
+
+    @Put()
+    @ApiBearerAuth()
+    @RoleRequired([Role.ADMIN])
+    @ApiBody({ type: UpdateAppReviewRequest })
+    async updateAppReview(@Body() body: UpdateAppReviewRequest) {
+        return this.appReviewService.updateAppReview(body);
+    }
+
+    @Delete()
+    @ApiBearerAuth()
+    @RoleRequired([Role.ADMIN])
+    @ApiBody({ type: RequestWithId })
+    async deleteAppReview(@Body() body: RequestWithId) {
+        return this.appReviewService.deleteAppReview(body);
     }
 }

@@ -7,7 +7,7 @@ import { Result } from "@domain/common/dtos/result.dto";
 import { AppStatus } from "@domain/common/enum/appStatus";
 import { App, Link, LinkType, Tag, User } from "@domain/entities";
 
-import { ErrorMessages } from "@libs/constant/errorMsg";
+import { ErrorMessages } from "@libs/constant/messages";
 import { GenericRepository } from "@libs/repository/genericRepository";
 import { Mapper } from "@libs/utils/mapper";
 import { paginate } from "@libs/utils/paginate";
@@ -79,7 +79,11 @@ export class MezonAppService {
         if (tagIds.length === 0) return new Result({ data: [] });
 
         const relatedMezonApps = await this.appRepository.getRepository().find({
-            where: { tags: { id: In(tagIds) }, id: Not(query.id) },
+            where: {
+                tags: { id: In(tagIds) },
+                id: Not(query.id),
+                status: AppStatus.PUBLISHED
+            },
             withDeleted: false,
             relations: ["tags", "ratings"],
             take: 5,
@@ -108,7 +112,10 @@ export class MezonAppService {
                 {
                     ...query,
                     relations: ["ratings", "tags"],
-                    where: () => whereCondition
+                    where: () => ({
+                        ...whereCondition,
+                        status: AppStatus.PUBLISHED
+                    })
                 }),
             query.pageSize,
             query.pageNumber,
@@ -222,5 +229,32 @@ export class MezonAppService {
         this.appRepository.getRepository().merge(app, { ...updateData, tags, socialLinks: links });
 
         return this.appRepository.getRepository().save(app);
+    }
+
+    async listAdminMezonApp(query: SearchMezonAppRequest) {
+        let whereCondition = undefined
+        if (query.fieldId && query.field)
+            whereCondition = filterBuilder(this.appRepository.getRepository().metadata, query.field, query.fieldId)
+
+        // Priorize to search by keyword if field and search exist at the same time.
+        if (query.search)
+            whereCondition = searchBuilder<App>({ keyword: query.search, fields: ["name", "headline"] })
+
+        return paginate<App, SearchMezonAppResponse>(
+            () => this.appRepository.findMany(
+                {
+                    ...query,
+                    relations: ["ratings", "tags"],
+                    where: () => whereCondition
+                }),
+            query.pageSize,
+            query.pageNumber,
+            (entity) => {
+                const mappedMezonApp = Mapper(SearchMezonAppResponse, entity);
+                mappedMezonApp.rateScore = this.getAverageRating(entity);
+                mappedMezonApp.tags = entity.tags.map(tag => ({ id: tag.id, name: tag.name }))
+                return mappedMezonApp;
+            },
+        );
     }
 }

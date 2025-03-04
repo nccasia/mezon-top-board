@@ -2,7 +2,7 @@ import { createParamDecorator, ExecutionContext, UnauthorizedException } from '@
 
 import { User } from '@domain/entities/schema/user.entity';
 
-import { ErrorMessages } from '@libs/constant/errorMsg';
+import { ErrorMessages } from '@libs/constant/messages';
 
 export const GetUserFromHeader = createParamDecorator(
     (data: unknown, ctx: ExecutionContext): User => {
