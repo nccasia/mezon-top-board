@@ -16,6 +16,7 @@ import { existsSync, unlinkSync } from "fs";
 import { CreateMediaRequest, DeleteMediaRequest, GetMediaRequest } from "./dtos/request";
 import { GetMediaResponse } from "./dtos/response";
 import { ErrorMessages } from "@libs/constant/messages";
+import envConfig from "@config/env.config";
 
 @Injectable()
 export class MediaService {
@@ -43,7 +44,7 @@ export class MediaService {
     const data = {
       fileName: file.filename,
       mimeType: file.mimetype,
-      filePath: `${createUploadPath('')}/${file.filename}`,
+      filePath: `/${createUploadPath(envConfig().UPLOAD_RELATIVE_DIR)}/${file.filename}`,
       ownerId,
     }
 
