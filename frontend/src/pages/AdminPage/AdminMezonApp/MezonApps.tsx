@@ -1,25 +1,26 @@
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import { useMezonAppControllerDeleteMezonAppMutation, useMezonAppControllerSearchMezonAppQuery } from "@app/services/api/mezonApp/mezonApp";
-import { Button, Spin, Table, Tooltip, Image, Popconfirm } from "antd";
-import { useEffect } from "react";
+import { GetMezonAppDetailsResponse, useMezonAppControllerDeleteMezonAppMutation, useMezonAppControllerSearchMezonAppQuery } from "@app/services/api/mezonApp/mezonApp";
+import { RootState } from "@app/store";
+import { useAppSelector } from "@app/store/hook";
+import { Button, Popconfirm, Spin, Table, Tooltip } from "antd";
 import { toast } from "react-toastify";
 
-const MezonApps = ({ onEdit }: { onEdit: (app: any) => void }) => {
-    const { data: apps, error, isLoading, refetch } = useMezonAppControllerSearchMezonAppQuery({
+const MezonApps = ({ onEdit }: { onEdit: (app: GetMezonAppDetailsResponse) => void }) => {
+    const { isLoading } = useMezonAppControllerSearchMezonAppQuery({
       pageSize: 10,
       pageNumber: 1,
       sortField: "createdAt",
       sortOrder: "DESC",
     });
-    const [deleteMezonApp, { isLoading: isDeleting }] = useMezonAppControllerDeleteMezonAppMutation();
+    const apps = useAppSelector((state: RootState) => state.mezonApp.mezonApp.data); // Get apps from Redux store
+     
+  const [deleteMezonApp, { isLoading: isDeleting }] = useMezonAppControllerDeleteMezonAppMutation();
     const handleDelete = async (appId: string) => {
       try {
         await deleteMezonApp({ requestWithId: { id: appId } }).unwrap();
         toast.success("App deleted successfully");
-        refetch(); // Refresh the table
       } catch (error: any) {
         toast.error(error?.data?.message || "Failed to delete app");
-        console.error("Delete error:", error);
       }
     };
   
@@ -30,9 +31,20 @@ const MezonApps = ({ onEdit }: { onEdit: (app: any) => void }) => {
         key: "name",
       },
       {
+        title: "Headline",
+        dataIndex: "headline",
+        key: "headline",
+      },
+      {
+        title: "Description",
+        dataIndex: "description",
+        key: "description",
+        ellipsis: true, // Truncate long text
+      },
+      {
         title: "Actions",
         key: "actions",
-        render: (_: any, record: any) => (
+        render: (_: any, record: GetMezonAppDetailsResponse) => (
           <>
             <Tooltip title="Edit">
               <Button type="link" icon={<EditOutlined />} onClick={() => onEdit(record)} />
@@ -51,11 +63,10 @@ const MezonApps = ({ onEdit }: { onEdit: (app: any) => void }) => {
         ),
       },
     ];
-  
     return isLoading ? (
-      <Spin size="large" style={{ textAlign: "center", marginTop: "20px" }} />
+      <Spin size="large" className="text-center mt-5" />
     ) : (
-      <Table dataSource={apps?.data} columns={columns} rowKey="id" />
+      <Table dataSource={apps} columns={columns} rowKey="id" />
     );
   };
 export default MezonApps
