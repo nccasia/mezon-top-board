@@ -171,6 +171,7 @@ export type AppReviewHistory = {
   app: App
 }
 export type App = {
+  id?: string
   name: string
   status: Status
   isAutoPublished: boolean

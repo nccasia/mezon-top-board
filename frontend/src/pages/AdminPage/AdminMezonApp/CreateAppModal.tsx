@@ -38,9 +38,9 @@ const CreateAppModal = () => {
           ]}
           width={700}
         >
-          <div style={{ maxHeight: "60vh", overflowY: "auto",}}>
+          <div className="max-h-[60vh] overflow-y-auto">
           <Form form={form} layout="horizontal" labelCol={{ span: 4 }}
-        wrapperCol={{ span: 20 }} style={{ maxWidth: "100%" }}>
+        wrapperCol={{ span: 20 }} className="max-w-full">
             <Form.Item name="name" label="App Name" rules={[{ required: true, message: "App Name is required" }]}>
               <Input />
             </Form.Item>
@@ -59,7 +59,8 @@ const CreateAppModal = () => {
               <Input />
             </Form.Item>
             <Form.Item name="isAutoPublished" label="Is Auto Published?" valuePropName="checked" >
-              <Switch style={{ marginLeft: "8px" }}/>
+              <Switch className="ml-2"
+              />
             </Form.Item>
             <Form.Item name="prefix" label="Prefix">
               <Input />

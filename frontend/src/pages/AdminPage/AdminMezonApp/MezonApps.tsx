@@ -1,16 +1,20 @@
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import { useMezonAppControllerDeleteMezonAppMutation, useMezonAppControllerSearchMezonAppQuery } from "@app/services/api/mezonApp/mezonApp";
-import { Button, Spin, Table, Tooltip, Popconfirm } from "antd";
+import { GetMezonAppDetailsResponse, useMezonAppControllerDeleteMezonAppMutation, useMezonAppControllerSearchMezonAppQuery } from "@app/services/api/mezonApp/mezonApp";
+import { RootState } from "@app/store";
+import { useAppSelector } from "@app/store/hook";
+import { Button, Popconfirm, Spin, Table, Tooltip } from "antd";
 import { toast } from "react-toastify";
 
-const MezonApps = ({ onEdit }: { onEdit: (app: any) => void }) => {
-    const { data: apps, error, isLoading } = useMezonAppControllerSearchMezonAppQuery({
+const MezonApps = ({ onEdit }: { onEdit: (app: GetMezonAppDetailsResponse) => void }) => {
+    const { isLoading } = useMezonAppControllerSearchMezonAppQuery({
       pageSize: 10,
       pageNumber: 1,
       sortField: "createdAt",
       sortOrder: "DESC",
     });
-    const [deleteMezonApp, { isLoading: isDeleting }] = useMezonAppControllerDeleteMezonAppMutation();
+    const apps = useAppSelector((state: RootState) => state.mezonApp.mezonApp.data); // Get apps from Redux store
+     
+  const [deleteMezonApp, { isLoading: isDeleting }] = useMezonAppControllerDeleteMezonAppMutation();
     const handleDelete = async (appId: string) => {
       try {
         await deleteMezonApp({ requestWithId: { id: appId } }).unwrap();
@@ -40,14 +44,14 @@ const MezonApps = ({ onEdit }: { onEdit: (app: any) => void }) => {
       {
         title: "Actions",
         key: "actions",
-        render: (_: any, record: any) => (
+        render: (_: any, record: GetMezonAppDetailsResponse) => (
           <>
             <Tooltip title="Edit">
               <Button type="link" icon={<EditOutlined />} onClick={() => onEdit(record)} />
             </Tooltip>
             <Popconfirm
             title="Are you sure you want to delete this app?"
-            onConfirm={() => handleDelete(record.id)}
+            onConfirm={() => handleDelete(record.id!)}
             okText="Yes"
             cancelText="No"
           >
@@ -60,9 +64,9 @@ const MezonApps = ({ onEdit }: { onEdit: (app: any) => void }) => {
       },
     ];
     return isLoading ? (
-      <Spin size="large" style={{ textAlign: "center", marginTop: "20px" }} />
+      <Spin size="large" className="text-center mt-5" />
     ) : (
-      <Table dataSource={apps?.data} columns={columns} rowKey="id" />
+      <Table dataSource={apps} columns={columns} rowKey="id" />
     );
   };
 export default MezonApps

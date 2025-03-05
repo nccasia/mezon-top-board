@@ -1,8 +1,7 @@
 import {
   GetMezonAppDetailsResponse,
   GetRelatedMezonAppResponse,
-  MezonAppControllerSearchMezonAppApiResponse,
-  mezonAppService
+  MezonAppControllerSearchMezonAppApiResponse
 } from '@app/services/api/mezonApp/mezonApp'
 import { createSlice } from '@reduxjs/toolkit'
 import { mezonAppExtraReducers } from './extraReducer'
