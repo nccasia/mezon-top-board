@@ -1,12 +1,12 @@
-import { Body, Controller, Delete, Get, Post, Put, Query } from "@nestjs/common";
-import { ApiBody, ApiTags } from "@nestjs/swagger";
-
 import { RequestWithId } from "@domain/common/dtos/request.dto";
-
 import { Logger } from "@libs/logger";
-
-import { CreateMediaRequest, DeleteMediaRequest, GetMediaRequest, UpdateMediaRequest } from "./dtos/request";
+import { Body, Controller, Delete, Get, Post, Query, UploadedFile, UseInterceptors } from "@nestjs/common";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from "@nestjs/swagger";
+import { CreateMediaRequest, DeleteMediaRequest, GetMediaRequest } from "./dtos/request";
 import { MediaService } from "./media.service";
+import { GetUserFromHeader } from "@libs/decorator/getUserFromHeader.decorator";
+import { User } from "@domain/entities";
 
 @Controller("media")
 @ApiTags("Media")
@@ -17,7 +17,9 @@ export class MediaController {
   ) {
     this.logger.setContext(MediaController.name);
   }
+
   @Get("search")
+  @ApiBearerAuth()
   getAllMedia(@Query() query: GetMediaRequest) {
     try {
       return this.mediaService.getAll(query);
@@ -28,6 +30,7 @@ export class MediaController {
   }
 
   @Get()
+  @ApiBearerAuth()
   getMedia(@Query() query: RequestWithId) {
     try {
       return this.mediaService.getMedia(query);
@@ -38,10 +41,13 @@ export class MediaController {
   }
 
   @Post()
+  @ApiBearerAuth()
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiConsumes('multipart/form-data')
   @ApiBody({ type: CreateMediaRequest })
-  createMedia(@Body() body: CreateMediaRequest) {
+  createMedia(@GetUserFromHeader() user: User, @Body() body: CreateMediaRequest, @UploadedFile() file: Express.Multer.File) {
     try {
-      return this.mediaService.createMedia(body);
+      return this.mediaService.createMedia(user.id, body, file);
     } catch (error) {
       this.logger.error("An error occured", error);
       throw error;
@@ -49,21 +55,11 @@ export class MediaController {
   }
 
   @Delete()
+  @ApiBearerAuth()
   @ApiBody({ type: DeleteMediaRequest })
   deleteMedia(@Body() body: DeleteMediaRequest) {
     try {
       return this.mediaService.deleteMedia(body);
-    } catch (error) {
-      this.logger.error("An error occured", error);
-      throw error;
-    }
-  }
-
-  @Put()
-  @ApiBody({ type: UpdateMediaRequest })
-  updateMedia(@Body() body: UpdateMediaRequest) {
-    try {
-      return this.mediaService.update(body);
     } catch (error) {
       this.logger.error("An error occured", error);
       throw error;

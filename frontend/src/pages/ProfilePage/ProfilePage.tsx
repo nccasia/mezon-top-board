@@ -8,24 +8,44 @@ import { useNavigate } from 'react-router-dom'
 import { useLazyTagControllerGetTagsQuery } from '@app/services/api/tag/tag'
 import { useEffect } from 'react'
 import { useMezonAppSearch } from '@app/hook/useSearch'
+import { useLazyUserControllerGetUserDetailsQuery } from '@app/services/api/user/user'
+import { useLazyMezonAppControllerSearchMezonAppQuery } from '@app/services/api/mezonApp/mezonApp'
+import { useSelector } from 'react-redux'
+import { RootState } from '@app/store'
+import { IMezonAppStore } from '@app/store/mezonApp'
 
 function ProfilePage() {
   const navigate = useNavigate()
   const [getTagList] = useLazyTagControllerGetTagsQuery()
+  const [getUserInfo] = useLazyUserControllerGetUserDetailsQuery()
   const { handleSearch } = useMezonAppSearch(1, 5)
+  const [getMezonAppOfUser] = useLazyMezonAppControllerSearchMezonAppQuery()
+  const { mezonAppOfUser } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
+
+  const getData = async () => {
+    const userRes = await getUserInfo().unwrap()
+    await getTagList()
+    if (userRes?.data?.id) {
+      getMezonAppOfUser({
+        field: 'ownerId',
+        fieldId: userRes?.data?.id,
+        pageNumber: 1,
+        pageSize: 5,
+        sortField: 'createdAt',
+        sortOrder: 'DESC'
+      })
+    }
+  }
 
   useEffect(() => {
-    getTagList()
+    getData()
   }, [])
 
   return (
     <div className='pt-8 pb-12 w-[75%] m-auto'>
       <MtbTypography variant='h1'>Explore millions of Mezon Bots</MtbTypography>
       <div className='pt-3'>
-        <SearchBar
-          onSearch={(val, tagId) => handleSearch(val ?? '', tagId)}
-          isResultPage={false}
-        ></SearchBar>
+        <SearchBar onSearch={(val, tagId) => handleSearch(val ?? '', tagId)} isResultPage={false}></SearchBar>
       </div>
       <Divider className='bg-gray-100'></Divider>
       <div className='flex justify-between gap-15 max-lg:flex-col max-2xl:flex-col'>
@@ -40,9 +60,7 @@ function ProfilePage() {
             </Button>
           </div>
           <div className='flex gap-8 max-lg:flex-wrap max-2xl:flex-wrap justify-center  max-lg:text-center max-2xl:text-center'>
-            {Array.from({ length: 5 }, (_, index) => (
-              <CompactBotCard key={index}></CompactBotCard>
-            ))}
+            {mezonAppOfUser?.data?.map((item) => <CompactBotCard key={item.id} data={item}></CompactBotCard>)}
           </div>
         </div>
       </div>

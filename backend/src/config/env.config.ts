@@ -6,7 +6,7 @@ export const envFilePath = `.env.${ENV ?? "local"}`;
 dotenv.config({ path: envFilePath });
 
 export default () => ({
-  PORT: process.env.PORT || 8000,
+  PORT: process.env.PORT || 8123,
   DB_NAME: process.env.POSTGRES_DB || "",
   DB_PORT: process.env.POSTGRES_PORT || 5432,
   DB_HOST: process.env.POSTGRES_HOST || "",
@@ -20,5 +20,6 @@ export default () => ({
   JWT_ACCESS_TOKEN_SECRET: process.env.JWT_ACCESS_TOKEN_SECRET || "",
   JWT_REFRESH_TOKEN_SECRET: process.env.JWT_REFRESH_TOKEN_SECRET || "",
   JWT_ACCESS_TOKEN_EXPIRES_IN_MINUTES: process.env.JWT_ACCESS_TOKEN_EXPIRES_IN_MINUTES || 60,
-  JWT_REFRESH_TOKEN_EXPIRES_IN_MINUTES: process.env.JWT_REFRESH_TOKEN_EXPIRES_IN_MINUTES || 10080
+  JWT_REFRESH_TOKEN_EXPIRES_IN_MINUTES: process.env.JWT_REFRESH_TOKEN_EXPIRES_IN_MINUTES || 10080,
+  UPLOAD_RELATIVE_DIR: process.env.UPLOAD_RELATIVE_DIR || "uploads",
 });

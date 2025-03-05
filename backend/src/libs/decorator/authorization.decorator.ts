@@ -1,5 +1,4 @@
+import { MetaKey } from "@libs/constant/meta-key.constant";
 import { SetMetadata } from "@nestjs/common";
 
-import { SKIP_AUTH } from "@libs/constant/meta-key.constant";
-
-export const Public = () => SetMetadata(SKIP_AUTH, true);
+export const Public = () => SetMetadata(MetaKey.SKIP_AUTH, true);

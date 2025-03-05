@@ -1,10 +1,21 @@
-import { Entity, Column, Unique } from "typeorm";
-
+import { Column, Entity, ManyToOne } from "typeorm";
 import { BaseSoftDelete } from "../base";
+import { User } from "./user.entity";
 
 @Entity()
-@Unique(["name"])
 export class Media extends BaseSoftDelete {
   @Column()
-  public name: string;
+  public fileName: string;
+
+  @Column({ nullable: true })
+  public mimeType: string;
+
+  @Column({ nullable: true })
+  public filePath: string;
+
+  @Column({ nullable: true })
+  public ownerId: string;
+
+  @ManyToOne(() => User, (user) => user.medias)
+  public owner: User;
 }

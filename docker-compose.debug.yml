@@ -28,6 +28,7 @@ services:
     container_name: backend
     volumes:
       - ./backend:/app
+      - be_node_modules:/app/node_modules
     depends_on:
       postgres:
         condition: service_healthy
@@ -49,6 +50,7 @@ services:
       JWT_REFRESH_TOKEN_SECRET: ${JWT_REFRESH_TOKEN_SECRET}
       JWT_ACCESS_TOKEN_EXPIRES_IN_MINUTES: ${JWT_ACCESS_TOKEN_EXPIRES_IN_MINUTES}
       JWT_REFRESH_TOKEN_EXPIRES_IN_MINUTES: ${JWT_REFRESH_TOKEN_EXPIRES_IN_MINUTES}
+      UPLOAD_RELATIVE_DIR: ${UPLOAD_RELATIVE_DIR}
     ports:
       - "8123:8123"
     networks:
@@ -72,6 +74,7 @@ services:
 volumes:
   postgres_data:
   fe_node_modules:
+  be_node_modules:
 
 networks:
   main_net:

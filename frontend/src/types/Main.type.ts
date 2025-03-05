@@ -1,3 +1,3 @@
 export interface IMainProps {
-  isSearchPage: boolean
+  isSearchPage?: boolean
 }

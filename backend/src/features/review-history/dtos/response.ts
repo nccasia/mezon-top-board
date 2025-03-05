@@ -1,4 +1,6 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { MezonAppInAppReviewResponse } from "@features/mezon-app/dtos/response";
+import { ReviewerResponse } from "@features/user/dtos/response";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 import { Expose } from "class-transformer";
 
@@ -12,18 +14,14 @@ export class AppReviewResponse {
     public remark: string;
 
     @Expose()
-    @ApiProperty()
-    public reviewer: string;
-
-    @Expose()
-    @ApiProperty()
-    public reviewerName: string;
-
-    @Expose()
-    @ApiProperty()
-    public rateScore: number;
+    @ApiProperty({ type: () => ReviewerResponse })
+    public reviewer: ReviewerResponse;
 
     @Expose()
     @ApiProperty()
     public reviewedAt: Date;
+
+    @Expose()
+    @ApiPropertyOptional({ type: () => MezonAppInAppReviewResponse })
+    public app?: MezonAppInAppReviewResponse;
 }

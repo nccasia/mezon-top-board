@@ -2,6 +2,9 @@ import { CreditCardOutlined, InfoCircleOutlined, SettingOutlined, UserAddOutline
 import { TypographyStyle } from '@app/enums/typography.enum'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import avatar from '@app/assets/images/0e54d87446f106d1fd58385295ae9deb.png'
+import { useSelector } from 'react-redux'
+import { RootState } from '@app/store'
+import { IUserStore } from '@app/store/user'
 
 const cardInfoLink = [
   {
@@ -23,13 +26,14 @@ const cardInfoLink = [
 ]
 
 function CardInfo() {
+  const { userInfo } = useSelector<RootState, IUserStore>((s) => s.user)
   return (
     <div className='flex flex-col gap-7 p-4 shadow-sm rounded-2xl'>
       <div className='flex items-center gap-4 max-lg:flex-col max-2xl:flex-col'>
         <div className='w-[70px] max-lg:w-[100px] max-2xl:w-[100px]'>
           <img src={avatar} alt='avatar' className='rounded-full w-full object-cover' />
         </div>
-        <div className='text-lg font-semibold'>Name</div>
+        <div className='text-lg font-semibold'>{userInfo.name}</div>
       </div>
       <div>
         <MtbTypography variant='p' customClassName='!pl-0' weight='bold' textStyle={[TypographyStyle.UPPERCASE]}>

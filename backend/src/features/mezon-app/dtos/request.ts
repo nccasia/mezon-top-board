@@ -66,10 +66,6 @@ export class CreateMezonAppRequest {
     @IsOptional()
     featuredImage?: string;
 
-    @ApiProperty()
-    @IsUUID()
-    ownerId: string;
-
     @ApiPropertyOptional()
     @IsString()
     @IsOptional()
@@ -94,5 +90,5 @@ export class CreateMezonAppRequest {
 
 export class UpdateMezonAppRequest extends IntersectionType(
     RequestWithId,
-    PartialType(OmitType(CreateMezonAppRequest, ["ownerId"] as const))
+    PartialType(OmitType(CreateMezonAppRequest, [] as const))
 ) { }

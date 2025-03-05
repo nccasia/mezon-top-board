@@ -1,58 +1,72 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { getAccessTokens, getRefreshTokens, removeAccessTokens, storeAccessTokens } from '@app/utils/storage'
+import { BaseQueryFn, createApi, FetchArgs, fetchBaseQuery, FetchBaseQueryError } from '@reduxjs/toolkit/query/react'
+import axios from 'axios'
 
 const paramsSerializer = (params: Record<string, any>): string => {
-  const searchParams = new URLSearchParams();
+  const searchParams = new URLSearchParams()
 
   for (const key in params) {
-    const value = params[key];
+    const value = params[key]
 
-    if (value === undefined || value === null) continue;
+    if (value === undefined || value === null) continue
 
     if (Array.isArray(value)) {
-      value.forEach((item) => searchParams.append(`${key}`, String(item)));
+      value.forEach((item) => searchParams.append(`${key}`, String(item)))
     } else {
-      searchParams.append(key, String(value));
+      searchParams.append(key, String(value))
     }
   }
 
-  return searchParams.toString();
-};
+  return searchParams.toString()
+}
 
+const getBaseQuery = (
+  baseQuery: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError>
+): BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> => {
+  return async function (args, api, extraOptions) {
+    let result = await baseQuery(args, api, extraOptions)
+    if (
+      result.error &&
+      (result.error.status === 401 ||
+        (result.error.data as { message?: string; error?: string })?.error === 'Unauthorized')
+    ) {
+      try {
+        const refreshToken = getRefreshTokens()
+        const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/auth/refresh-token`, {
+          refreshToken
+        })
+        storeAccessTokens(response?.data?.data)
 
-const baseQuery = fetchBaseQuery({
-  baseUrl: process.env.REACT_APP_BACKEND_URL,
-  prepareHeaders: async (headers) => {
-    const token = localStorage.getItem('accessToken')
-    if (token) {
-      headers.set('Authorization', `Bearer ${token}`)
+        const updatedArgs =
+          typeof args === 'object'
+            ? {
+                ...args,
+                headers: { ...(args.headers || {}), Authorization: `Bearer ${response.data.data.accessToken}` }
+              }
+            : args
+
+        return await baseQuery(updatedArgs, api, extraOptions)
+      } catch (err) {
+        removeAccessTokens()
+        return result
+      }
     }
-    return headers
-  },
-  paramsSerializer
-})
-
-// const getBaseQueryWithReauth = (
-//   baseQuery: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError>
-// ): BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> => {
-//   return async function (args, api, extraOptions) {
-//     let result = await baseQuery(args, api, extraOptions)
-
-//     if (result.error && (result.error.status === 401 || result.error.data === 'Unauthorized')) {
-//       const token = await getRefreshedToken()
-
-//       if (token) {
-//         api.dispatch(tokenReceived(token))
-//         result = await baseQuery(args, api, extraOptions)
-//       } else {
-//         // refresh failed - do something like redirect to login or show a "retry" button
-//         // api.dispatch(loggedOut())
-//       }
-//     }
-//     return result
-//   }
-// }
+    return result
+  }
+}
 
 export const api = createApi({
-  baseQuery: baseQuery,
-  endpoints: () => ({}),
+  baseQuery: getBaseQuery(
+    fetchBaseQuery({
+      baseUrl: process.env.REACT_APP_BACKEND_URL,
+      prepareHeaders: async (headers) => {
+        const token = getAccessTokens()
+        if (token) {
+          headers.set('Authorization', `Bearer ${token}`)
+        }
+        return headers
+      }
+    })
+  ),
+  endpoints: () => ({})
 })

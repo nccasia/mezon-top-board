@@ -9,7 +9,7 @@ import config from "@config/env.config";
 
 import { AuthService } from "@features/auth/auth.service";
 
-import { ErrorMessages } from "@libs/constant/errorMsg";
+import { ErrorMessages } from "@libs/constant/messages";
 import { JwtPayload, ValidateJwtRequest } from "@libs/guard/jwt.types";
 
 @Injectable()
