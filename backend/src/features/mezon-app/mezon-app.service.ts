@@ -257,4 +257,34 @@ export class MezonAppService {
             },
         );
     }
+
+    async getMyApp(userId: string, query: SearchMezonAppRequest) {
+        let whereCondition = undefined
+        if (query.fieldId && query.field)
+            whereCondition = filterBuilder(this.appRepository.getRepository().metadata, query.field, query.fieldId)
+
+        // Priorize to search by keyword if field and search exist at the same time.
+        if (query.search)
+            whereCondition = searchBuilder<App>({ keyword: query.search, fields: ["name", "headline"] })
+
+        return paginate<App, SearchMezonAppResponse>(
+            () => this.appRepository.findMany(
+                {
+                    ...query,
+                    relations: ["ratings", "tags"],
+                    where: () => ({
+                        ...whereCondition,
+                        ownerId: userId
+                    })
+                }),
+            query.pageSize,
+            query.pageNumber,
+            (entity) => {
+                const mappedMezonApp = Mapper(SearchMezonAppResponse, entity);
+                mappedMezonApp.rateScore = this.getAverageRating(entity);
+                mappedMezonApp.tags = entity.tags.map(tag => ({ id: tag.id, name: tag.name }))
+                return mappedMezonApp;
+            },
+        );
+    }
 }

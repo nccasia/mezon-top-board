@@ -37,6 +37,17 @@ export class MezonAppController {
     }
   }
 
+  @Get("my-app")
+  @ApiBearerAuth()
+  getMyApp(@GetUserFromHeader() user: User, @Query() query: SearchMezonAppRequest) {
+    try {
+      return this.mezonAppService.getMyApp(user.id, query);
+    } catch (error) {
+      this.logger.error("An error occured", error);
+      throw error;
+    }
+  }
+
   @Public()
   @Get()
   @ApiResponse({ type: GetMezonAppDetailsResponse })

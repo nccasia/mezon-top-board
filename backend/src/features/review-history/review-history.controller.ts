@@ -21,8 +21,8 @@ export class ReviewHistoryController {
     }
 
     
-    @Public()
     @Get()
+    @ApiBearerAuth()
     async getAppReviews(@Query() query: GetAppReviewRequest) {
         return this.appReviewService.getAppReviews(query);
     }

@@ -19,6 +19,7 @@ export class MediaController {
   }
 
   @Get("search")
+  @ApiBearerAuth()
   getAllMedia(@Query() query: GetMediaRequest) {
     try {
       return this.mediaService.getAll(query);
@@ -29,6 +30,7 @@ export class MediaController {
   }
 
   @Get()
+  @ApiBearerAuth()
   getMedia(@Query() query: RequestWithId) {
     try {
       return this.mediaService.getMedia(query);
