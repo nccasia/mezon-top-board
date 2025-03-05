@@ -15,3 +15,7 @@ export interface ISocialLinksData {
 export interface ICompactBotCardProps {
   data?: GetRelatedMezonAppResponse
 }
+
+export interface IAddBotFormProps {
+  onResetAvatar : () => void
+}

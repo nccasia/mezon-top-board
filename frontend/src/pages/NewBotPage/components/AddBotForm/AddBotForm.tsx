@@ -6,13 +6,18 @@ import Button from '@app/mtb-ui/Button'
 import { errorStatus } from '@app/constants/common.constant'
 import TextArea from 'antd/es/input/TextArea'
 import { useEffect, useMemo, useState } from 'react'
-import { CreateMezonAppRequest, SocialLinkDto, useMezonAppControllerCreateMezonAppMutation } from '@app/services/api/mezonApp/mezonApp'
+import {
+  CreateMezonAppRequest,
+  SocialLinkDto,
+  useMezonAppControllerCreateMezonAppMutation
+} from '@app/services/api/mezonApp/mezonApp'
 import { useSelector } from 'react-redux'
 import { RootState } from '@app/store'
 import { ITagStore } from '@app/store/tag'
 import { ILinkTypeStore } from '@app/store/linkType'
-import { ISocialLinksData } from '@app/types/Botcard.types'
-function AddBotForm() {
+import { IAddBotFormProps, ISocialLinksData } from '@app/types/Botcard.types'
+import { toast } from 'react-toastify'
+function AddBotForm({ onResetAvatar }: IAddBotFormProps) {
   const {
     control,
     handleSubmit,
@@ -45,6 +50,8 @@ function AddBotForm() {
     }
 
     addBot({ createMezonAppRequest: addBotData })
+    toast.success('Add new bot success')
+    onResetAvatar()
     reset()
   }
 
