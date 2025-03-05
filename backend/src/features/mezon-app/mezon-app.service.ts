@@ -172,6 +172,7 @@ export class MezonAppService {
 
         return await this.appRepository.create({
             ...appData,
+            ownerId: ownerId,
             tags: existingTags,
             socialLinks: links
         });
