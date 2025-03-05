@@ -1,10 +1,8 @@
 import { RiseOutlined, StarOutlined } from '@ant-design/icons'
 import avatar from '../../assets/images/0e54d87446f106d1fd58385295ae9deb.png'
-import { GetRelatedMezonAppResponse } from '@app/services/api/mezonApp/mezonApp'
 import { useNavigate } from 'react-router-dom'
-interface ICompactBotCardProps {
-  data?: GetRelatedMezonAppResponse
-}
+import { ICompactBotCardProps } from '@app/types/Botcard.types'
+
 function CompactBotCard({ data }: ICompactBotCardProps) {
   const navigate = useNavigate()
   const handleNavigateDetail = () => {

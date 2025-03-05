@@ -4,6 +4,9 @@ import { routePaths } from './routePaths'
 import { adminRoutePaths } from './adminRoutePaths'
 import AdminLayout from '@app/components/layouts/AdminLayout'
 import { RoutePath } from '@app/types/RoutePath.types'
+import { useSelector } from 'react-redux'
+import { RootState } from '@app/store'
+import { IAuthStore } from '@app/store/auth'
 
 export const renderRoutes = () => {
   const renderRouteChild = (route: RoutePath) => (
@@ -33,8 +36,9 @@ export const renderRoutes = () => {
 
 export const renderMenu = (isHasActive: boolean) => {
   const location = useLocation()
+  const { isLogin } = useSelector<RootState, IAuthStore>(s => s.auth)
 
-  return routePaths.map((route, index) => {
+  return routePaths.filter((route) => isLogin || route.path !== '/your-bots').map((route, index) => {
     if (route.isShowMenu) {
       const isActive = location.pathname === route.path && isHasActive
 

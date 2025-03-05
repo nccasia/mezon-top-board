@@ -1,7 +1,7 @@
 import avatarDefault from '@app/assets/images/0e54d87446f106d1fd58385295ae9deb.png'
 import Button from '@app/mtb-ui/Button'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
-import { Upload, UploadProps } from 'antd'
+import { Upload } from 'antd'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import AddBotForm from './components/AddBotForm/AddBotForm'
@@ -17,6 +17,7 @@ import { useLazyUserControllerGetUserDetailsQuery } from '@app/services/api/user
 import { isEmpty } from 'lodash'
 import { ITagStore } from '@app/store/tag'
 import { useLazyLinkTypeControllerGetAllLinksQuery } from '@app/services/api/linkType/linkType'
+import { useMediaControllerCreateMediaMutation } from '@app/services/api/media/media'
 function NewBotPage() {
   const [avatar, setAvatar] = useState<string>(avatarDefault)
   const { userInfo } = useSelector<RootState, IUserStore>((s) => s.user)
@@ -25,8 +26,7 @@ function NewBotPage() {
     defaultValues: {
       name: '',
       isAutoPublished: false,
-      ownerId: userInfo?.id,
-      socialLinkIds: []
+      socialLinks: []
     },
     resolver: yupResolver(ADD_BOT_SCHEMA)
   })
@@ -36,6 +36,7 @@ function NewBotPage() {
   const [getTagList] = useLazyTagControllerGetTagsQuery()
   const [getSocialLink] = useLazyLinkTypeControllerGetAllLinksQuery()
   const [getUserInfo] = useLazyUserControllerGetUserDetailsQuery()
+  const [uploadImage] = useMediaControllerCreateMediaMutation()
 
   useEffect(() => {
     if (isEmpty(userInfo)) getUserInfo()
@@ -43,24 +44,24 @@ function NewBotPage() {
     getSocialLink()
   }, [])
 
-  const mockUpload = ({ file, onSuccess, onError }: any) => {
-    console.log('Uploading...', file)
+  const handleUpload = async (options: any) => {
+    const { file, onSuccess, onError } = options
 
-    setTimeout(() => {
-      if (Math.random() > 0.2) {
-        onSuccess({ url: URL.createObjectURL(file) })
-        toast.success('Upload successfully!')
-      } else {
-        onError(new Error('Upload failed!'))
-        toast.error('Upload failed!')
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      const response = await uploadImage(formData).unwrap()
+
+      if (response?.statusCode === 200) {
+        setAvatar(response?.data?.filePath)
+        setValue('featuredImage', response?.data?.filePath)
       }
-    }, 1500)
-  }
 
-  const handleUpload: UploadProps['onChange'] = (info) => {
-    if (info.file.status === 'done') {
-      setAvatar(info.file.response.url)
-      setValue('featuredImage', info.file.response.url)
+      onSuccess(response, file)
+      toast.success('Upload Success')
+    } catch (error) {
+      toast.error('Upload failed!')
+      onError(error)
     }
   }
 
@@ -77,7 +78,7 @@ function NewBotPage() {
           </div>
         </div>
         <div>
-          <Upload onChange={handleUpload} customRequest={mockUpload} showUploadList={false}>
+          <Upload customRequest={handleUpload} showUploadList={false}>
             <Button color='primary' size='large'>
               Change image
             </Button>

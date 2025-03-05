@@ -13,279 +13,352 @@ import { Mapper } from "@libs/utils/mapper";
 import { paginate } from "@libs/utils/paginate";
 import { filterBuilder, searchBuilder } from "@libs/utils/queryBuilder";
 
-import { CreateMezonAppRequest, SearchMezonAppRequest, UpdateMezonAppRequest } from "./dtos/request";
-import { GetMezonAppDetailsResponse, GetRelatedMezonAppResponse, SearchMezonAppResponse } from "./dtos/response";
+import {
+  CreateMezonAppRequest,
+  SearchMezonAppRequest,
+  UpdateMezonAppRequest,
+} from "./dtos/request";
+import {
+  GetMezonAppDetailsResponse,
+  GetRelatedMezonAppResponse,
+  SearchMezonAppResponse,
+} from "./dtos/response";
 
 @Injectable()
 export class MezonAppService {
-    private readonly appRepository: GenericRepository<App>;
-    private readonly userRepository: GenericRepository<User>;
-    private readonly tagRepository: GenericRepository<Tag>;
-    private readonly linkRepository: GenericRepository<Link>;
-    private readonly linkTypeRepository: GenericRepository<LinkType>;
+  private readonly appRepository: GenericRepository<App>;
+  private readonly userRepository: GenericRepository<User>;
+  private readonly tagRepository: GenericRepository<Tag>;
+  private readonly linkRepository: GenericRepository<Link>;
+  private readonly linkTypeRepository: GenericRepository<LinkType>;
 
-    constructor(private manager: EntityManager) {
-        this.appRepository = new GenericRepository(App, manager);
-        this.userRepository = new GenericRepository(User, manager);
-        this.tagRepository = new GenericRepository(Tag, manager);
-        this.linkRepository = new GenericRepository(Link, manager);
-        this.linkTypeRepository = new GenericRepository(LinkType, manager);
+  constructor(private manager: EntityManager) {
+    this.appRepository = new GenericRepository(App, manager);
+    this.userRepository = new GenericRepository(User, manager);
+    this.tagRepository = new GenericRepository(Tag, manager);
+    this.linkRepository = new GenericRepository(Link, manager);
+    this.linkTypeRepository = new GenericRepository(LinkType, manager);
+  }
+
+  /**
+   *  Calculate the average rating and round to the nearest 0.5 increment
+   */
+  private getAverageRating(mezonApp: App): number {
+    if (!mezonApp.ratings.length) return 0;
+
+    const totalScore = mezonApp.ratings.reduce(
+      (sum, rating) => sum + rating.score,
+      0,
+    );
+    const averageScore = totalScore / mezonApp.ratings.length;
+
+    return Math.round(averageScore * 2) / 2;
+  }
+
+  async getMezonAppDetail(query: RequestWithId) {
+    const mezonApp = await this.appRepository.findById(query.id, [
+      "tags",
+      "socialLinks",
+      "socialLinks.type",
+      "ratings",
+    ]);
+
+    if (!mezonApp || mezonApp.status !== AppStatus.PUBLISHED) {
+      return new Result({ data: {} });
     }
 
-    /**
-     *  Calculate the average rating and round to the nearest 0.5 increment
-     */
-    private getAverageRating(mezonApp: App): number {
-        if (!mezonApp.ratings.length) return 0;
+    const owner = await this.userRepository.findById(mezonApp.ownerId);
 
-        const totalScore = mezonApp.ratings.reduce((sum, rating) => sum + rating.score, 0);
-        const averageScore = totalScore / mezonApp.ratings.length;
+    const detail = Mapper(GetMezonAppDetailsResponse, mezonApp);
 
-        return Math.round(averageScore * 2) / 2;
+    detail.rateScore = this.getAverageRating(mezonApp);
+    detail.owner = {
+      id: owner.id,
+      name: owner.name,
+    };
+    detail.tags = mezonApp.tags.map((tag) => ({ id: tag.id, name: tag.name }));
+    detail.socialLinks = mezonApp.socialLinks.map((link) => ({
+      id: link.id,
+      url: link.url,
+      icon: link.type.icon ?? "",
+    }));
+
+    return new Result({
+      data: detail,
+    });
+  }
+
+  async getRelatedMezonApp(query: RequestWithId) {
+    const mezonApp = await this.appRepository.findById(query.id, ["tags"]);
+
+    if (!mezonApp || mezonApp.status !== AppStatus.PUBLISHED) {
+      return new Result({ data: [] });
     }
 
-    async getMezonAppDetail(query: RequestWithId) {
-        const mezonApp = await this.appRepository.findById(query.id, ["tags", "socialLinks", "socialLinks.type", "ratings"])
+    const tagIds = mezonApp.tags.map((tag) => tag.id);
+    if (tagIds.length === 0) return new Result({ data: [] });
 
-        if (!mezonApp || mezonApp.status !== AppStatus.PUBLISHED) {
-            return new Result({ data: {} })
-        }
+    const relatedMezonApps = await this.appRepository.getRepository().find({
+      where: {
+        tags: { id: In(tagIds) },
+        id: Not(query.id),
+        status: AppStatus.PUBLISHED,
+      },
+      withDeleted: false,
+      relations: ["tags", "ratings"],
+      take: 5,
+    });
 
-        const owner = await this.userRepository.findById(mezonApp.ownerId);
+    const res = relatedMezonApps.map((mezonApp) => {
+      const mappedMezonApp = Mapper(GetRelatedMezonAppResponse, mezonApp);
+      mappedMezonApp.rateScore = this.getAverageRating(mezonApp);
+      return mappedMezonApp;
+    });
 
-        const detail = Mapper(GetMezonAppDetailsResponse, mezonApp);
+    return new Result({ data: res });
+  }
 
-        detail.rateScore = this.getAverageRating(mezonApp)
-        detail.owner = {
-            id: owner.id,
-            name: owner.name,
-        }
-        detail.tags = mezonApp.tags.map(tag => ({ id: tag.id, name: tag.name }))
-        detail.socialLinks = mezonApp.socialLinks.map(link => ({ id: link.id, url: link.url, icon: link.type.icon ?? "" }))
+  async searchMezonApp(query: SearchMezonAppRequest) {
+    let whereCondition = undefined;
+    if (query.fieldId && query.field)
+      whereCondition = filterBuilder(
+        this.appRepository.getRepository().metadata,
+        query.field,
+        query.fieldId,
+      );
 
-        return new Result({
-            data: detail,
-        });
-    }
+    // Priorize to search by keyword if field and search exist at the same time.
+    if (query.search)
+      whereCondition = searchBuilder<App>({
+        keyword: query.search,
+        fields: ["name", "headline"],
+      });
 
-    async getRelatedMezonApp(query: RequestWithId) {
-        const mezonApp = await this.appRepository.findById(query.id, ["tags"]);
+    return paginate<App, SearchMezonAppResponse>(
+      () =>
+        this.appRepository.findMany({
+          ...query,
+          relations: ["ratings", "tags"],
+          where: () => ({
+            ...whereCondition,
+            status: AppStatus.PUBLISHED,
+          }),
+        }),
+      query.pageSize,
+      query.pageNumber,
+      (entity) => {
+        const mappedMezonApp = Mapper(SearchMezonAppResponse, entity);
+        mappedMezonApp.rateScore = this.getAverageRating(entity);
+        mappedMezonApp.tags = entity.tags.map((tag) => ({
+          id: tag.id,
+          name: tag.name,
+        }));
+        return mappedMezonApp;
+      },
+    );
+  }
 
-        if (!mezonApp || mezonApp.status !== AppStatus.PUBLISHED) {
-            return new Result({ data: [] });
-        }
+  async deleteMezonApp(req: RequestWithId) {
+    await this.appRepository.softDelete(req.id);
+    return new Result({});
+  }
 
-        const tagIds = mezonApp.tags.map(tag => tag.id);
-        if (tagIds.length === 0) return new Result({ data: [] });
+  async createMezonApp(ownerId: string, req: CreateMezonAppRequest) {
+    const { tagIds, socialLinks, ...appData } = req;
+    console.log("ownerId", ownerId);
 
-        const relatedMezonApps = await this.appRepository.getRepository().find({
+    // Fetch existing tags
+    const existingTags = tagIds?.length
+      ? await this.tagRepository.getRepository().findBy({ id: In(tagIds) })
+      : [];
+    const missingTagIds =
+      tagIds?.filter((id) => !existingTags.some((tag) => tag.id === id)) || [];
+    if (missingTagIds.length)
+      throw new BadRequestException(ErrorMessages.INVALID_TAGS);
+
+    let links: Link[] = [];
+    if (socialLinks && socialLinks.length > 0) {
+      links = await Promise.all(
+        socialLinks.map(async (socialLink) => {
+          // Check if linkType exist.
+          const linkType = await this.linkTypeRepository.findById(
+            socialLink.linkTypeId,
+          );
+          if (!linkType)
+            throw new BadRequestException(ErrorMessages.INVALID_LINK_TYPE);
+
+          let existingLink = await this.linkRepository.getRepository().findOne({
             where: {
-                tags: { id: In(tagIds) },
-                id: Not(query.id),
-                status: AppStatus.PUBLISHED
+              url: socialLink.url,
+              linkTypeId: socialLink.linkTypeId,
+              ownerId: ownerId,
             },
-            withDeleted: false,
-            relations: ["tags", "ratings"],
-            take: 5,
-        });
+          });
 
-        const res = relatedMezonApps.map(mezonApp => {
-            const mappedMezonApp = Mapper(GetRelatedMezonAppResponse, mezonApp);
-            mappedMezonApp.rateScore = this.getAverageRating(mezonApp);
-            return mappedMezonApp;
-        })
+          // If url is not exist, create a new one.
+          if (!existingLink) {
+            existingLink = await this.linkRepository.create({
+              url: socialLink.url,
+              type: linkType,
+              ownerId: ownerId,
+            });
+          }
 
-        return new Result({ data: res });
+          return existingLink;
+        }),
+      );
     }
 
-    async searchMezonApp(query: SearchMezonAppRequest) {
-        let whereCondition = undefined
-        if (query.fieldId && query.field)
-            whereCondition = filterBuilder(this.appRepository.getRepository().metadata, query.field, query.fieldId)
+    return await this.appRepository.create({
+      ...appData,
+      ownerId: ownerId,
+      tags: existingTags,
+      socialLinks: links,
+    });
+  }
 
-        // Priorize to search by keyword if field and search exist at the same time.
-        if (query.search)
-            whereCondition = searchBuilder<App>({ keyword: query.search, fields: ["name", "headline"] })
+  async updateMezonApp(req: UpdateMezonAppRequest) {
+    const app = await this.appRepository.findById(req.id, [
+      "tags",
+      "socialLinks",
+    ]);
 
-        return paginate<App, SearchMezonAppResponse>(
-            () => this.appRepository.findMany(
-                {
-                    ...query,
-                    relations: ["ratings", "tags"],
-                    where: () => ({
-                        ...whereCondition,
-                        status: AppStatus.PUBLISHED
-                    })
-                }),
-            query.pageSize,
-            query.pageNumber,
-            (entity) => {
-                const mappedMezonApp = Mapper(SearchMezonAppResponse, entity);
-                mappedMezonApp.rateScore = this.getAverageRating(entity);
-                mappedMezonApp.tags = entity.tags.map(tag => ({ id: tag.id, name: tag.name }))
-                return mappedMezonApp;
+    if (!app) {
+      throw new BadRequestException(ErrorMessages.NOT_FOUND_MSG);
+    }
+
+    const { tagIds, socialLinks, ...updateData } = req;
+
+    let tags = app.tags;
+    let links = app.socialLinks;
+
+    if (tagIds) {
+      const existingTags = await this.tagRepository
+        .getRepository()
+        .findBy({ id: In(tagIds) });
+      const missingTagIds = tagIds.filter(
+        (id) => !existingTags.some((tag) => tag.id === id),
+      );
+
+      if (missingTagIds.length) {
+        throw new BadRequestException(ErrorMessages.INVALID_TAGS);
+      }
+
+      tags = existingTags;
+    }
+
+    if (socialLinks && socialLinks.length > 0) {
+      links = await Promise.all(
+        socialLinks.map(async (socialLink) => {
+          // Check if linkType exist.
+          const linkType = await this.linkTypeRepository.findById(
+            socialLink.linkTypeId,
+          );
+          if (!linkType)
+            throw new BadRequestException(ErrorMessages.INVALID_LINK_TYPE);
+
+          let existingLink = await this.linkRepository.getRepository().findOne({
+            where: {
+              url: socialLink.url,
+              linkTypeId: socialLink.linkTypeId,
+              ownerId: app.ownerId,
             },
-        );
+          });
+          // If url is not exist, create a new one.
+          if (!existingLink) {
+            existingLink = await this.linkRepository.create({
+              url: socialLink.url,
+              type: linkType,
+              ownerId: app.ownerId,
+            });
+          }
+
+          return existingLink;
+        }),
+      );
     }
 
-    async deleteMezonApp(req: RequestWithId) {
-        await this.appRepository.softDelete(req.id)
-        return new Result({})
-    }
+    this.appRepository
+      .getRepository()
+      .merge(app, { ...updateData, tags, socialLinks: links });
 
-    async createMezonApp(ownerId: string, req: CreateMezonAppRequest) {
-        const { tagIds, socialLinks, ...appData } = req;
+    return this.appRepository.getRepository().save(app);
+  }
 
-        // Fetch existing tags
-        const existingTags = tagIds?.length ? await this.tagRepository.getRepository().findBy({ id: In(tagIds) }) : [];
-        const missingTagIds = tagIds?.filter(id => !existingTags.some(tag => tag.id === id)) || [];
-        if (missingTagIds.length)
-            throw new BadRequestException(ErrorMessages.INVALID_TAGS);
+  async listAdminMezonApp(query: SearchMezonAppRequest) {
+    let whereCondition = undefined;
+    if (query.fieldId && query.field)
+      whereCondition = filterBuilder(
+        this.appRepository.getRepository().metadata,
+        query.field,
+        query.fieldId,
+      );
 
-        let links: Link[] = []
-        if (socialLinks && socialLinks.length > 0) {
-            links = await Promise.all(socialLinks.map(async (socialLink) => {
-                // Check if linkType exist.
-                const linkType = await this.linkTypeRepository.findById(socialLink.linkTypeId);
-                if (!linkType) throw new BadRequestException(ErrorMessages.INVALID_LINK_TYPE);
+    // Priorize to search by keyword if field and search exist at the same time.
+    if (query.search)
+      whereCondition = searchBuilder<App>({
+        keyword: query.search,
+        fields: ["name", "headline"],
+      });
 
-                let existingLink = await this.linkRepository.getRepository().findOne({
-                    where: {
-                        url: socialLink.url,
-                        linkTypeId: socialLink.linkTypeId,
-                        ownerId: ownerId
-                    }
-                });
+    return paginate<App, SearchMezonAppResponse>(
+      () =>
+        this.appRepository.findMany({
+          ...query,
+          relations: ["ratings", "tags"],
+          where: () => whereCondition,
+        }),
+      query.pageSize,
+      query.pageNumber,
+      (entity) => {
+        const mappedMezonApp = Mapper(SearchMezonAppResponse, entity);
+        mappedMezonApp.rateScore = this.getAverageRating(entity);
+        mappedMezonApp.tags = entity.tags.map((tag) => ({
+          id: tag.id,
+          name: tag.name,
+        }));
+        return mappedMezonApp;
+      },
+    );
+  }
 
-                // If url is not exist, create a new one.
-                if (!existingLink) {
-                    existingLink = await this.linkRepository.create({
-                        url: socialLink.url,
-                        type: linkType,
-                        ownerId: ownerId
-                    });
-                }
+  async getMyApp(userId: string, query: SearchMezonAppRequest) {
+    let whereCondition = undefined;
+    if (query.fieldId && query.field)
+      whereCondition = filterBuilder(
+        this.appRepository.getRepository().metadata,
+        query.field,
+        query.fieldId,
+      );
 
-                return existingLink;
-            }));
-        }
+    // Priorize to search by keyword if field and search exist at the same time.
+    if (query.search)
+      whereCondition = searchBuilder<App>({
+        keyword: query.search,
+        fields: ["name", "headline"],
+      });
 
-        return await this.appRepository.create({
-            ...appData,
-            ownerId: ownerId,
-            tags: existingTags,
-            socialLinks: links
-        });
-    }
-
-    async updateMezonApp(req: UpdateMezonAppRequest) {
-        const app = await this.appRepository.findById(req.id, ["tags", "socialLinks"]);
-
-        if (!app) {
-            throw new BadRequestException(ErrorMessages.NOT_FOUND_MSG);
-        }
-
-        const { tagIds, socialLinks, ...updateData } = req;
-
-        let tags = app.tags;
-        let links = app.socialLinks;
-
-        if (tagIds) {
-            const existingTags = await this.tagRepository.getRepository().findBy({ id: In(tagIds) });
-            const missingTagIds = tagIds.filter(id => !existingTags.some(tag => tag.id === id));
-
-            if (missingTagIds.length) {
-                throw new BadRequestException(ErrorMessages.INVALID_TAGS);
-            }
-
-            tags = existingTags;
-        }
-
-        if (socialLinks && socialLinks.length > 0) {
-            links = await Promise.all(socialLinks.map(async (socialLink) => {
-                // Check if linkType exist.
-                const linkType = await this.linkTypeRepository.findById(socialLink.linkTypeId);
-                if (!linkType) throw new BadRequestException(ErrorMessages.INVALID_LINK_TYPE);
-
-                let existingLink = await this.linkRepository.getRepository().findOne({
-                    where: {
-                        url: socialLink.url,
-                        linkTypeId: socialLink.linkTypeId,
-                        ownerId: app.ownerId
-                    }
-                });
-                // If url is not exist, create a new one.
-                if (!existingLink) {
-                    existingLink = await this.linkRepository.create({
-                        url: socialLink.url,
-                        type: linkType,
-                        ownerId: app.ownerId
-                    });
-                }
-
-                return existingLink;
-            }));
-        }
-
-        this.appRepository.getRepository().merge(app, { ...updateData, tags, socialLinks: links });
-
-        return this.appRepository.getRepository().save(app);
-    }
-
-    async listAdminMezonApp(query: SearchMezonAppRequest) {
-        let whereCondition = undefined
-        if (query.fieldId && query.field)
-            whereCondition = filterBuilder(this.appRepository.getRepository().metadata, query.field, query.fieldId)
-
-        // Priorize to search by keyword if field and search exist at the same time.
-        if (query.search)
-            whereCondition = searchBuilder<App>({ keyword: query.search, fields: ["name", "headline"] })
-
-        return paginate<App, SearchMezonAppResponse>(
-            () => this.appRepository.findMany(
-                {
-                    ...query,
-                    relations: ["ratings", "tags"],
-                    where: () => whereCondition
-                }),
-            query.pageSize,
-            query.pageNumber,
-            (entity) => {
-                const mappedMezonApp = Mapper(SearchMezonAppResponse, entity);
-                mappedMezonApp.rateScore = this.getAverageRating(entity);
-                mappedMezonApp.tags = entity.tags.map(tag => ({ id: tag.id, name: tag.name }))
-                return mappedMezonApp;
-            },
-        );
-    }
-
-    async getMyApp(userId: string, query: SearchMezonAppRequest) {
-        let whereCondition = undefined
-        if (query.fieldId && query.field)
-            whereCondition = filterBuilder(this.appRepository.getRepository().metadata, query.field, query.fieldId)
-
-        // Priorize to search by keyword if field and search exist at the same time.
-        if (query.search)
-            whereCondition = searchBuilder<App>({ keyword: query.search, fields: ["name", "headline"] })
-
-        return paginate<App, SearchMezonAppResponse>(
-            () => this.appRepository.findMany(
-                {
-                    ...query,
-                    relations: ["ratings", "tags"],
-                    where: () => ({
-                        ...whereCondition,
-                        ownerId: userId
-                    })
-                }),
-            query.pageSize,
-            query.pageNumber,
-            (entity) => {
-                const mappedMezonApp = Mapper(SearchMezonAppResponse, entity);
-                mappedMezonApp.rateScore = this.getAverageRating(entity);
-                mappedMezonApp.tags = entity.tags.map(tag => ({ id: tag.id, name: tag.name }))
-                return mappedMezonApp;
-            },
-        );
-    }
+    return paginate<App, SearchMezonAppResponse>(
+      () =>
+        this.appRepository.findMany({
+          ...query,
+          relations: ["ratings", "tags"],
+          where: () => ({
+            ...whereCondition,
+            ownerId: userId,
+          }),
+        }),
+      query.pageSize,
+      query.pageNumber,
+      (entity) => {
+        const mappedMezonApp = Mapper(SearchMezonAppResponse, entity);
+        mappedMezonApp.rateScore = this.getAverageRating(entity);
+        mappedMezonApp.tags = entity.tags.map((tag) => ({
+          id: tag.id,
+          name: tag.name,
+        }));
+        return mappedMezonApp;
+      },
+    );
+  }
 }

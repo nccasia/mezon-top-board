@@ -9,13 +9,11 @@ import { useLazyTagControllerGetTagsQuery } from '@app/services/api/tag/tag'
 import { useEffect } from 'react'
 import { useMezonAppSearch } from '@app/hook/useSearch'
 import { useLazyUserControllerGetUserDetailsQuery } from '@app/services/api/user/user'
-import {
-  useLazyMezonAppControllerGetMyAppQuery,
-  useLazyMezonAppControllerSearchMezonAppQuery
-} from '@app/services/api/mezonApp/mezonApp'
+import { useLazyMezonAppControllerGetMyAppQuery } from '@app/services/api/mezonApp/mezonApp'
 import { useSelector } from 'react-redux'
 import { RootState } from '@app/store'
 import { IMezonAppStore } from '@app/store/mezonApp'
+import { IAuthStore } from '@app/store/auth'
 
 function ProfilePage() {
   const navigate = useNavigate()
@@ -24,6 +22,7 @@ function ProfilePage() {
   const { handleSearch } = useMezonAppSearch(1, 5)
   const [getMyApp] = useLazyMezonAppControllerGetMyAppQuery()
   const { mezonAppOfUser } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
+  const { isLogin } = useSelector<RootState, IAuthStore>((s) => s.auth)
 
   const getData = async () => {
     const userRes = await getUserInfo().unwrap()
@@ -41,8 +40,13 @@ function ProfilePage() {
   }
 
   useEffect(() => {
+    if (!isLogin) {
+      navigate('/')
+      return
+    }
+
     getData()
-  }, [])
+  }, [isLogin])
 
   return (
     <div className='pt-8 pb-12 w-[75%] m-auto'>

@@ -1,3 +1,4 @@
+import { HttpResponse } from '@app/types/API.types'
 import { api } from '../../apiInstance'
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
@@ -20,11 +21,9 @@ const injectedRtkApi = api.injectEndpoints({
         }
       })
     }),
-    mediaControllerCreateMedia: build.mutation<MediaControllerCreateMediaApiResponse, MediaControllerCreateMediaApiArg>(
-      {
-        query: (queryArg) => ({ url: `/api/media`, method: 'POST', body: queryArg.createMediaRequest })
-      }
-    ),
+    mediaControllerCreateMedia: build.mutation<MediaControllerCreateMediaApiResponse, FormData>({
+      query: (queryArg) => ({ url: `/api/media`, method: 'POST', body: queryArg })
+    }),
     mediaControllerDeleteMedia: build.mutation<MediaControllerDeleteMediaApiResponse, MediaControllerDeleteMediaApiArg>(
       {
         query: (queryArg) => ({ url: `/api/media`, method: 'DELETE', body: queryArg.deleteMediaRequest })
@@ -45,7 +44,7 @@ export type MediaControllerGetMediaApiResponse = unknown
 export type MediaControllerGetMediaApiArg = {
   id: string
 }
-export type MediaControllerCreateMediaApiResponse = unknown
+export type MediaControllerCreateMediaApiResponse = HttpResponse<UploadedFile>
 export type MediaControllerCreateMediaApiArg = {
   createMediaRequest: CreateMediaRequest
 }
@@ -56,6 +55,18 @@ export type MediaControllerDeleteMediaApiArg = {
 export type CreateMediaRequest = {
   file: Blob
 }
+
+export type UploadedFile = {
+  fileName: string
+  mimeType: string
+  filePath: string
+  ownerId: string
+  id: string
+  createdAt: string
+  updatedAt: string
+  deletedAt: string | null
+}
+
 export type DeleteMediaRequest = {
   id: string
 }
