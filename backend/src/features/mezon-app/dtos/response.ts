@@ -18,6 +18,10 @@ export class GetMezonAppDetailsResponse {
 
     @Expose()
     @ApiProperty()
+    public installLink: string;
+
+    @Expose()
+    @ApiProperty()
     public description: string;
 
     @Expose()
@@ -60,6 +64,10 @@ export class SearchMezonAppResponse {
 
     @Expose()
     @ApiProperty()
+    public installLink: string;
+
+    @Expose()
+    @ApiProperty()
     public featuredImage: string;
 
     @Expose()
@@ -86,6 +94,7 @@ export class MezonAppInAppReviewResponse extends PickType(GetMezonAppDetailsResp
     "id",
     "name",
     "description",
+    "installLink",
     "headline",
     "featuredImage",
     "rateScore",

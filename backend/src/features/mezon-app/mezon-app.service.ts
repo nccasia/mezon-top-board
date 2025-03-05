@@ -63,7 +63,7 @@ export class MezonAppService {
       "ratings",
     ]);
 
-    if (!mezonApp || mezonApp.status !== AppStatus.PUBLISHED) {
+    if (!mezonApp) {
       return new Result({ data: {} });
     }
 

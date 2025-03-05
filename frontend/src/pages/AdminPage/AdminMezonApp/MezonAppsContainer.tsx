@@ -25,6 +25,7 @@ const MezonAppsContainer = () => {
         onClose={() => setIsEditModalVisible(false)}
       />
     </>
-  )};
-  
+  )
+};
+
 export default MezonAppsContainer

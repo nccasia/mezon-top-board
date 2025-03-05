@@ -11,7 +11,7 @@ import { CreateAppReviewRequest, GetAppReviewRequest, UpdateAppReviewRequest } f
 import { ReviewHistoryService } from "./review-history.service";
 
 @Controller("review-history")
-@ApiTags("Review history")
+@ApiTags("Review History")
 export class ReviewHistoryController {
     constructor(
         private readonly appReviewService: ReviewHistoryService,

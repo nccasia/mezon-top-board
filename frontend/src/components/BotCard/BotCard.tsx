@@ -1,5 +1,6 @@
 import { UploadOutlined } from '@ant-design/icons'
 import { avatarBotDefault } from '@app/assets'
+import { AppStatus } from '@app/enums/AppStatus.enum'
 import Button from '@app/mtb-ui/Button'
 import MtbRate from '@app/mtb-ui/Rate/Rate'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
@@ -11,7 +12,8 @@ import { useNavigate } from 'react-router-dom'
 function BotCard({ readonly = false, data }: IBotCardProps) {
   const navigate = useNavigate()
   const handleInvite = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation()
+    e.stopPropagation();
+    window.open(data?.installLink, '_blank')
   }
   const handleShare = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
@@ -33,6 +35,7 @@ function BotCard({ readonly = false, data }: IBotCardProps) {
           <div className='flex flex-col gap-3'>
             <MtbTypography variant='h4'>{data?.name}</MtbTypography>
             <div className='flex gap-1'>
+              {data?.status !== AppStatus.PUBLISHED && (<Tag color='red'>UNPUBLISHED</Tag>)}
               <MtbRate readonly={readonly} value={data?.rateScore}></MtbRate>
             </div>
             <div className='flex gap-2'>

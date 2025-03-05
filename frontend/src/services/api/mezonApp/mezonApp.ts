@@ -173,11 +173,12 @@ export type GetMezonAppDetailsResponse = {
   description: string
   headline: string
   featuredImage: string
-  status: string
+  status: number
   owner: OwnerInMezonAppDetailResponse
   tags: TagInMezonAppDetailResponse[]
   socialLinks: SocialLinkInMezonAppDetailResponse[]
-  rateScore: number
+  rateScore: number;
+  installLink: string;
 }
 export type RequestWithId = {
   id: string

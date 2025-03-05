@@ -49,6 +49,10 @@ const config: ConfigFile = {
     //   filterEndpoints: filterByTag('User'),
     //   exportName: 'userService'
     // },
+    // './api/reviewHistory/reviewHistory.ts': {
+    //   filterEndpoints: filterByTag('Review History'),
+    //   exportName: 'reviewHistoryService'
+    // },
   },
 
   hooks: {

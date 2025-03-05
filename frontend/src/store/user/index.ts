@@ -16,6 +16,7 @@ const userSlice = createSlice({
   extraReducers(builder) {
     builder.addMatcher(userService.endpoints.userControllerGetUserDetails.matchFulfilled, (state, { payload }) => {
       state.userInfo = payload.data
+      state.userInfo.name = payload.data.name || payload.data.email.split('@')[0]
     })
   }
 })

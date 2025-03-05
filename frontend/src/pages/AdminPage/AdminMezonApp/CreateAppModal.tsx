@@ -4,43 +4,43 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 
 const CreateAppModal = () => {
-    const [isModalVisible, setIsModalVisible] = useState(false);
-    const [form] = Form.useForm();
-    const [createMezonApp, { isLoading }] = useMezonAppControllerCreateMezonAppMutation();
-  
-    const handleOpen = () => {
-      form.resetFields();
-      setIsModalVisible(true);
-    };
-  
-    const handleSave = async () => {
-      try {
-        const values = await form.validateFields();
-        await createMezonApp({ createMezonAppRequest: values }).unwrap();
-        toast.success("App created successfully");
-        setIsModalVisible(false);
-      } catch (error: any) {
-        toast.error(error?.data?.message || "Failed to create app");
-      }
-    };
-  
-    return (
-      <>
-        <Button type="primary" onClick={handleOpen}>Create App</Button>
-  
-        <Modal
-          title="Create New App"
-          open={isModalVisible}
-          onCancel={() => setIsModalVisible(false)}
-          footer={[
-            <Button key="cancel" onClick={() => setIsModalVisible(false)}>Cancel</Button>,
-            <Button key="save" type="primary" loading={isLoading} onClick={handleSave}>Save</Button>,
-          ]}
-          width={700}
-        >
-          <div className="max-h-[60vh] overflow-y-auto">
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [form] = Form.useForm();
+  const [createMezonApp, { isLoading }] = useMezonAppControllerCreateMezonAppMutation();
+
+  const handleOpen = () => {
+    form.resetFields();
+    setIsModalVisible(true);
+  };
+
+  const handleSave = async () => {
+    try {
+      const values = await form.validateFields();
+      await createMezonApp({ createMezonAppRequest: values }).unwrap();
+      toast.success("App created successfully");
+      setIsModalVisible(false);
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to create app");
+    }
+  };
+
+  return (
+    <>
+      <Button type="primary" onClick={handleOpen}>Create App</Button>
+
+      <Modal
+        title="Create New App"
+        open={isModalVisible}
+        onCancel={() => setIsModalVisible(false)}
+        footer={[
+          <Button key="cancel" onClick={() => setIsModalVisible(false)}>Cancel</Button>,
+          <Button key="save" type="primary" loading={isLoading} onClick={handleSave}>Save</Button>,
+        ]}
+        width={700}
+      >
+        <div className="max-h-[60vh] overflow-y-auto">
           <Form form={form} layout="horizontal" labelCol={{ span: 4 }}
-        wrapperCol={{ span: 20 }} className="max-w-full">
+            wrapperCol={{ span: 20 }} className="max-w-full">
             <Form.Item name="name" label="App Name" rules={[{ required: true, message: "App Name is required" }]}>
               <Input />
             </Form.Item>
@@ -51,9 +51,9 @@ const CreateAppModal = () => {
               <Input.TextArea rows={3} />
             </Form.Item>
             <Form.Item name="installLink" label="Install Link" rules={[
-    { type: "url", message: "Please enter a valid URL" }
-  ]} validateTrigger="onBlur">
-              <Input placeholder="https://example.com"/>
+              { type: "url", message: "Please enter a valid URL" }
+            ]} validateTrigger="onBlur">
+              <Input placeholder="https://example.com" />
             </Form.Item>
             <Form.Item name="ownerId" label="Owner ID" rules={[{ required: true, message: "Owner ID is required" }]}>
               <Input />
@@ -66,9 +66,9 @@ const CreateAppModal = () => {
               <Input />
             </Form.Item>
             <Form.Item name="supportUrl" label="Support Url" rules={[
-    { type: "url", message: "Please enter a valid URL" }, // Built-in URL validator
-  ]} validateTrigger="onBlur">
-              <Input placeholder="https://support.example.com"/>
+              { type: "url", message: "Please enter a valid URL" }, // Built-in URL validator
+            ]} validateTrigger="onBlur">
+              <Input placeholder="https://support.example.com" />
             </Form.Item>
             <Form.Item name="remark" label="Remark">
               <Input />
@@ -77,10 +77,10 @@ const CreateAppModal = () => {
               <Input placeholder="Paste Image URL" />
             </Form.Item>
           </Form>
-          </div>
-        </Modal>
-      </>
-    );
-  };
-  
+        </div>
+      </Modal>
+    </>
+  );
+};
+
 export default CreateAppModal

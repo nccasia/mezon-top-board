@@ -7,7 +7,8 @@ import { createSlice } from '@reduxjs/toolkit'
 import { mezonAppExtraReducers } from './extraReducer'
 
 export interface IMezonAppStore {
-  mezonApp: MezonAppControllerSearchMezonAppApiResponse
+  mezonApp: MezonAppControllerSearchMezonAppApiResponse;
+  mezonAppOfAdmin: MezonAppControllerSearchMezonAppApiResponse;
   mezonAppDetail: GetMezonAppDetailsResponse
   relatedMezonApp: GetRelatedMezonAppResponse[]
   mezonAppOfUser: MezonAppControllerSearchMezonAppApiResponse
@@ -15,6 +16,7 @@ export interface IMezonAppStore {
 
 const initialState: IMezonAppStore = {
   mezonApp: {} as MezonAppControllerSearchMezonAppApiResponse,
+  mezonAppOfAdmin: {} as MezonAppControllerSearchMezonAppApiResponse,
   mezonAppDetail: {} as GetMezonAppDetailsResponse,
   relatedMezonApp: [],
   mezonAppOfUser: {} as MezonAppControllerSearchMezonAppApiResponse

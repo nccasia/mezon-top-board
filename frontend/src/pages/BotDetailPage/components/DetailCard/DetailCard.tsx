@@ -1,7 +1,7 @@
 import { DollarOutlined, InfoCircleOutlined, RiseOutlined, TagOutlined, UserOutlined } from '@ant-design/icons'
 import { Tag } from 'antd'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
-import avatar from '@app/assets/images/0e54d87446f106d1fd58385295ae9deb.png'
+import avatar from '@app/assets/images/default-user.webp'
 import { useSelector } from 'react-redux'
 import { RootState } from '@app/store'
 import { IMezonAppStore } from '@app/store/mezonApp'

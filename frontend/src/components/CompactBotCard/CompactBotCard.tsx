@@ -14,12 +14,12 @@ function CompactBotCard({ data }: ICompactBotCardProps) {
   const imgUrl = data?.featuredImage ? getUrlImage(data.featuredImage) : avatarBotDefault
   return (
     <div className='shadow-sm rounded-2xl p-4 bg-white cursor-pointer' onClick={handleNavigateDetail}>
-      <div className='pl-10 pr-10 rounded-2xl bg-red-300'>
+      <div className='pl-10 pr-10 rounded-2xl'>
         <div className='w-20 m-auto'>
           <img src={imgUrl} alt='' className='rounded-full object-cover w-full' width={'100%'} />
         </div>
       </div>
-      <p className='pt-3 pb-3'>{data?.name || 'Name'}</p>
+      <p className='pt-3 pb-3 font-black'>{data?.name || 'Name'}</p>
       <div className='flex justify-between items-center'>
         <p>
           <StarOutlined /> {data?.rateScore || 0}

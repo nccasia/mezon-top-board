@@ -1,6 +1,10 @@
-import { Layout, Menu, Image, Breadcrumb } from "antd";
-import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { adminRoutePaths } from '@app/navigation/adminRoutePaths';
+import { RootState } from "@app/store";
+import { IAuthStore } from "@app/store/auth";
+import { Breadcrumb, Image, Layout, Menu } from "antd";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import styles from "./AdminLayout.module.scss"; // Import the styles
 
 const { Header, Footer, Sider, Content } = Layout;
@@ -8,6 +12,15 @@ const { Header, Footer, Sider, Content } = Layout;
 function AdminLayout() {
   const location = useLocation();
   const pathSnippets = location.pathname.split("/").filter((i) => i);
+  const { isLogin } = useSelector<RootState, IAuthStore>((s) => s.auth)
+
+  // Check auth token
+  useEffect(() => {
+    if (!isLogin) {
+      window.location.href = '/';
+    }
+  }, []);
+
   return (
     <Layout className={styles["admin-layout"]}>
       <Sider width={250} className={styles.sider}>

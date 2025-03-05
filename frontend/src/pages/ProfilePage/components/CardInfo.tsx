@@ -1,7 +1,7 @@
 import { CreditCardOutlined, InfoCircleOutlined, SettingOutlined, UserAddOutlined } from '@ant-design/icons'
 import { TypographyStyle } from '@app/enums/typography.enum'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
-import avatar from '@app/assets/images/0e54d87446f106d1fd58385295ae9deb.png'
+import avatar from '@app/assets/images/default-user.webp'
 import { useSelector } from 'react-redux'
 import { RootState } from '@app/store'
 import { IUserStore } from '@app/store/user'
