@@ -1,10 +1,9 @@
 import { RiseOutlined, StarOutlined } from '@ant-design/icons'
-import avatar from '../../assets/images/0e54d87446f106d1fd58385295ae9deb.png'
-import { GetRelatedMezonAppResponse } from '@app/services/api/mezonApp/mezonApp'
 import { useNavigate } from 'react-router-dom'
-interface ICompactBotCardProps {
-  data?: GetRelatedMezonAppResponse
-}
+import { ICompactBotCardProps } from '@app/types/Botcard.types'
+import { getUrlImage } from '@app/utils/stringHelper'
+import { avatarBotDefault } from '@app/assets'
+
 function CompactBotCard({ data }: ICompactBotCardProps) {
   const navigate = useNavigate()
   const handleNavigateDetail = () => {
@@ -12,11 +11,12 @@ function CompactBotCard({ data }: ICompactBotCardProps) {
       navigate(`/${data?.id}`)
     }
   }
+  const imgUrl = data?.featuredImage ? getUrlImage(data.featuredImage) : avatarBotDefault
   return (
     <div className='shadow-sm rounded-2xl p-4 bg-white cursor-pointer' onClick={handleNavigateDetail}>
       <div className='pl-10 pr-10 rounded-2xl bg-red-300'>
         <div className='w-20 m-auto'>
-          <img src={data?.featuredImage || avatar} alt='' className='rounded-full object-cover w-full' width={'100%'} />
+          <img src={imgUrl} alt='' className='rounded-full object-cover w-full' width={'100%'} />
         </div>
       </div>
       <p className='pt-3 pb-3'>{data?.name || 'Name'}</p>

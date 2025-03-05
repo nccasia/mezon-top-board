@@ -1,8 +1,10 @@
 import { UploadOutlined } from '@ant-design/icons'
+import { avatarBotDefault } from '@app/assets'
 import Button from '@app/mtb-ui/Button'
 import MtbRate from '@app/mtb-ui/Rate/Rate'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import { IBotCardProps } from '@app/types/Botcard.types'
+import { getUrlImage } from '@app/utils/stringHelper'
 import { Tag } from 'antd'
 import { useNavigate } from 'react-router-dom'
 
@@ -14,18 +16,17 @@ function BotCard({ readonly = false, data }: IBotCardProps) {
   const handleShare = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
   }
+
+  const imgUrl = data?.featuredImage ? getUrlImage(data.featuredImage) : avatarBotDefault
+
   return (
     <div
       className='shadow-md pb-8 pt-8 px-8 border border-gray-300 relative rounded-xl cursor-pointer'
       onClick={() => navigate(`/${data?.id}`)}
     >
-      <div className='flex flex-col md:flex-row items-start gap-4'>
+      <div className='flex flex-col md:flex-row items-start gap-6'>
         <div className='w-32 md:w-48'>
-          <img
-            src={data?.featuredImage || 'https://placehold.co/200x200'}
-            alt='Bot'
-            className='w-full h-auto rounded-lg'
-          />
+          <img src={imgUrl} alt='Bot' className='w-full h-auto rounded-lg' />
         </div>
 
         <div className='flex-1'>

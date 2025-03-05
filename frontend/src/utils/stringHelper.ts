@@ -49,3 +49,7 @@ export const handleMapOption = (enums: Record<string, string>) => {
     label: value
   }))
 }
+
+export const getUrlImage = (path: string) => {
+  return `${process.env.REACT_APP_BACKEND_URL}/api${path}`;
+}

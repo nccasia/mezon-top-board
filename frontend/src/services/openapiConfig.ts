@@ -39,7 +39,7 @@ const config: ConfigFile = {
     // },
     // './api/mezonApp/mezonApp.ts': {
     //   filterEndpoints: filterByTag('MezonApp'),
-    //   exportName: 'tagService'
+    //   exportName: 'mezonAppService'
     // },
     // './api/linkType/linkType.ts': {
     //   filterEndpoints: filterByTag('LinkType'),

@@ -6,12 +6,18 @@ import Button from '@app/mtb-ui/Button'
 import { errorStatus } from '@app/constants/common.constant'
 import TextArea from 'antd/es/input/TextArea'
 import { useEffect, useMemo, useState } from 'react'
-import { CreateMezonAppRequest, useMezonAppControllerCreateMezonAppMutation } from '@app/services/api/mezonApp/mezonApp'
+import {
+  CreateMezonAppRequest,
+  SocialLinkDto,
+  useMezonAppControllerCreateMezonAppMutation
+} from '@app/services/api/mezonApp/mezonApp'
 import { useSelector } from 'react-redux'
 import { RootState } from '@app/store'
 import { ITagStore } from '@app/store/tag'
 import { ILinkTypeStore } from '@app/store/linkType'
-function AddBotForm() {
+import { IAddBotFormProps, ISocialLinksData } from '@app/types/Botcard.types'
+import { toast } from 'react-toastify'
+function AddBotForm({ onResetAvatar }: IAddBotFormProps) {
   const {
     control,
     handleSubmit,
@@ -23,20 +29,20 @@ function AddBotForm() {
   const [addBot] = useMezonAppControllerCreateMezonAppMutation()
   const { tagList } = useSelector<RootState, ITagStore>((s) => s.tag)
   const { linkTypeList } = useSelector<RootState, ILinkTypeStore>((s) => s.link)
-  const selectedSocialLink = watch('socialLinkIds')
-  const [socialLinks, setSocialLinks] = useState<{ icon: string; name: string; url: string; id: string }[]>([])
+  const selectedSocialLink = watch('socialLinks')
+  const [socialLinksData, setSocialLinks] = useState<ISocialLinksData[]>([])
 
   useEffect(() => {
-    setValue('socialLinkIds', [])
-  }, [socialLinks, setValue])
+    setValue('socialLinks', [])
+  }, [socialLinksData, setValue])
 
   const onSubmit = (data: CreateMezonAppRequest) => {
-    const formattedSocialLinks = socialLinks.map((link) => ({
+    const formattedSocialLinks = socialLinksData.map((link) => ({
       url: link.url,
       linkTypeId: link.id
     }))
 
-    const { socialLinkIds, ...restData } = data
+    const { socialLinks, ...restData } = data
 
     const addBotData = {
       ...restData,
@@ -44,6 +50,8 @@ function AddBotForm() {
     }
 
     addBot({ createMezonAppRequest: addBotData })
+    toast.success('Add new bot success')
+    onResetAvatar()
     reset()
   }
 
@@ -67,7 +75,7 @@ function AddBotForm() {
     const selectedSocialLinkValue = Array.isArray(selectedSocialLink) ? selectedSocialLink[0] : selectedSocialLink
     const selectedLink = optionsLink?.find((item) => item.value === selectedSocialLinkValue)
 
-    if (socialLinks.some((link) => link.name === selectedLink?.label)) return
+    if (socialLinksData.some((link) => link.name === selectedLink?.label)) return
 
     const defaultSocialLink = {
       icon: selectedLink?.icon || '',
@@ -76,11 +84,11 @@ function AddBotForm() {
       id: selectedLink?.value || ''
     }
 
-    setSocialLinks([...socialLinks, defaultSocialLink])
+    setSocialLinks([...socialLinksData, defaultSocialLink])
   }
 
   const removeLink = (id: string) => {
-    setSocialLinks(socialLinks.filter((link) => link.id !== id))
+    setSocialLinks(socialLinksData.filter((link) => link.id !== id))
   }
 
   const tagRender: SelectProps['tagRender'] = (props) => {
@@ -99,10 +107,10 @@ function AddBotForm() {
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>, id: string) => {
-    const index = socialLinks.findIndex((link) => link.id === id)
+    const index = socialLinksData.findIndex((link) => link.id === id)
     if (index === -1) return
 
-    const newLinks = [...socialLinks]
+    const newLinks = [...socialLinksData]
     newLinks[index].url = e.target.value
     setSocialLinks(newLinks)
   }
@@ -111,7 +119,7 @@ function AddBotForm() {
     console.log(`selected ${value}`)
   }
 
-  const handleSelectLink = (value: string[]) => {
+  const handleSelectLink = (value: SocialLinkDto[]) => {
     console.log(`Link ${value}`)
   }
 
@@ -206,7 +214,7 @@ function AddBotForm() {
             <div className='flex-1'>
               <Controller
                 control={control}
-                name='socialLinkIds'
+                name='socialLinks'
                 render={({ field }) => (
                   <Select
                     {...field}
@@ -228,8 +236,8 @@ function AddBotForm() {
               </Button>
             </div>
           </div>
-          {!!socialLinks.length &&
-            socialLinks.map((link, index) => (
+          {!!socialLinksData.length &&
+            socialLinksData.map((link, index) => (
               <div key={index} className='mt-4 flex gap-4'>
                 <Input
                   className='flex-1 border p-2 rounded'

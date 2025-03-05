@@ -5,13 +5,15 @@ export const mezonAppExtraReducers = (builder: ActionReducerMapBuilder<any>) => 
   builder
     .addMatcher(mezonAppService.endpoints.mezonAppControllerSearchMezonApp.matchFulfilled, (state, { payload }) => {
       state.mezonApp = payload
-      state.mezonAppOfUser = payload
     })
     .addMatcher(mezonAppService.endpoints.mezonAppControllerGetMezonAppDetail.matchFulfilled, (state, { payload }) => {
       state.mezonAppDetail = payload.data
     })
     .addMatcher(mezonAppService.endpoints.mezonAppControllerGetRelatedMezonApp.matchFulfilled, (state, { payload }) => {
       state.relatedMezonApp = payload.data
+    })
+    .addMatcher(mezonAppService.endpoints.mezonAppControllerGetMyApp.matchFulfilled, (state, { payload }) => {
+      state.mezonAppOfUser = payload
     })
     .addMatcher(mezonAppService.endpoints.mezonAppControllerDeleteMezonApp.matchFulfilled, (state, action) => {
       const deletedId = action.meta.arg.originalArgs.requestWithId.id;

@@ -2,6 +2,37 @@ import { HttpResponse } from '@app/types/API.types'
 import { api } from '../../apiInstance'
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
+    mezonAppControllerListAdminMezonApp: build.query<
+      MezonAppControllerListAdminMezonAppApiResponse,
+      MezonAppControllerListAdminMezonAppApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/mezon-app/admin-all`,
+        params: {
+          search: queryArg.search,
+          field: queryArg.field,
+          fieldId: queryArg.fieldId,
+          pageSize: queryArg.pageSize,
+          pageNumber: queryArg.pageNumber,
+          sortField: queryArg.sortField,
+          sortOrder: queryArg.sortOrder
+        }
+      })
+    }),
+    mezonAppControllerGetMyApp: build.query<MezonAppControllerGetMyAppApiResponse, MezonAppControllerGetMyAppApiArg>({
+      query: (queryArg) => ({
+        url: `/api/mezon-app/my-app`,
+        params: {
+          search: queryArg.search,
+          field: queryArg.field,
+          fieldId: queryArg.fieldId,
+          pageSize: queryArg.pageSize,
+          pageNumber: queryArg.pageNumber,
+          sortField: queryArg.sortField,
+          sortOrder: queryArg.sortOrder
+        }
+      })
+    }),
     mezonAppControllerGetMezonAppDetail: build.query<
       MezonAppControllerGetMezonAppDetailApiResponse,
       MezonAppControllerGetMezonAppDetailApiArg
@@ -49,9 +80,9 @@ const injectedRtkApi = api.injectEndpoints({
       query: (queryArg) => ({
         url: `/api/mezon-app/search`,
         params: {
-          search: queryArg?.search,
-          field: queryArg?.field,
-          fieldId: queryArg?.fieldId,
+          search: queryArg.search,
+          field: queryArg.field,
+          fieldId: queryArg.fieldId,
           pageSize: queryArg.pageSize,
           pageNumber: queryArg.pageNumber,
           sortField: queryArg.sortField,
@@ -63,6 +94,32 @@ const injectedRtkApi = api.injectEndpoints({
   overrideExisting: false
 })
 export { injectedRtkApi as mezonAppService }
+export type MezonAppControllerListAdminMezonAppApiResponse = unknown
+export type MezonAppControllerListAdminMezonAppApiArg = {
+  /** Keyword to search mezonApps by name or headline */
+  search?: string
+  /** A valid column of MezonApp (tags, ratings, socialLinks) */
+  field?: string
+  /** ID value of the field */
+  fieldId?: string
+  pageSize: number
+  pageNumber: number
+  sortField: string
+  sortOrder: 'ASC' | 'DESC'
+}
+export type MezonAppControllerGetMyAppApiResponse = unknown
+export type MezonAppControllerGetMyAppApiArg = {
+  /** Keyword to search mezonApps by name or headline */
+  search?: string
+  /** A valid column of MezonApp (tags, ratings, socialLinks) */
+  field?: string
+  /** ID value of the field */
+  fieldId?: string
+  pageSize: number
+  pageNumber: number
+  sortField: string
+  sortOrder: 'ASC' | 'DESC'
+}
 export type MezonAppControllerGetMezonAppDetailApiResponse = HttpResponse<GetMezonAppDetailsResponse>
 export type MezonAppControllerGetMezonAppDetailApiArg = {
   id: string
@@ -116,6 +173,7 @@ export type GetMezonAppDetailsResponse = {
   description: string
   headline: string
   featuredImage: string
+  status: string
   owner: OwnerInMezonAppDetailResponse
   tags: TagInMezonAppDetailResponse[]
   socialLinks: SocialLinkInMezonAppDetailResponse[]
@@ -134,12 +192,6 @@ export type LinkType = {
   icon: string
   links: Link[]
 }
-export type User = {
-  name: string
-  email: string
-  password: string
-  ratings: Rating[]
-}
 export type Rating = {
   appId: string
   userId: string
@@ -148,31 +200,46 @@ export type Rating = {
   user: User
   app: App
 }
-export type Developer = {
-  bio: string
-  socialLinks: Link[]
-  name: string
+export type Media = {
+  fileName: string
+  mimeType: string
+  filePath: string
+  ownerId: string
+  owner: User
+}
+export type User = {
+  name: string | null
   email: string
   password: string
+  role: Role
+  bio: string
   ratings: Rating[]
+  apps: App[]
+  links: Link[]
+  medias: Media[]
 }
 export type Link = {
   url: string
+  ownerId: string
+  showOnProfile: boolean
   linkTypeId: string
   type: LinkType
   apps: App[]
-  devs: Developer[]
+  owner: User
 }
 export type AppReviewHistory = {
   appId: string
-  reviewer: string
+  isApproved: boolean
+  reviewerId: string
   reviewedAt: string
   remark: string
   app: App
+  reviewer: User
 }
 export type App = {
   id?: string
   name: string
+  ownerId: string
   status: Status
   isAutoPublished: boolean
   installLink: string
@@ -180,13 +247,17 @@ export type App = {
   description: string
   prefix: string
   featuredImage: string
-  ownerId: string
   supportUrl: string
   remark: string
   tags: Tag[]
   socialLinks: Link[]
   reviewHistories: AppReviewHistory[]
   ratings: Rating[]
+  owner: User
+}
+export type SocialLinkDto = {
+  url?: string
+  linkTypeId?: string
 }
 export type CreateMezonAppRequest = {
   name: string
@@ -196,11 +267,10 @@ export type CreateMezonAppRequest = {
   description?: string
   prefix?: string
   featuredImage?: string
-  ownerId: string
   supportUrl?: string
   remark?: string
   tagIds?: string[]
-  socialLinkIds?: string[]
+  socialLinks?: SocialLinkDto[]
 }
 export type UpdateMezonAppRequest = {
   id: string
@@ -214,11 +284,12 @@ export type UpdateMezonAppRequest = {
   supportUrl?: string
   remark?: string
   tagIds?: string[]
-  socialLinkIds?: string[]
+  socialLinks?: SocialLinkDto[]
 }
 export type GetRelatedMezonAppResponse = {
   id: string
   name: string
+  status: string
   featuredImage: string
   rateScore: number
 }
@@ -228,7 +299,15 @@ export enum Status {
   $2 = 2,
   $3 = 3
 }
+export enum Role {
+  Admin = 'ADMIN',
+  Developer = 'DEVELOPER'
+}
 export const {
+  useMezonAppControllerListAdminMezonAppQuery,
+  useLazyMezonAppControllerListAdminMezonAppQuery,
+  useMezonAppControllerGetMyAppQuery,
+  useLazyMezonAppControllerGetMyAppQuery,
   useMezonAppControllerGetMezonAppDetailQuery,
   useLazyMezonAppControllerGetMezonAppDetailQuery,
   useMezonAppControllerDeleteMezonAppMutation,

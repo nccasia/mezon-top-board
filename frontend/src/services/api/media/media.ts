@@ -1,3 +1,4 @@
+import { HttpResponse } from '@app/types/API.types'
 import { api } from '../../apiInstance'
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
@@ -20,19 +21,12 @@ const injectedRtkApi = api.injectEndpoints({
         }
       })
     }),
-    mediaControllerCreateMedia: build.mutation<MediaControllerCreateMediaApiResponse, MediaControllerCreateMediaApiArg>(
-      {
-        query: (queryArg) => ({ url: `/api/media`, method: 'POST', body: queryArg.createMediaRequest })
-      }
-    ),
+    mediaControllerCreateMedia: build.mutation<MediaControllerCreateMediaApiResponse, FormData>({
+      query: (queryArg) => ({ url: `/api/media`, method: 'POST', body: queryArg })
+    }),
     mediaControllerDeleteMedia: build.mutation<MediaControllerDeleteMediaApiResponse, MediaControllerDeleteMediaApiArg>(
       {
         query: (queryArg) => ({ url: `/api/media`, method: 'DELETE', body: queryArg.deleteMediaRequest })
-      }
-    ),
-    mediaControllerUpdateMedia: build.mutation<MediaControllerUpdateMediaApiResponse, MediaControllerUpdateMediaApiArg>(
-      {
-        query: (queryArg) => ({ url: `/api/media`, method: 'PUT', body: queryArg.updateMediaRequest })
       }
     )
   }),
@@ -50,7 +44,7 @@ export type MediaControllerGetMediaApiResponse = unknown
 export type MediaControllerGetMediaApiArg = {
   id: string
 }
-export type MediaControllerCreateMediaApiResponse = unknown
+export type MediaControllerCreateMediaApiResponse = HttpResponse<UploadedFile>
 export type MediaControllerCreateMediaApiArg = {
   createMediaRequest: CreateMediaRequest
 }
@@ -58,19 +52,23 @@ export type MediaControllerDeleteMediaApiResponse = unknown
 export type MediaControllerDeleteMediaApiArg = {
   deleteMediaRequest: DeleteMediaRequest
 }
-export type MediaControllerUpdateMediaApiResponse = unknown
-export type MediaControllerUpdateMediaApiArg = {
-  updateMediaRequest: UpdateMediaRequest
-}
 export type CreateMediaRequest = {
-  name: string
+  file: Blob
 }
+
+export type UploadedFile = {
+  fileName: string
+  mimeType: string
+  filePath: string
+  ownerId: string
+  id: string
+  createdAt: string
+  updatedAt: string
+  deletedAt: string | null
+}
+
 export type DeleteMediaRequest = {
   id: string
-}
-export type UpdateMediaRequest = {
-  id: string
-  name: string
 }
 export const {
   useMediaControllerGetAllMediaQuery,
@@ -78,6 +76,5 @@ export const {
   useMediaControllerGetMediaQuery,
   useLazyMediaControllerGetMediaQuery,
   useMediaControllerCreateMediaMutation,
-  useMediaControllerDeleteMediaMutation,
-  useMediaControllerUpdateMediaMutation
+  useMediaControllerDeleteMediaMutation
 } = injectedRtkApi
