@@ -23,7 +23,7 @@ const footerLink = [
 ]
 function Footer() {
   return (
-    <div className='pt-10 pb-20 bg-gray-100'>
+    <div className='pt-10 pb-5 bg-gray-100'>
       <div className={`flex justify-around items-center pb-8`}>
         <div className='flex gap-4 items-center'>
           <MtbTypography variant='h5' customClassName='!mb-0 !text-gray-600'>Follow us</MtbTypography>
@@ -50,8 +50,8 @@ function Footer() {
       <Divider className='bg-gray-400' />
       <ul className='flex justify-center pt-10 gap-6'>{renderMenu(false)}</ul>
       <div className='flex flex-col items-center pt-8 gap-2'>
-        <MtbTypography variant='h5' customClassName='!mb-0 !text-gray-600' weight='normal'>Address</MtbTypography>
-        <MtbTypography variant='h5' customClassName='!mb-0 !text-gray-600' weight='normal'>License</MtbTypography>
+        <MtbTypography variant='p' customClassName='!mb-0 !text-gray-600' weight='normal'>Address: 2nd Floor, CT3 The Pride, To Huu st, Ha Dong District, Ha Noi City, Viet Nam</MtbTypography>
+        <MtbTypography variant='p' customClassName='!mb-0 !text-gray-600' weight='normal'>(+84) 2466874606</MtbTypography>
       </div>
     </div>
   )
