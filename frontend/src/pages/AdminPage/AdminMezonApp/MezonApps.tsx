@@ -51,7 +51,7 @@ const MezonApps = ({ onEdit }: { onEdit: (app: GetMezonAppDetailsResponse) => vo
             </Tooltip>
             <Popconfirm
             title="Are you sure you want to delete this app?"
-            onConfirm={() => handleDelete(record.id!)}
+            onConfirm={() => handleDelete(record.id)}
             okText="Yes"
             cancelText="No"
           >

@@ -3,9 +3,6 @@ import { Button, Form, Input, Modal } from 'antd'
 import { useEffect } from 'react'
 import { toast } from 'react-toastify'
 
-// interface EditModalProps {
-//   onUpdateSuccess: () => void; // Callback function for handling updates
-// }
 const EditModal = ({
   isVisible,
   selectedApp,
