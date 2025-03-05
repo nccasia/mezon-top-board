@@ -9,7 +9,10 @@ import { useLazyTagControllerGetTagsQuery } from '@app/services/api/tag/tag'
 import { useEffect } from 'react'
 import { useMezonAppSearch } from '@app/hook/useSearch'
 import { useLazyUserControllerGetUserDetailsQuery } from '@app/services/api/user/user'
-import { useLazyMezonAppControllerSearchMezonAppQuery } from '@app/services/api/mezonApp/mezonApp'
+import {
+  useLazyMezonAppControllerGetMyAppQuery,
+  useLazyMezonAppControllerSearchMezonAppQuery
+} from '@app/services/api/mezonApp/mezonApp'
 import { useSelector } from 'react-redux'
 import { RootState } from '@app/store'
 import { IMezonAppStore } from '@app/store/mezonApp'
@@ -19,14 +22,14 @@ function ProfilePage() {
   const [getTagList] = useLazyTagControllerGetTagsQuery()
   const [getUserInfo] = useLazyUserControllerGetUserDetailsQuery()
   const { handleSearch } = useMezonAppSearch(1, 5)
-  const [getMezonAppOfUser] = useLazyMezonAppControllerSearchMezonAppQuery()
+  const [getMyApp] = useLazyMezonAppControllerGetMyAppQuery()
   const { mezonAppOfUser } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
 
   const getData = async () => {
     const userRes = await getUserInfo().unwrap()
     await getTagList()
     if (userRes?.data?.id) {
-      getMezonAppOfUser({
+      getMyApp({
         field: 'ownerId',
         fieldId: userRes?.data?.id,
         pageNumber: 1,

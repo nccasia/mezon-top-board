@@ -29,11 +29,6 @@ const injectedRtkApi = api.injectEndpoints({
       {
         query: (queryArg) => ({ url: `/api/media`, method: 'DELETE', body: queryArg.deleteMediaRequest })
       }
-    ),
-    mediaControllerUpdateMedia: build.mutation<MediaControllerUpdateMediaApiResponse, MediaControllerUpdateMediaApiArg>(
-      {
-        query: (queryArg) => ({ url: `/api/media`, method: 'PUT', body: queryArg.updateMediaRequest })
-      }
     )
   }),
   overrideExisting: false
@@ -58,19 +53,11 @@ export type MediaControllerDeleteMediaApiResponse = unknown
 export type MediaControllerDeleteMediaApiArg = {
   deleteMediaRequest: DeleteMediaRequest
 }
-export type MediaControllerUpdateMediaApiResponse = unknown
-export type MediaControllerUpdateMediaApiArg = {
-  updateMediaRequest: UpdateMediaRequest
-}
 export type CreateMediaRequest = {
-  name: string
+  file: Blob
 }
 export type DeleteMediaRequest = {
   id: string
-}
-export type UpdateMediaRequest = {
-  id: string
-  name: string
 }
 export const {
   useMediaControllerGetAllMediaQuery,
@@ -78,6 +65,5 @@ export const {
   useMediaControllerGetMediaQuery,
   useLazyMediaControllerGetMediaQuery,
   useMediaControllerCreateMediaMutation,
-  useMediaControllerDeleteMediaMutation,
-  useMediaControllerUpdateMediaMutation
+  useMediaControllerDeleteMediaMutation
 } = injectedRtkApi
