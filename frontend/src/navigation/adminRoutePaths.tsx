@@ -1,7 +1,7 @@
 // src/routes/adminRoutePaths.ts
 
 import { AppstoreAddOutlined, SettingOutlined, UserOutlined } from "@ant-design/icons";
-import MezonAppsContainer from "@app/pages/AdminPage/MezonAppsContainer";
+import MezonAppsContainer from "@app/pages/AdminPage/AdminMezonApp/MezonAppsContainer";
 import { RoutePath } from "@app/types/RoutePath.types";
 
 

@@ -48,7 +48,7 @@ const injectedRtkApi = api.injectEndpoints({
       MezonAppControllerDeleteMezonAppApiResponse,
       MezonAppControllerDeleteMezonAppApiArg
     >({
-      query: (queryArg) => ({ url: `/api/mezon-app`, method: 'DELETE', body: queryArg.requestWithId })
+      query: (queryArg) => ({ url: `/api/mezon-app`, method: 'DELETE', body: queryArg.requestWithId }),
     }),
     mezonAppControllerCreateMezonApp: build.mutation<
       MezonAppControllerCreateMezonAppApiResponse,
@@ -237,6 +237,7 @@ export type AppReviewHistory = {
   reviewer: User
 }
 export type App = {
+  id?: string
   name: string
   ownerId: string
   status: Status
