@@ -1,5 +1,13 @@
+import Banner from '@app/pages/AboutPage/components/Banner/Banner'
+import Main from '@app/pages/AboutPage/components/Main/Main'
+
 function AboutPage() {
-  return <div className="pt-8 pb-12 w-[75%] m-auto">AboutPage</div>
+  return (
+    <div>
+      <Banner></Banner>
+      <Main></Main>
+    </div>
+  )
 }
 
 export default AboutPage

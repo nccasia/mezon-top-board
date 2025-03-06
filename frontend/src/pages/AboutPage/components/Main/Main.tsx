@@ -1,0 +1,77 @@
+import MtbTypography from '@app/mtb-ui/Typography/Typography'
+import { Divider } from 'antd'
+import StatsSection from '@app/components/StatsSection/StatsSection'
+import TestimonialsSection from '@app/components/TestimonialsSection/TestimonialsSection'
+import Button from '@app/mtb-ui/Button'
+
+function Main() {
+  const stats = [
+    { number: '10000', description: 'Community, App, & Bot Advertisers' },
+    { number: '15M', description: 'Impressions per Week' },
+    { number: '300%', description: 'Platform Growth' }
+  ]
+
+  const testimonials = [
+    {
+      title: 'Our Vision',
+      type: '',
+      description:
+        'We aim to be the ultimate listing hub for Mezon-based applications, fostering a thriving community where ' +
+        'developers and users can connect, share, and grow. By providing a structured and transparent overview of ' +
+        'applications, we empower users to make informed decisions and developers to gain visibility for their projects.'
+    },
+    {
+      title: 'What We Offer',
+      type: '',
+      description:
+        'Curated selection of top Mezon-powered applications.\n\n' +
+        'Detailed descriptions, standout features, and real-world use cases.\n\n' +
+        'Ratings, reviews, and discussions that spark collaboration.\n\n' +
+        'A stage to promote your projects and reach a wider audience.'
+    },
+    {
+      title: 'Why Choose We?',
+      type: '',
+      description:
+        'Mezon Top Board bridges the gap between users and Mezon-powered applications\n\n' +
+        "Whether you're a developer seeking visibility or a user searching for the next great" +
+        'app, we provide the tools, resources, and community to support your journey.'
+    }
+  ]
+  
+  return (
+    <div className='flex flex-col justify-center pt-8 pb-12 w-[80%] m-auto'>
+      <div className='flex flex-col items-center text-center mt-10'>
+        <MtbTypography variant='h1'>Power your discovery and growth with Mezon Bots</MtbTypography>
+        <p className='text-gray-500'>
+          Gain millions of impressions for your app or community on the #1 platform for bot and server discovery
+        </p>
+      </div>
+      <StatsSection stats={stats}></StatsSection>
+      <Divider className='bg-gray-200'></Divider>
+      <div className='flex flex-col items-center text-center mt-10'>
+        <MtbTypography variant='h1'>Why Mezon Top Board? Here's Everything!</MtbTypography>
+        <p className='text-gray-500'>Hear from our trusted partners - our customers say it best</p>
+      </div>
+      <TestimonialsSection testimonials={testimonials}></TestimonialsSection>
+      <Divider className='bg-gray-200'></Divider>
+      <div className='flex flex-col items-center text-center mt-10'>
+        <MtbTypography variant='h1'>Have we got your attention?</MtbTypography>
+        <p className='text-gray-500'>
+          Join us in exploring the future of applications built on Mezon. Discover, engage, and innovate with Mezon Top
+          Board!
+        </p>
+        <div className='pt-6'>
+          <Button color='primary' variant='solid' size='large'>
+            Get Started
+          </Button>
+        </div>
+      </div>
+      <div className='flex flex-col items-center object-cover pt-10'>
+        <img src='https://placehold.co/350x200' alt='' width='60%' />
+      </div>
+    </div>
+  )
+}
+
+export default Main
