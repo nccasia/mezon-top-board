@@ -34,7 +34,7 @@ function AdminLayout() {
           />
           <h1>Mezon Top Board</h1>
         </div>
-        <Menu theme="dark" mode="vertical" defaultSelectedKeys={["/admin"]}>
+        <Menu theme="dark" mode="vertical" defaultSelectedKeys={["/admin"]} selectedKeys={[location.pathname]}>
           {
             adminRoutePaths.map((route) => (
               <Menu.Item key={route.path} icon={route.icon}>

@@ -179,6 +179,7 @@ const MezonApps = ({ onEdit }: { onEdit: (app: GetMezonAppDetailsResponse) => vo
                 },
               }
             }
+            className='cursor-pointer'
           />
         )
       }
@@ -223,7 +224,7 @@ const MezonApps = ({ onEdit }: { onEdit: (app: GetMezonAppDetailsResponse) => vo
         <Input.TextArea
           placeholder="Remark"
           value={reviewRemark}
-          onChange={(e: ChangeEvent<HTMLInputElement>) => setReviewRemark(e.target.value)}
+          onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setReviewRemark(e.target.value)}
         />
       </Modal>
     </>
