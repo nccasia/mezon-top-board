@@ -1,6 +1,7 @@
 import { UserControllerSearchUserApiArg, useUserControllerSearchUserQuery } from '@app/services/api/user/user'
-import { Table, Tag, Spin, Alert, Input, Select, Button, Form } from 'antd'
-import { useState, useRef } from 'react'
+import { Table, Spin, Alert, Input, Select, Button, Form } from 'antd'
+import { useState, useRef, useMemo } from 'react'
+import { userTableColumns } from './components/UserTableColumns'
 
 const { Option } = Select
 
@@ -19,13 +20,15 @@ function UsersList() {
   const users = data?.data || []
 
   //   Error handling
-  let errorMessage = 'There was an issue fetching user data.'
-  if (error && 'data' in error) {
-    const serverError = error.data as { message?: string[] }
-    if (serverError?.message) {
-      errorMessage = Array.isArray(serverError.message) ? serverError.message.join(', ') : serverError.message
+  const errorMessage = useMemo(() => {
+    if (error && 'data' in error) {
+      const serverError = error.data as { message?: string[] }
+      if (serverError?.message) {
+        return Array.isArray(serverError.message) ? serverError.message.join(', ') : serverError.message
+      }
     }
-  }
+    return 'There was an issue fetching user data.'
+  }, [error])
 
   // Handle form submission
   const handleSubmit = (values: any) => {
@@ -37,39 +40,6 @@ function UsersList() {
       pageNumber: 1
     }))
   }
-
-  //   Styling
-  const roleColors: Record<string, string> = {
-    ADMIN: 'red',
-    DEVELOPER: 'blue',
-    USER: 'green'
-  }
-
-  const columns = [
-    {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
-      render: (text: string) => text || <span className='text-gray-400'>No name</span>
-    },
-    {
-      title: 'Email',
-      dataIndex: 'email',
-      key: 'email'
-    },
-    {
-      title: 'Bio',
-      dataIndex: 'bio',
-      key: 'bio',
-      render: (text: string | null) => (text ? <Tag color='geekblue'>{text}</Tag> : <Tag color='gray'>No bio</Tag>)
-    },
-    {
-      title: 'Role',
-      dataIndex: 'role',
-      key: 'role',
-      render: (role: string) => <Tag color={roleColors[role] || 'default'}>{role}</Tag>
-    }
-  ]
 
   return (
     <div className='p-4 bg-white rounded-md shadow-md'>
@@ -118,7 +88,7 @@ function UsersList() {
       {/* Render Table */}
       {!isLoading && !error && (
         <Table
-          columns={columns}
+          columns={userTableColumns}
           dataSource={users.map((user) => ({ ...user, key: user.id }))}
           pagination={{
             current: queryArgs.pageNumber,
