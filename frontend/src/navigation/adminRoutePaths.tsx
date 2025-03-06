@@ -2,6 +2,7 @@
 
 import { AppstoreAddOutlined, SettingOutlined, UserOutlined } from "@ant-design/icons";
 import MezonAppsContainer from "@app/pages/AdminPage/AdminMezonApp/MezonAppsContainer";
+import UsersList from "@app/pages/AdminPage/AdminManageUsers/UsersList";
 import { RoutePath } from "@app/types/RoutePath.types";
 
 
@@ -16,7 +17,7 @@ export const adminRoutePaths: RoutePath[] = [
   },
   {
     path: "/manage/users",
-    element: <h1>Users</h1>,
+    element: <UsersList/>,
     label: "Users",
     icon: <UserOutlined/>,
     isShowMenu: true

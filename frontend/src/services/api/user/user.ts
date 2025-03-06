@@ -36,7 +36,7 @@ const injectedRtkApi = api.injectEndpoints({
   overrideExisting: false
 })
 export { injectedRtkApi as userService }
-export type UserControllerSearchUserApiResponse = unknown
+export type UserControllerSearchUserApiResponse = HttpResponse<SearchUserResponse[]>
 export type UserControllerSearchUserApiArg = {
   /** Keyword to search user by name or email */
   search?: string
