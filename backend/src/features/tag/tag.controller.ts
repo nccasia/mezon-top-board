@@ -1,15 +1,16 @@
 import { Body, Controller, Delete, Get, Post, Put } from "@nestjs/common";
-import { ApiBody, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiBody, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import { RequestWithId } from "@domain/common/dtos/request.dto";
+import { Role } from "@domain/common/enum/role";
 
 import { Public } from "@libs/decorator/authorization.decorator";
+import { RoleRequired } from "@libs/decorator/roles.decorator";
 import { Logger } from "@libs/logger";
 
 import { CreateTagRequest, UpdateTagRequest } from "./dtos/request";
 import { TagResponse } from "./dtos/response";
 import { TagService } from "./tag.service";
-
 
 @Controller("tag")
 @ApiTags("Tag")
@@ -28,7 +29,8 @@ export class TagController {
     return this.tagService.getTagAll();
   }
 
-  @Public()
+  @ApiBearerAuth()
+  @RoleRequired([Role.ADMIN])
   @Post()
   @ApiBody({ type: CreateTagRequest })
   createTag(@Body() body: CreateTagRequest) {
@@ -40,7 +42,8 @@ export class TagController {
     }
   }
 
-  @Public()
+  @ApiBearerAuth()
+  @RoleRequired([Role.ADMIN])
   @Put()
   @ApiBody({ type: UpdateTagRequest })
   updateTag(@Body() body: UpdateTagRequest) {
@@ -52,7 +55,8 @@ export class TagController {
     }
   }
 
-  @Public()
+  @ApiBearerAuth()
+  @RoleRequired([Role.ADMIN])
   @Delete()
   @ApiBody({ type: RequestWithId })
   deleteTag(@Body() body: RequestWithId) {
