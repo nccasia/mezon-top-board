@@ -5,7 +5,8 @@ import Button from '@app/mtb-ui/Button'
 import MtbRate from '@app/mtb-ui/Rate/Rate'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import { IBotCardProps } from '@app/types/Botcard.types'
-import { getUrlImage } from '@app/utils/stringHelper'
+import { randomColor } from '@app/utils/mezonApp'
+import { getUrlImage, uuidToNumber } from '@app/utils/stringHelper'
 import { Tag } from 'antd'
 import { useNavigate } from 'react-router-dom'
 
@@ -40,7 +41,7 @@ function BotCard({ readonly = false, data }: IBotCardProps) {
             </div>
             <div className='flex gap-2'>
               {data?.tags?.map((tag) => (
-                <Tag className='!text-gray-500' key={tag?.id}>
+                <Tag key={tag?.id} color={randomColor('normal', uuidToNumber(tag?.id))}>
                   {tag?.name}
                 </Tag>
               ))}
