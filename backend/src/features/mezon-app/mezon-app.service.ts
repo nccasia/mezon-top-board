@@ -139,10 +139,10 @@ export class MezonAppService {
         this.appRepository.findMany({
           ...query,
           relations: ["ratings", "tags"],
-          where: () => ({
+          where: () => ([
             ...whereCondition,
-            status: AppStatus.PUBLISHED,
-          }),
+            { status: AppStatus.PUBLISHED },
+          ]),
         }),
       query.pageSize,
       query.pageNumber,
@@ -343,10 +343,10 @@ export class MezonAppService {
         this.appRepository.findMany({
           ...query,
           relations: ["ratings", "tags"],
-          where: () => ({
+          where: () => ([
             ...whereCondition,
-            ownerId: userId,
-          }),
+            { ownerId: userId },
+          ]),
         }),
       query.pageSize,
       query.pageNumber,

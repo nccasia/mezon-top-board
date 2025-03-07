@@ -290,7 +290,7 @@ export type UpdateMezonAppRequest = {
 export type GetRelatedMezonAppResponse = {
   id: string
   name: string
-  status: string
+  status: number
   featuredImage: string
   rateScore: number
 }

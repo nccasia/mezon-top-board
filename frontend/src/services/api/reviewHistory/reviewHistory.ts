@@ -1,3 +1,4 @@
+import { HttpResponse } from '@app/types/API.types'
 import { api } from '../../apiInstance'
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
@@ -38,7 +39,7 @@ const injectedRtkApi = api.injectEndpoints({
   overrideExisting: false
 })
 export { injectedRtkApi as reviewHistoryService }
-export type ReviewHistoryControllerGetAppReviewsApiResponse = unknown
+export type ReviewHistoryControllerGetAppReviewsApiResponse = HttpResponse<ReviewHistoryResponse[]>
 export type ReviewHistoryControllerGetAppReviewsApiArg = {
   appId?: string
   pageSize: number
@@ -46,6 +47,34 @@ export type ReviewHistoryControllerGetAppReviewsApiArg = {
   sortField: string
   sortOrder: 'ASC' | 'DESC'
 }
+
+
+type Reviewer = {
+  id: string
+  name: string
+  email: string
+  role: string
+}
+
+type AppInfo = {
+  id: string
+  name: string
+  installLink: string | null
+  description: string | null
+  headline: string | null
+  featuredImage: string | null
+}
+
+type ReviewHistory = {
+  id: string
+  remark: string
+  reviewer: Reviewer
+  reviewedAt: string
+  app: AppInfo
+}
+
+export type ReviewHistoryResponse = ReviewHistory
+
 export type ReviewHistoryControllerCreateAppReviewApiResponse = unknown
 export type ReviewHistoryControllerCreateAppReviewApiArg = {
   createAppReviewRequest: CreateAppReviewRequest
