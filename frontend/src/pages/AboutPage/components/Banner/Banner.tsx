@@ -1,12 +1,12 @@
 import Button from '@app/mtb-ui/Button'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
+import screenshot from '@app/assets/images/screenshot.png'
 
 function Banner() {
   return (
     <div className={`bg-gray-200 pt-7 pb-7 pl-20 pr-20`}>
       <div className='flex items-center justify-between gap-4'>
         <div className='flex-1'>
-          <MtbTypography variant='h1'>About Us</MtbTypography>
           <MtbTypography variant='h1'>Mezon Top Board</MtbTypography>
           <div className='pt-3'>
             <p className='text-gray-500'>
@@ -22,7 +22,7 @@ function Banner() {
           </div>
         </div>
         <div className='flex-1 object-cover w-full'>
-          <img src='https://placehold.co/350x200' alt='' width='100%' />
+          <img src={screenshot} alt='' width='100%' />
         </div>
       </div>
     </div>

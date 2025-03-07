@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 
-import { EntityManager, In, Not } from "typeorm";
+import { Brackets, EntityManager, In, Not } from "typeorm";
 
 import { RequestWithId } from "@domain/common/dtos/request.dto";
 import { Result } from "@domain/common/dtos/result.dto";
@@ -119,31 +119,27 @@ export class MezonAppService {
   }
 
   async searchMezonApp(query: SearchMezonAppRequest) {
-    let whereCondition = undefined;
-    if (query.fieldId && query.field)
-      whereCondition = filterBuilder(
-        this.appRepository.getRepository().metadata,
-        query.field,
-        query.fieldId,
-      );
+    let whereCondition = this.appRepository.getRepository()
+      .createQueryBuilder('app')
+      .leftJoinAndSelect('app.tags', 'tag')
+      .leftJoinAndSelect('app.ratings', 'rating')
+      .where('app.status = :status', { status: AppStatus.PUBLISHED });
 
     // Priorize to search by keyword if field and search exist at the same time.
     if (query.search)
-      whereCondition = searchBuilder<App>({
-        keyword: query.search,
-        fields: ["name", "headline"],
-      });
+      whereCondition.andWhere(
+        new Brackets(qb => {
+          qb.where("app.name ILIKE :keyword", { keyword: `%${query.search}%` })
+            .orWhere("app.headline ILIKE :keyword", { keyword: `%${query.search}%` });
+        })
+      );
+
+    if (query.tags?.length) {
+      whereCondition.andWhere("tag.id IN (:...tagIds)", { tagIds: query.tags });
+    }
 
     return paginate<App, SearchMezonAppResponse>(
-      () =>
-        this.appRepository.findMany({
-          ...query,
-          relations: ["ratings", "tags"],
-          where: () => ([
-            ...whereCondition,
-            { status: AppStatus.PUBLISHED },
-          ]),
-        }),
+      () => whereCondition.getManyAndCount(),
       query.pageSize,
       query.pageNumber,
       (entity) => {
@@ -286,28 +282,26 @@ export class MezonAppService {
   }
 
   async listAdminMezonApp(query: SearchMezonAppRequest) {
-    let whereCondition = undefined;
-    if (query.fieldId && query.field)
-      whereCondition = filterBuilder(
-        this.appRepository.getRepository().metadata,
-        query.field,
-        query.fieldId,
-      );
+    let whereCondition = this.appRepository.getRepository()
+      .createQueryBuilder('app')
+      .leftJoinAndSelect('app.tags', 'tag')
+      .leftJoinAndSelect('app.ratings', 'rating')
 
     // Priorize to search by keyword if field and search exist at the same time.
     if (query.search)
-      whereCondition = searchBuilder<App>({
-        keyword: query.search,
-        fields: ["name", "headline"],
-      });
+      whereCondition.andWhere(
+        new Brackets(qb => {
+          qb.where("app.name ILIKE :keyword", { keyword: `%${query.search}%` })
+            .orWhere("app.headline ILIKE :keyword", { keyword: `%${query.search}%` });
+        })
+      );
+
+    if (query.tags?.length) {
+      whereCondition.andWhere("tag.id IN (:...tagIds)", { tagIds: query.tags });
+    }
 
     return paginate<App, SearchMezonAppResponse>(
-      () =>
-        this.appRepository.findMany({
-          ...query,
-          relations: ["ratings", "tags"],
-          where: () => whereCondition,
-        }),
+      () => whereCondition.getManyAndCount(),
       query.pageSize,
       query.pageNumber,
       (entity) => {
@@ -323,31 +317,29 @@ export class MezonAppService {
   }
 
   async getMyApp(userId: string, query: SearchMezonAppRequest) {
-    let whereCondition = undefined;
-    if (query.fieldId && query.field)
-      whereCondition = filterBuilder(
-        this.appRepository.getRepository().metadata,
-        query.field,
-        query.fieldId,
-      );
+    let whereCondition = this.appRepository.getRepository()
+      .createQueryBuilder('app')
+      .leftJoinAndSelect('app.tags', 'tag')
+      .leftJoinAndSelect('app.ratings', 'rating')
+      .where('app.ownerId = :ownerId', { ownerId: userId });
 
     // Priorize to search by keyword if field and search exist at the same time.
     if (query.search)
-      whereCondition = searchBuilder<App>({
-        keyword: query.search,
-        fields: ["name", "headline"],
-      });
+      whereCondition.andWhere(
+        new Brackets(qb => {
+          qb.where("app.name ILIKE :keyword", { keyword: `%${query.search}%` })
+            .orWhere("app.headline ILIKE :keyword", { keyword: `%${query.search}%` });
+        })
+      );
+
+    if (query.tags?.length) {
+      whereCondition.andWhere("tag.id IN (:...tagIds)", { tagIds: query.tags });
+    }
+
+    console.log("whereCondition", whereCondition.getQueryAndParameters());
 
     return paginate<App, SearchMezonAppResponse>(
-      () =>
-        this.appRepository.findMany({
-          ...query,
-          relations: ["ratings", "tags"],
-          where: () => ([
-            ...whereCondition,
-            { ownerId: userId },
-          ]),
-        }),
+      () => whereCondition.getManyAndCount(),
       query.pageSize,
       query.pageNumber,
       (entity) => {

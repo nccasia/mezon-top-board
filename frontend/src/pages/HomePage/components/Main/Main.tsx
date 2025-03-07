@@ -42,7 +42,6 @@ function Main({ isSearchPage = false }: IMainProps) {
   useEffect(() => {
     getMezonApp({
       search: isSearchPage ? searchQuery : undefined,
-      field: isSearchPage ? 'tags' : undefined,
       pageNumber: page,
       pageSize: botPerPage,
       sortField: 'createdAt',

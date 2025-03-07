@@ -2,22 +2,24 @@ import { DownOutlined, MenuOutlined } from '@ant-design/icons'
 import logo from '@app/assets/images/topLogo.png'
 import Button from '@app/mtb-ui/Button'
 import { renderMenu } from '@app/navigation/router'
+import { useLazyUserControllerGetUserDetailsQuery } from '@app/services/api/user/user'
+import { RootState } from '@app/store'
+import { IAuthStore, setLogIn } from '@app/store/auth'
+import { IUserStore } from '@app/store/user'
 import { redirectToOAuth } from '@app/utils/auth'
+import { removeAccessTokens } from '@app/utils/storage'
 import { Drawer, Dropdown, MenuProps, Space } from 'antd'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import MtbTypography from '../Typography/Typography'
 import styles from './Header.module.scss'
-import { useDispatch, useSelector } from 'react-redux'
-import { RootState } from '@app/store'
-import { IUserStore } from '@app/store/user'
-import { removeAccessTokens } from '@app/utils/storage'
-import { IAuthStore, setLogIn } from '@app/store/auth'
 
 function Header() {
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   // const { theme, setTheme } = useTheme()
+  const [getUserInfo] = useLazyUserControllerGetUserDetailsQuery()
   const { userInfo } = useSelector<RootState, IUserStore>((s) => s.user)
   const { isLogin } = useSelector<RootState, IAuthStore>((s) => s.auth)
   const dispatch = useDispatch()
@@ -36,18 +38,19 @@ function Header() {
     }
   ]
 
+  useEffect(() => {
+    if (isLogin) {
+      getUserInfo()
+    }
+  }, [isLogin])
+
   return (
     <div
-      className={`flex bg-white z-1 items-center justify-between py-5 px-20 border-t-1 border-b-1 border-gray-200 cursor-pointer sticky top-0`}
+      className={`flex bg-white z-1 items-center justify-between py-4 px-20 border-t-1 border-b-1 border-gray-200 cursor-pointer sticky top-0`}
     >
       <div className='flex items-center gap-3' onClick={() => navigate('/')}>
-        <div className='w-10'>
-          <img src={logo} alt='' width={'100%'} />
-        </div>
-        <div>
-          <MtbTypography variant='h5' weight='normal' style={{ marginBottom: 0 }}>
-            Mezon Top Board
-          </MtbTypography>
+        <div className='h-[50px]'>
+          <img src={logo} alt='' style={{ height: '100%', objectFit: 'contain' }} />
         </div>
       </div>
       <div className='flex items-center justify-between gap-12.5 max-lg:hidden max-2xl:hidden'>

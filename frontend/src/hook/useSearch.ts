@@ -3,11 +3,10 @@ import { useLazyMezonAppControllerSearchMezonAppQuery } from '@app/services/api/
 export const useMezonAppSearch = (page: number, botPerPage: number) => {
   const [getBotList] = useLazyMezonAppControllerSearchMezonAppQuery()
 
-  const handleSearch = (text: string, fieldId?: string) => {
+  const handleSearch = (text: string, tagIds?: string) => {
     getBotList({
       search: text,
-      field: 'tags',
-      fieldId,
+      tags: tagIds ? [tagIds] : undefined,
       pageNumber: page,
       pageSize: botPerPage,
       sortField: 'createdAt',

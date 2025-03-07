@@ -11,7 +11,7 @@ const paramsSerializer = (params: Record<string, any>): string => {
     if (value === undefined || value === null) continue
 
     if (Array.isArray(value)) {
-      value.forEach((item) => searchParams.append(`${key}`, String(item)))
+      value.forEach((item) => searchParams.append(`${key}[]`, item));
     } else {
       searchParams.append(key, String(value))
     }
@@ -40,9 +40,9 @@ const getBaseQuery = (
         const updatedArgs =
           typeof args === 'object'
             ? {
-                ...args,
-                headers: { ...(args.headers || {}), Authorization: `Bearer ${response.data.data.accessToken}` }
-              }
+              ...args,
+              headers: { ...(args.headers || {}), Authorization: `Bearer ${response.data.data.accessToken}` }
+            }
             : args
 
         return await baseQuery(updatedArgs, api, extraOptions)
@@ -65,7 +65,8 @@ export const api = createApi({
           headers.set('Authorization', `Bearer ${token}`)
         }
         return headers
-      }
+      },
+      paramsSerializer
     })
   ),
   endpoints: () => ({})

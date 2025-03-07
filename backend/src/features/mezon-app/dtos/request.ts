@@ -10,15 +10,9 @@ export class SearchMezonAppRequest extends PaginationQuery {
     @IsOptional()
     search: string;
 
-    @ApiPropertyOptional({ description: "A valid column of MezonApp (tags, ratings, socialLinks)" })
-    @IsString()
+    @ApiPropertyOptional()
     @IsOptional()
-    field: string;
-    
-    @ApiPropertyOptional({ description: "ID value of the field" })
-    @IsUUID()
-    @IsOptional()
-    fieldId: string;
+    tags: string[];
 }
 
 class SocialLinkDto {

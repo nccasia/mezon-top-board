@@ -10,8 +10,7 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/api/mezon-app/admin-all`,
         params: {
           search: queryArg.search,
-          field: queryArg.field,
-          fieldId: queryArg.fieldId,
+          tags: queryArg.tags,
           pageSize: queryArg.pageSize,
           pageNumber: queryArg.pageNumber,
           sortField: queryArg.sortField,
@@ -24,8 +23,7 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/api/mezon-app/my-app`,
         params: {
           search: queryArg.search,
-          field: queryArg.field,
-          fieldId: queryArg.fieldId,
+          tags: queryArg.tags,
           pageSize: queryArg.pageSize,
           pageNumber: queryArg.pageNumber,
           sortField: queryArg.sortField,
@@ -81,8 +79,7 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/api/mezon-app/search`,
         params: {
           search: queryArg.search,
-          field: queryArg.field,
-          fieldId: queryArg.fieldId,
+          tags: queryArg.tags,
           pageSize: queryArg.pageSize,
           pageNumber: queryArg.pageNumber,
           sortField: queryArg.sortField,
@@ -98,10 +95,7 @@ export type MezonAppControllerListAdminMezonAppApiResponse = unknown
 export type MezonAppControllerListAdminMezonAppApiArg = {
   /** Keyword to search mezonApps by name or headline */
   search?: string
-  /** A valid column of MezonApp (tags, ratings, socialLinks) */
-  field?: string
-  /** ID value of the field */
-  fieldId?: string
+  tags?: string[]
   pageSize: number
   pageNumber: number
   sortField: string
@@ -111,10 +105,7 @@ export type MezonAppControllerGetMyAppApiResponse = unknown
 export type MezonAppControllerGetMyAppApiArg = {
   /** Keyword to search mezonApps by name or headline */
   search?: string
-  /** A valid column of MezonApp (tags, ratings, socialLinks) */
-  field?: string
-  /** ID value of the field */
-  fieldId?: string
+  tags?: string[]
   pageSize: number
   pageNumber: number
   sortField: string
@@ -145,10 +136,7 @@ export type MezonAppControllerSearchMezonAppApiResponse = HttpResponse<GetMezonA
 export type MezonAppControllerSearchMezonAppApiArg = {
   /** Keyword to search mezonApps by name or headline */
   search?: string
-  /** A valid column of MezonApp (tags, ratings, socialLinks) */
-  field?: string
-  /** ID value of the field */
-  fieldId?: string
+  tags?: string[]
   pageSize: number
   pageNumber: number
   sortField: string

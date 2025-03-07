@@ -5,12 +5,12 @@ function TestimonialsSection({ testimonials }: ITestimonialsSectionProps) {
     <div className='flex items-center justify-center py-20'>
       <div className='grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl'>
         {testimonials.map((item, index) => (
-          <div key={index} className='bg-[#1a1a1a] text-white p-6 rounded-lg shadow-lg'>
+          <div key={index} className='bg-gray-200 text-dark p-6 rounded-lg shadow-lg'>
             <div className='flex items-center gap-3 mb-4'>
               <div className='w-8 h-8 bg-gray-700 rounded-full' />
               <div>
                 <h2 className='text-lg font-semibold'>{item.title}</h2>
-                <p className='text-sm text-gray-400'>{item.type}</p>
+                <p className='text-sm text-primary'>{item.type}</p>
               </div>
               <a className='ml-auto p-2 rounded-md hover:bg-gray-700'>
                 <svg className='w-4 h-4 text-gray-400' fill='currentColor' viewBox='0 0 24 24'>

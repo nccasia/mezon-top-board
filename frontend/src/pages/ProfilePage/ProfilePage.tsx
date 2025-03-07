@@ -1,36 +1,31 @@
 import CompactBotCard from '@app/components/CompactBotCard/CompactBotCard'
+import { useMezonAppSearch } from '@app/hook/useSearch'
 import Button from '@app/mtb-ui/Button'
 import SearchBar from '@app/mtb-ui/SearchBar/SearchBar'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
-import { Divider } from 'antd'
-import CardInfo from './components/CardInfo'
-import { useNavigate } from 'react-router-dom'
-import { useLazyTagControllerGetTagsQuery } from '@app/services/api/tag/tag'
-import { useEffect } from 'react'
-import { useMezonAppSearch } from '@app/hook/useSearch'
-import { useLazyUserControllerGetUserDetailsQuery } from '@app/services/api/user/user'
 import { useLazyMezonAppControllerGetMyAppQuery } from '@app/services/api/mezonApp/mezonApp'
-import { useSelector } from 'react-redux'
+import { useLazyTagControllerGetTagsQuery } from '@app/services/api/tag/tag'
 import { RootState } from '@app/store'
-import { IMezonAppStore } from '@app/store/mezonApp'
 import { IAuthStore } from '@app/store/auth'
+import { IMezonAppStore } from '@app/store/mezonApp'
+import { Divider } from 'antd'
+import { useEffect } from 'react'
+import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import CardInfo from './components/CardInfo'
 
 function ProfilePage() {
   const navigate = useNavigate()
   const [getTagList] = useLazyTagControllerGetTagsQuery()
-  const [getUserInfo] = useLazyUserControllerGetUserDetailsQuery()
   const { handleSearch } = useMezonAppSearch(1, 5)
   const [getMyApp] = useLazyMezonAppControllerGetMyAppQuery()
   const { mezonAppOfUser } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
   const { isLogin } = useSelector<RootState, IAuthStore>((s) => s.auth)
 
   const getData = async () => {
-    const userRes = await getUserInfo().unwrap()
     await getTagList()
-    if (userRes?.data?.id) {
+    if (isLogin) {
       getMyApp({
-        field: 'ownerId',
-        fieldId: userRes?.data?.id,
         pageNumber: 1,
         pageSize: 5,
         sortField: 'createdAt',
@@ -52,7 +47,7 @@ function ProfilePage() {
     <div className='pt-8 pb-12 w-[75%] m-auto'>
       <MtbTypography variant='h1'>Explore millions of Mezon Bots</MtbTypography>
       <div className='pt-3'>
-        <SearchBar onSearch={(val, tagId) => handleSearch(val ?? '', tagId)} isResultPage={false}></SearchBar>
+        <SearchBar onSearch={(val, tagId) => handleSearch(val ?? '', tagId || "")} isResultPage={false}></SearchBar>
       </div>
       <Divider className='bg-gray-100'></Divider>
       <div className='flex justify-between gap-15 max-lg:flex-col max-2xl:flex-col'>

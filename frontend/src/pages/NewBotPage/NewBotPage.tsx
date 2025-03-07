@@ -11,8 +11,6 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { ADD_BOT_SCHEMA } from '@app/validations/addBot.validations'
 import { useSelector } from 'react-redux'
 import { RootState } from '@app/store'
-import { IUserStore } from '@app/store/user'
-import { useLazyUserControllerGetUserDetailsQuery } from '@app/services/api/user/user'
 import { isEmpty } from 'lodash'
 import { ITagStore } from '@app/store/tag'
 import { useLazyLinkTypeControllerGetAllLinksQuery } from '@app/services/api/linkType/linkType'
@@ -21,7 +19,6 @@ import { getUrlImage } from '@app/utils/stringHelper'
 import { avatarBotDefault } from '@app/assets'
 function NewBotPage() {
   const [avatar, setAvatar] = useState<string>(avatarBotDefault)
-  const { userInfo } = useSelector<RootState, IUserStore>((s) => s.user)
   const { tagList } = useSelector<RootState, ITagStore>((s) => s.tag)
   const methods = useForm<CreateMezonAppRequest>({
     defaultValues: {
@@ -36,11 +33,9 @@ function NewBotPage() {
 
   const [getTagList] = useLazyTagControllerGetTagsQuery()
   const [getSocialLink] = useLazyLinkTypeControllerGetAllLinksQuery()
-  const [getUserInfo] = useLazyUserControllerGetUserDetailsQuery()
   const [uploadImage] = useMediaControllerCreateMediaMutation()
 
   useEffect(() => {
-    if (isEmpty(userInfo)) getUserInfo()
     if (isEmpty(tagList.data)) getTagList()
     getSocialLink()
   }, [])

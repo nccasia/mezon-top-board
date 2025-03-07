@@ -3,6 +3,7 @@ import { Divider } from 'antd'
 import StatsSection from '@app/components/StatsSection/StatsSection'
 import TestimonialsSection from '@app/components/TestimonialsSection/TestimonialsSection'
 import Button from '@app/mtb-ui/Button'
+import mezonScreenshot from '@app/assets/images/mezon-screenshot.png'
 
 function Main() {
   const stats = [
@@ -68,7 +69,7 @@ function Main() {
         </div>
       </div>
       <div className='flex flex-col items-center object-cover pt-10'>
-        <img src='https://placehold.co/350x200' alt='' width='60%' />
+        <img src={mezonScreenshot} alt='' width='60%' />
       </div>
     </div>
   )
