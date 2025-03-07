@@ -3,6 +3,7 @@
 import { AppstoreAddOutlined, HistoryOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons'
 import MezonAppsContainer from '@app/pages/AdminPage/AdminMezonApp/MezonAppsContainer'
 import ReviewHistoryPage from '@app/pages/AdminPage/ReviewHistoryPage/ReviewHistoryPage'
+import UsersList from "@app/pages/AdminPage/AdminManageUsers/UsersList";
 import { RoutePath } from '@app/types/RoutePath.types'
 
 export const adminRoutePaths: RoutePath[] = [
@@ -22,10 +23,10 @@ export const adminRoutePaths: RoutePath[] = [
     isShowMenu: true
   },
   {
-    path: '/manage/users',
-    element: <h1>Users</h1>,
-    label: 'Users',
-    icon: <UserOutlined />,
+    path: "/manage/users",
+    element: <UsersList/>,
+    label: "Users",
+    icon: <UserOutlined/>,
     isShowMenu: true
   },
   {
