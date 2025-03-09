@@ -9,6 +9,7 @@ import { AuthModule } from "@features/auth/auth.module";
 import { LinkTypeModule } from "@features/linkType/linkType.module";
 import { MediaModule } from "@features/media/media.module";
 import { MezonAppModule } from "@features/mezon-app/mezon-app.module";
+import { RatingModule } from "@features/rating/rating.module";
 import { ReviewHistoryModule } from "@features/review-history/review-history.module";
 import { TagModule } from "@features/tag/tag.module";
 import { UserModule } from "@features/user/user.module";
@@ -32,7 +33,8 @@ import { LoggerModule } from "@libs/logger";
     TagModule,
     ReviewHistoryModule,
     UserModule,
-    LinkTypeModule
+    LinkTypeModule,
+    RatingModule
   ],
   controllers: [],
   providers: [],
