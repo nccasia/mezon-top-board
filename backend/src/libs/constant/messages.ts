@@ -10,7 +10,8 @@ export enum ErrorMessages {
     MODIFY_REVIEW_RESTRICTION = 'Only the review owner is permitted to update or delete it.',
     PERMISSION_DENIED = 'You do not have permission.',
     APP_RATING_LIMIT_REACHED = 'You have already rated this app.',
-    APP_RATING_EDIT_RESTRICTION = 'You can only edit your rating'
+    APP_RATING_EDIT_RESTRICTION = 'You can only edit your rating',
+    EXISTED_TAG = 'This tag is already existed '
 }
 
 export enum SuccessMessages {

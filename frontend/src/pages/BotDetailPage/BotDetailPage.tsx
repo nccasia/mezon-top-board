@@ -24,7 +24,7 @@ import { useMezonAppSearch } from '@app/hook/useSearch'
 import { ApiError } from '@app/types/API.types'
 import { toast } from 'react-toastify'
 function BotDetailPage() {
-  const [getMezonAppDetail, {isError, error}] = useLazyMezonAppControllerGetMezonAppDetailQuery()
+  const [getMezonAppDetail, { isError, error }] = useLazyMezonAppControllerGetMezonAppDetailQuery()
   const [getrelatedMezonApp] = useLazyMezonAppControllerGetRelatedMezonAppQuery()
   const [getTagList] = useLazyTagControllerGetTagsQuery()
 
@@ -57,7 +57,7 @@ function BotDetailPage() {
     <div className='m-auto pt-10 pb-10 w-[75%]'>
       <MtbTypography>Explore milions of mezon bots</MtbTypography>
       <div className='pt-5'>
-        <SearchBar onSearch={(val) => handleSearch(val ?? '')} defaultValue={searchQuery}></SearchBar>
+        <SearchBar onSearch={(val) => handleSearch(val ?? '')} defaultValue={searchQuery} isResultPage={false}></SearchBar>
       </div>
       <div className='pt-5 pb-5'>
         <BotCard readonly={true} data={mezonAppDetail}></BotCard>

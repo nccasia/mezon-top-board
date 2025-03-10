@@ -78,7 +78,7 @@ function Main({ isSearchPage = false }: IMainProps) {
       </Divider>
       <div className='pt-3'>
         <SearchBar
-          onSearch={(val, tagId) => handleSearch(val ?? '', tagId)}
+          onSearch={(val, tagIds) => handleSearch(val ?? '', tagIds)}
           defaultValue={searchQuery}
           isResultPage={isSearchPage}
         ></SearchBar>

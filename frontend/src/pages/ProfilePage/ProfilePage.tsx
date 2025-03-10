@@ -47,7 +47,7 @@ function ProfilePage() {
     <div className='pt-8 pb-12 w-[75%] m-auto'>
       <MtbTypography variant='h1'>Explore millions of Mezon Bots</MtbTypography>
       <div className='pt-3'>
-        <SearchBar onSearch={(val, tagId) => handleSearch(val ?? '', tagId || "")} isResultPage={false}></SearchBar>
+        <SearchBar onSearch={(val, tagIds) => handleSearch(val ?? '', tagIds)} isResultPage={false}></SearchBar>
       </div>
       <Divider className='bg-gray-100'></Divider>
       <div className='flex justify-between gap-15 max-lg:flex-col max-2xl:flex-col'>
