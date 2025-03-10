@@ -9,6 +9,7 @@ export enum ErrorMessages {
     INVALID_APP = 'Cannot find this app',
     MODIFY_REVIEW_RESTRICTION = 'Only the review owner is permitted to update or delete it.',
     PERMISSION_DENIED = 'You do not have permission.',
+    EXISTED_TAG = 'This tag is already existed '
 }
 
 export enum SuccessMessages {
