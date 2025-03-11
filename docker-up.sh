@@ -9,6 +9,8 @@ for arg in "$@"
 do
     if [ "$arg" == "--debug" ]; then
         COMPOSE_FILE="docker-compose.debug.yml"
+    elif [ "$arg" == "--dev" ]; then
+        COMPOSE_FILE="docker-compose.dev.yml"
     elif [ "$arg" == "--build" ]; then
         BUILD_FLAG="--build"
     elif [ "$arg" == "--core" ]; then

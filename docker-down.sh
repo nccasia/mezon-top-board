@@ -7,6 +7,8 @@ for arg in "$@"
 do
     if [ "$arg" == "--debug" ]; then
         COMPOSE_FILE="docker-compose.debug.yml"
+    elif [ "$arg" == "--dev" ]; then
+        COMPOSE_FILE="docker-compose.dev.yml"
     elif [ "$arg" == "--core" ]; then
         DOCKER_CMD="docker compose"
     fi
