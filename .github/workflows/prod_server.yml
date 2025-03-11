@@ -1,0 +1,40 @@
+name: Deploy to Production Server
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: top-prod
+    environment: production
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Create .env file
+      run: |
+        rm -f .env
+        echo "NODE_ENV=${{ secrets.NODE_ENV }}" >> .env
+        echo "POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}" >> .env
+        echo "POSTGRES_USERNAME=${{ secrets.POSTGRES_USERNAME }}" >> .env
+        echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
+        echo "POSTGRES_DB=m${{ secrets.POSTGRES_DB }}tb" >> .env
+        echo "POSTGRES_SCHEMA=${{ secrets.POSTGRES_SCHEMA }}" >> .env
+        echo "OAUTH2_CLIENT_ID=${{ secrets.OAUTH2_CLIENT_ID }}" >> .env
+        echo "OAUTH2_CLIENT_SECRET=${{ secrets.OAUTH2_CLIENT_SECRET }}" >> .env
+        echo "OAUTH2_REDIRECT_URI=${{ secrets.OAUTH2_REDIRECT_URI }}" >> .env
+        echo "OAUTH2_API_URL=${{ secrets.OAUTH2_API_URL }}" >> .env
+        echo "JWT_ACCESS_TOKEN_SECRET=${{ secrets.JWT_ACCESS_TOKEN_SECRET }}" >> .env
+        echo "JWT_REFRESH_TOKEN_SECRET=${{ secrets.JWT_REFRESH_TOKEN_SECRET }}" >> .env
+        echo "JWT_ACCESS_TOKEN_EXPIRES_IN_MINUTES=${{ secrets.JWT_ACCESS_TOKEN_EXPIRES_IN_MINUTES }}" >> .env
+        echo "JWT_REFRESH_TOKEN_EXPIRES_IN_MINUTES=${{ secrets.JWT_REFRESH_TOKEN_EXPIRES_IN_MINUTES }}" >> .env
+        echo "UPLOAD_RELATIVE_DIR=${{ secrets.UPLOAD_RELATIVE_DIR }}" >> .env
+        echo "REACT_APP_BACKEND_URL=${{ secrets.REACT_APP_BACKEND_URL }}" >> .env
+
+    - name: Run docker-up.sh
+      run: ./docker-up.sh --build --core
+    
+    - name: Prune Docker system
+      run: docker system prune -f

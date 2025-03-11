@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: self-hosted
+    runs-on: top-dev
     environment: development
     steps:
     - name: Checkout code
