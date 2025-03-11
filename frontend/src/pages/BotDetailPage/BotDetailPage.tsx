@@ -1,67 +1,87 @@
-import { Tag, Divider, Rate } from 'antd'
+import { Tag, Divider } from 'antd'
 import BotCard from '@app/components/BotCard/BotCard'
 import DetailCard from './components/DetailCard/DetailCard'
 import CompactBotCard from '@app/components/CompactBotCard/CompactBotCard'
-import { ratings, searchOption } from '@app/constants/common.constant'
+import { ratings } from '@app/constants/common.constant'
 import Comment from './components/Comment/Comment'
 import MtbProgress from '@app/mtb-ui/ProgressBar/ProgressBar'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import { TypographyStyle } from '@app/enums/typography.enum'
 import SearchBar from '@app/mtb-ui/SearchBar/SearchBar'
+import {
+  useLazyMezonAppControllerGetMezonAppDetailQuery,
+  useLazyMezonAppControllerGetRelatedMezonAppQuery
+} from '@app/services/api/mezonApp/mezonApp'
+import { useParams, useSearchParams } from 'react-router-dom'
+import { useEffect } from 'react'
+import { useSelector } from 'react-redux'
+import { RootState } from '@app/store'
+import { IMezonAppStore } from '@app/store/mezonApp'
+import MtbRate from '@app/mtb-ui/Rate/Rate'
+import { ITagStore } from '@app/store/tag'
+import { useLazyTagControllerGetTagsQuery } from '@app/services/api/tag/tag'
+import { useMezonAppSearch } from '@app/hook/useSearch'
+import { ApiError } from '@app/types/API.types'
+import { toast } from 'react-toastify'
 function BotDetailPage() {
+  const [getMezonAppDetail, { isError, error }] = useLazyMezonAppControllerGetMezonAppDetailQuery()
+  const [getrelatedMezonApp] = useLazyMezonAppControllerGetRelatedMezonAppQuery()
+  const [getTagList] = useLazyTagControllerGetTagsQuery()
+
+  const { botId } = useParams()
+  const { mezonAppDetail, relatedMezonApp } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
+  const { tagList } = useSelector<RootState, ITagStore>((s) => s.tag)
+  const { handleSearch } = useMezonAppSearch(1, 5)
+  const [searchParams] = useSearchParams()
+  const searchQuery = searchParams.get('q') || ''
+  useEffect(() => {
+    if (botId) {
+      getMezonAppDetail({ id: botId })
+      getrelatedMezonApp({ id: botId })
+    }
+  }, [botId])
+
+  useEffect(() => {
+    if (!tagList?.data?.length) {
+      getTagList()
+    }
+  }, [tagList])
+
+  useEffect(() => {
+    if (isError && error) {
+      const apiError = error as ApiError
+      toast.error(apiError?.data?.message[0])
+    }
+  }, [isError, error])
   return (
     <div className='m-auto pt-10 pb-10 w-[75%]'>
       <MtbTypography>Explore milions of mezon bots</MtbTypography>
       <div className='pt-5'>
-        <SearchBar data={searchOption} onSearch={(val) => console.log('Search:', val)}></SearchBar>
-      </div>
-      <div className='pt-5 cursor-pointer'>
-        {Array.from({ length: 8 }, (_, index) => (
-          <Tag key={index} className='!rounded-[10px]' color='#999999'>
-            Tag
-          </Tag>
-        ))}
+        <SearchBar onSearch={(val) => handleSearch(val ?? '')} defaultValue={searchQuery} isResultPage={false}></SearchBar>
       </div>
       <div className='pt-5 pb-5'>
-        <BotCard readonly={true}></BotCard>
+        <BotCard readonly={true} data={mezonAppDetail}></BotCard>
       </div>
       <MtbTypography variant='h3' textStyle={[TypographyStyle.UNDERLINE]}>
         Overview
       </MtbTypography>
       <div className='flex gap-10 pt-5 pb-5'>
         <div className='flex-3'>
-          <p className='text-justify'>
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nemo magni tempora ducimus blanditiis, harum
-            reiciendis recusandae eum quaerat id ea! Accusamus vero excepturi minus porro quam cum temporibus ea. Odit?
-            Dolorum numquam expedita voluptatum libero molestiae ut provident praesentium totam deleniti nemo. Debitis
-            nihil voluptatum sunt iste rem accusamus. Doloribus ab asperiores nemo dolorem perspiciatis tempore
-            accusamus exercitationem minus quas? Cumque, voluptates ipsum! Recusandae fuga autem sequi culpa totam
-            ratione voluptatibus, accusantium blanditiis eveniet nemo nulla dignissimos atque obcaecati neque quia alias
-            eum expedita itaque mollitia? Sapiente magnam doloremque minima? Laudantium totam saepe modi assumenda atque
-            commodi! Aliquid asperiores deserunt maxime quibusdam, debitis, voluptas nobis pariatur fuga, exercitationem
-            explicabo nisi! Et quisquam temporibus, explicabo facilis nemo saepe amet? Ad, hic? Non vel voluptas totam
-            repudiandae saepe quibusdam debitis, inventore, qui pariatur necessitatibus explicabo possimus perspiciatis
-            sunt magni dolorem nihil eius doloremque! Iste repellendus delectus unde omnis temporibus ad iure
-            aspernatur. Temporibus sapiente ipsa ut blanditiis pariatur in modi, voluptas cum voluptatem ipsum libero
-            alias voluptatibus voluptates hic suscipit quis eligendi sed possimus tempore, similique debitis totam
-            beatae harum. Quod, repellat? Quisquam deserunt eaque soluta. Ducimus facere minima ab distinctio, tempore
-            voluptas quisquam totam magnam accusamus inventore veritatis nam atque ratione modi sunt. Temporibus iure
-            aspernatur non animi corrupti deleniti harum? Nam sit eos saepe ab dolores! Veniam itaque commodi
-            consectetur adipisci suscipit blanditiis maxime beatae cumque. Earum quis esse molestiae rerum! Asperiores
-            hic commodi placeat optio mollitia, architecto possimus quam. At, aliquam, quidem totam laboriosam eum
-            nostrum temporibus libero beatae minima voluptatem sequi repudiandae officia fugiat iste ipsa. Quidem quos
-            libero repudiandae quisquam accusamus ipsam enim magnam vero dolores error. Aliquam, ipsa. Numquam tenetur
-            molestias laudantium unde quos dolor fuga ducimus! Sit aspernatur quod obcaecati assumenda nostrum saepe
-            aperiam, soluta facilis nulla eum, alias beatae eaque repellat illum, eius dolore?
-          </p>
+          <p className='text-justify'>{mezonAppDetail.description}</p>
           <div className='pt-5'>
             <MtbTypography variant='h3'>More like this</MtbTypography>
             <Divider className='bg-gray-200'></Divider>
-            <div className='flex justify-between gap-10 items-center max-lg:text-center max-2xl:text-center max-lg:flex-wrap max-2xl:flex-wrap max-lg:justify-center max-2xl:justify-center'>
-              {Array.from({ length: 5 }, (_, index) => (
-                <CompactBotCard key={index}></CompactBotCard>
-              ))}
-            </div>
+            {relatedMezonApp?.length > 0 ? (
+              <div className='flex gap-10 items-center max-lg:text-center max-2xl:text-center max-lg:flex-wrap max-2xl:flex-wrap max-lg:justify-center max-2xl:justify-center'>
+                {relatedMezonApp.map((bot) => (
+                  <CompactBotCard key={bot.id} data={bot} />
+                ))}
+              </div>
+            ) : (
+              <MtbTypography variant='h4' weight='normal' customClassName='!text-gray-500 !text-center !block'>
+                No related bot
+              </MtbTypography>
+            )}
           </div>
           <div className='pt-8'>
             <MtbTypography variant='h3'>Ratings & Reviews</MtbTypography>
@@ -69,9 +89,9 @@ function BotDetailPage() {
             <div className='flex justify-between gap-4 max-lg:flex-col max-2xl:flex-col'>
               <div className='flex-1'>
                 <div className='flex items-center gap-10 max-lg:justify-between max-2xl:justify-between'>
-                  <p className='text-6xl'>4.54</p>
+                  <p className='text-6xl'>{mezonAppDetail.rateScore}</p>
                   <div>
-                    <Rate defaultValue={4.5} allowHalf disabled></Rate>
+                    <MtbRate readonly={true} value={mezonAppDetail.rateScore}></MtbRate>
                     <p className='pt-2'>9,160 reviews</p>
                   </div>
                 </div>

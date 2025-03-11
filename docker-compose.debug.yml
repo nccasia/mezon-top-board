@@ -28,6 +28,7 @@ services:
     container_name: backend
     volumes:
       - ./backend:/app
+      - be_node_modules:/app/node_modules
     depends_on:
       postgres:
         condition: service_healthy
@@ -41,6 +42,15 @@ services:
       POSTGRES_PORT: 5432
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_SCHEMA: ${POSTGRES_SCHEMA}
+      OAUTH2_CLIENT_ID: ${OAUTH2_CLIENT_ID}
+      OAUTH2_CLIENT_SECRET: ${OAUTH2_CLIENT_SECRET}
+      OAUTH2_REDIRECT_URI: ${OAUTH2_REDIRECT_URI}
+      OAUTH2_API_URL: ${OAUTH2_API_URL}
+      JWT_ACCESS_TOKEN_SECRET: ${JWT_ACCESS_TOKEN_SECRET}
+      JWT_REFRESH_TOKEN_SECRET: ${JWT_REFRESH_TOKEN_SECRET}
+      JWT_ACCESS_TOKEN_EXPIRES_IN_MINUTES: ${JWT_ACCESS_TOKEN_EXPIRES_IN_MINUTES}
+      JWT_REFRESH_TOKEN_EXPIRES_IN_MINUTES: ${JWT_REFRESH_TOKEN_EXPIRES_IN_MINUTES}
+      UPLOAD_RELATIVE_DIR: ${UPLOAD_RELATIVE_DIR}
     ports:
       - "8123:8123"
     networks:
@@ -64,6 +74,7 @@ services:
 volumes:
   postgres_data:
   fe_node_modules:
+  be_node_modules:
 
 networks:
   main_net:

@@ -1,5 +1,5 @@
 import { LikeOutlined } from '@ant-design/icons'
-import avatar from '@app/assets/images/0e54d87446f106d1fd58385295ae9deb.png'
+import avatar from '@app/assets/images/default-user.webp'
 import MtbRate from '@app/mtb-ui/Rate/Rate'
 function Comment() {
   return (

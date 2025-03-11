@@ -1,5 +1,6 @@
 import Button from '@app/mtb-ui/Button'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
+import screenshot from '@app/assets/images/screenshot.png'
 
 function Banner() {
   return (
@@ -10,8 +11,9 @@ function Banner() {
           <MtbTypography variant='h1'>#1 Bot Listing for Mezon</MtbTypography>
           <div className='pt-3'>
             <p className='text-gray-500'>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusamus eum quasi ipsam in voluptas laboriosam
-              perferendis. Quibusdam
+              Welcome to Mezon Top Board, your go-to platform for discovering the best applications built on the Mezon
+              ecosystem. Our mission is to curate and showcase top-tier applications that leverage Mezon's cutting-edge
+              technology, helping users and developers explore innovative solutions with ease.
             </p>
           </div>
           <div className='pt-6'>
@@ -21,7 +23,7 @@ function Banner() {
           </div>
         </div>
         <div className='flex-1 object-cover w-full'>
-          <img src='https://placehold.co/350x200' alt='' width='100%' />
+          <img src={screenshot} alt='' width='100%' />
         </div>
       </div>
     </div>

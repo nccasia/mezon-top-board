@@ -7,11 +7,14 @@ import {
     ObjectLiteral,
     FindOptionsOrder,
     DeepPartial,
+    FindOptionsWhere,
+    FindOneOptions,
+    FindManyOptions,
 } from "typeorm";
 
 import { SortOrder } from "@domain/common/enum/sortOder";
 
-import { NOT_FOUND_MSG } from "@libs/constant/errorMsg";
+import { ErrorMessages } from "@libs/constant/messages";
 
 export class GenericRepository<T extends ObjectLiteral> {
     private repository: Repository<T>;
@@ -28,26 +31,42 @@ export class GenericRepository<T extends ObjectLiteral> {
         pageSize: number;
         sortField: string;
         sortOrder: string;
-        filters?: object;
+        where?: () => FindOptionsWhere<T> | FindOptionsWhere<T>[]; // Accepts single or multiple conditions
+        relations?: string[]
     }): Promise<[T[], number]> {
         const {
             pageNumber,
             pageSize,
             sortField = "createdAt",
             sortOrder = SortOrder.ASC,
-            filters,
+            where,
+            relations
         } = req;
 
         return await this.repository.findAndCount({
             skip: (pageNumber - 1) * pageSize,
             take: pageSize,
-            where: filters,
+            where: where ? where() : {},
+            withDeleted: false,
             order: { [sortField]: sortOrder } as FindOptionsOrder<T>,
+            relations
         });
     }
 
-    public async findById(id: string): Promise<T | null> {
-        return await this.repository.findOne({ where: { id } as any });
+    public async findById(id: string, relations?: string[]): Promise<T | null> {
+        return await this.repository.findOne({
+            where: { id } as any,
+            withDeleted: false,
+            relations
+        });
+    }
+
+    public async findOne(options: FindOneOptions<T>): Promise<T | null> {
+        return await this.repository.findOne(options);
+    }
+
+    public async find(options: FindManyOptions<T>): Promise<T[]> {
+        return await this.repository.find(options);
     }
 
     public async create(data: DeepPartial<T>): Promise<T> {
@@ -55,21 +74,21 @@ export class GenericRepository<T extends ObjectLiteral> {
         return await this.repository.save(entity);
     }
 
-    public async update(id: string, data: Partial<T>, msg: string = NOT_FOUND_MSG): Promise<void> {
+    public async update(id: string, data: Partial<T>, msg: string = ErrorMessages.NOT_FOUND_MSG): Promise<void> {
         const entity = await this.findById(id);
         if (!entity)
             throw new NotFoundException(msg)
         await this.repository.update(id, data);
     }
 
-    public async delete(id: string, msg: string = NOT_FOUND_MSG): Promise<void> {
+    public async delete(id: string, msg: string = ErrorMessages.NOT_FOUND_MSG): Promise<void> {
         const entity = await this.findById(id);
         if (!entity)
             throw new NotFoundException(msg)
         await this.repository.delete(id);
     }
 
-    public async softDelete(id: string, msg: string = NOT_FOUND_MSG): Promise<void> {
+    public async softDelete(id: string, msg: string = ErrorMessages.NOT_FOUND_MSG): Promise<void> {
         const entity = await this.findById(id);
         if (!entity)
             throw new NotFoundException(msg)

@@ -1,90 +1,121 @@
-import { AutoComplete, Input } from 'antd'
-import { SearchOutlined, CloseCircleOutlined } from '@ant-design/icons'
-import { useState } from 'react'
-import { debounce } from 'lodash'
+import { CloseCircleOutlined, SearchOutlined } from '@ant-design/icons'
+import { RootState } from '@app/store'
+import { ITagStore } from '@app/store/tag'
 import { ISearchBarProps } from '@app/types/Search.types'
-import { Controller, useForm } from 'react-hook-form'
-import { SEARCH_SCHEMA } from '@app/validations/search.validations'
-import { yupResolver } from '@hookform/resolvers/yup'
+import { Input, Tag } from 'antd'
+import { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import Button from '../Button'
+
+const MAX_VISIBLE_TAGS = 10
 
 const SearchBar = ({
   placeholder = 'Search',
   allowClear = true,
   onSearch,
-  debounceTime = 500,
-  data = [],
   isShowButton = true,
-  ...props
+  isResultPage = false,
 }: ISearchBarProps) => {
-  const [suggestions, setSuggestions] = useState<string[]>([])
-  const {
-    control,
-    handleSubmit,
-    setValue,
-    formState: { errors }
-  } = useForm<{ search: string }>({
-    resolver: yupResolver(SEARCH_SCHEMA)
-  })
+  const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const { tagList } = useSelector<RootState, ITagStore>((s) => s.tag)
 
-  const handleSearch = debounce((val: string) => {
-    if (!val) return setSuggestions([])
-    setSuggestions(data.filter((item) => item.toLowerCase().includes(val.toLowerCase())))
-  }, debounceTime)
+  const defaultTags = searchParams.get('tags')?.split(',') || []
+
+  const [showAllTags, setShowAllTags] = useState(false)
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>(defaultTags)
+  const [searchText, setSearchText] = useState<string>(searchParams.get('q') || '')
 
   const handleClear = () => {
-    setValue('search', '')
-    setSuggestions([])
+    setSearchText('')
+    setSelectedTagIds([])
+    setSearchParams({})
+    if (isResultPage) {
+      onSearch('', [])
+    }
   }
 
-  const onSubmit = (data: { search: string }) => {
-    onSearch(data.search.trim())
+  const updateSearchParams = (q: string, tags: string[]) => {
+    setSearchParams({ q, tags: tags.join(',') })
   }
+
+  const handleSearch = (inpSearchTags?: string[]) => {
+    const searchTags = inpSearchTags || selectedTagIds;
+
+    if (!isResultPage) {
+      navigate(`/search?q=${encodeURIComponent(searchText)}&tags=${searchTags.join(',')}`)
+      return;
+    }
+
+    updateSearchParams(searchText, searchTags)
+  }
+
+  const handleSearchTag = (tagId: string) => {
+    const updatedTagIds = selectedTagIds.includes(tagId)
+      ? selectedTagIds.filter((id) => id !== tagId)
+      : [...selectedTagIds, tagId]
+
+    setSelectedTagIds(updatedTagIds)
+    handleSearch(updatedTagIds)
+  }
+
+  const totalTags = tagList?.data?.length || 0
+  const hiddenTagsCount = totalTags - MAX_VISIBLE_TAGS
+
+  useEffect(() => {
+    onSearch(searchText, selectedTagIds)
+  }, [searchText, selectedTagIds])
 
   return (
-    <div className='flex gap-5 items-center'>
-      <form onSubmit={handleSubmit(onSubmit)} style={{ width: '100%' }}>
-        <Controller
-          name='search'
-          control={control}
-          render={({ field }) => (
-            <AutoComplete
-              {...props}
-              options={suggestions.map((item) => ({ value: item }))}
-              onSearch={(val) => handleSearch(val)}
-              onSelect={(val) => {
-                setValue('search', val)
-                onSearch(val.trim())
-              }}
-              value={field.value}
-              style={{ width: '100%' }}
-            >
-              <Input
-                {...field}
-                style={{ borderRadius: '100px' }}
-                status={errors.search ? 'error' : ''}
-                placeholder={placeholder}
-                prefix={<SearchOutlined style={{ color: '#bbb' }} />}
-                suffix={
-                  allowClear && field.value ? (
-                    <button onClick={handleClear} className='cursor-pointer flex align-middle'>
-                      <CloseCircleOutlined  className='text-sm'/>
-                    </button>
-                  ) : null
-                }
-                onPressEnter={handleSubmit(onSubmit)}
-              />
-            </AutoComplete>
-          )}
-        />
-        {errors.search && <p style={{ color: 'red', paddingTop: '10px' }}>{errors.search.message}</p>}
-      </form>
-      {isShowButton && (
-        <Button color='primary' variant='solid' size='large' htmlType='submit' onClick={handleSubmit(onSubmit)}>
-          Search
-        </Button>
-      )}
-    </div>
+    <>
+      <div className='flex gap-15 items-center'>
+        <div style={{ width: '100%' }}>
+          <Input
+            // {...props}
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            style={{
+              borderRadius: '100px',
+              height: '50px'
+            }}
+            placeholder={placeholder}
+            prefix={<SearchOutlined style={{ color: '#bbb' }} />}
+            suffix={
+              allowClear && (searchText || selectedTagIds.length) ? (
+                <button onClick={handleClear} className='cursor-pointer flex align-middle'>
+                  <CloseCircleOutlined className='text-sm' />
+                </button>
+              ) : null
+            }
+            onPressEnter={() => handleSearch()}
+          />
+        </div>
+        {isShowButton && (
+          <Button color='primary' variant='solid' size='large' htmlType='submit' style={{ height: '50px', minWidth: '130px' }} onClick={() => handleSearch()}>
+            Search
+          </Button>
+        )}
+      </div>
+      <div className={`pt-5 cursor-pointer`}>
+        {tagList?.data?.slice(0, showAllTags ? totalTags : MAX_VISIBLE_TAGS).map((tag) => (
+          <Tag.CheckableTag
+            key={tag.id}
+            checked={selectedTagIds.includes(tag?.id)}
+            className='!border !border-gray-300'
+            // color={selectedTagIds.includes(tag?.id) ? tag.tagSelectedColor : tag.tagColor}
+            onClick={() => handleSearchTag(tag?.id)}
+          >
+            {tag.name}
+          </Tag.CheckableTag>
+        ))}
+        {!showAllTags && totalTags > 10 && (
+          <Tag className='!mb-2' onClick={() => setShowAllTags(true)}>
+            +{hiddenTagsCount}
+          </Tag>
+        )}
+      </div>
+    </>
   )
 }
 

@@ -1,36 +1,44 @@
-import { Entity, Column, Unique, OneToMany, ChildEntity, ManyToMany, TableInheritance, JoinTable } from "typeorm";
+import {
+    Column,
+    Entity,
+    JoinTable,
+    OneToMany,
+    Unique,
+} from "typeorm";
 
 import { Role } from "@domain/common/enum/role";
-import { Rating, Link } from "@domain/entities";
+import { App, Link, Media, Rating } from "@domain/entities";
 
 import { BaseSoftDelete } from "../base";
 
 @Entity()
 @Unique(["email"])
-@TableInheritance({ column: { name: "role", type: "enum", enum: Role } })
 export class User extends BaseSoftDelete {
-    @Column()
-    public name: string;
+    @Column({ nullable: true, default: '' })
+    public name: string | null;
 
     @Column()
     public email: string;
 
-    @Column()
+    @Column({ nullable: true, default: null })
     public password: string;
+
+    @Column({ type: "enum", enum: Object.keys(Role), default: Role.DEVELOPER })
+    public role: Role;
+
+    @Column({ nullable: true, default: null })
+    public bio: string;
 
     @OneToMany(() => Rating, (rating) => rating.user)
     public ratings: Rating[];
-}
 
-@ChildEntity(Role.ADMIN)
-export class Admin extends User { }
+    @OneToMany(() => App, (app) => app.owner)
+    public apps: App[];
 
-@ChildEntity(Role.DEVELOPER)
-export class Developer extends User {
-    @Column({ nullable: true })
-    public bio: string;
-
-    @ManyToMany(() => Link, (link) => link.devs)
+    @OneToMany(() => Link, (link) => link.owner)
     @JoinTable()
-    public socialLinks: Link[];
+    public links: Link[];
+
+    @OneToMany(() => Media, (media) => media.owner)
+    public medias: Media[];
 }

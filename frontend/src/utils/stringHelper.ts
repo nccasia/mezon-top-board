@@ -49,3 +49,18 @@ export const handleMapOption = (enums: Record<string, string>) => {
     label: value
   }))
 }
+
+export const getUrlImage = (path: string) => {
+  return `${process.env.REACT_APP_BACKEND_URL}/api${path}`;
+}
+
+export function uuidToNumber(uuid: string) {
+  // Remove all dashes from the UUID string.
+  const cleanedUuid = uuid.replace(/-/g, '');
+  let total = 0;
+  // Sum the ASCII values of each character.
+  for (let i = 0; i < cleanedUuid.length; i++) {
+    total += cleanedUuid.charCodeAt(i);
+  }
+  return total;
+}

@@ -1,17 +1,32 @@
 import { RiseOutlined, StarOutlined } from '@ant-design/icons'
-import avatar from '../../assets/images/0e54d87446f106d1fd58385295ae9deb.png'
-function CompactBotCard() {
+import { useNavigate } from 'react-router-dom'
+import { ICompactBotCardProps } from '@app/types/Botcard.types'
+import { getUrlImage } from '@app/utils/stringHelper'
+import { avatarBotDefault } from '@app/assets'
+
+function CompactBotCard({ data }: ICompactBotCardProps) {
+  const navigate = useNavigate()
+  const handleNavigateDetail = () => {
+    if (data?.id) {
+      navigate(`/${data?.id}`)
+    }
+  }
+  const imgUrl = data?.featuredImage ? getUrlImage(data.featuredImage) : avatarBotDefault
   return (
-    <div className='shadow-sm rounded-2xl p-4 bg-white cursor-pointer'>
-      <div className='pl-10 pr-10 rounded-2xl bg-red-300'>
+    <div className='shadow-sm rounded-2xl p-4 bg-white cursor-pointer' onClick={handleNavigateDetail}>
+      <div className='pl-10 pr-10 rounded-2xl'>
         <div className='w-20 m-auto'>
-          <img src={avatar} alt='' className='rounded-full object-cover w-full' width={'100%'} />
+          <img src={imgUrl} alt='' className='rounded-full object-cover w-full' width={'100%'} />
         </div>
       </div>
-      <p className='pt-3 pb-3'>Name</p>
+      <p className='pt-3 pb-3 font-black'>{data?.name || 'Name'}</p>
       <div className='flex justify-between items-center'>
-        <p><StarOutlined /> 4,1</p>
-        <p><RiseOutlined /> 841,600</p>
+        <p>
+          <StarOutlined /> {data?.rateScore || 0}
+        </p>
+        <p>
+          <RiseOutlined /> 841,600
+        </p>
       </div>
     </div>
   )

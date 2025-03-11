@@ -1,14 +1,12 @@
 import { safeConcatUrl } from '../utils/stringHelper'
 import type { ConfigFile } from '@rtk-query/codegen-openapi'
-import dotenv from 'dotenv'
+import * as dotenv from 'dotenv'
 
 dotenv.config({
   path: '../../.env'
 })
 
-console.log('first', process.env.REACT_APP_BACKEND_ENDPOINT)
-
-const schemaUrl = safeConcatUrl(process.env.REACT_APP_BACKEND_ENDPOINT ?? '', 'docs/openApi.json') as string
+const schemaUrl = safeConcatUrl(process.env.REACT_APP_BACKEND_URL ?? '', 'api/openApi.json') as string
 
 const filterByTag = (tag: string) => {
   const matcher = (name: string, operationDefinition: any) => {
@@ -26,10 +24,35 @@ const config: ConfigFile = {
   apiImport: 'api',
   useEnumType: true,
   outputFiles: {
-    './api/auth.ts': {
-      filterEndpoints: filterByTag('auth'),
-      exportName: 'authService'
-    }
+    // UNCOMMENT TO ENABLE SERVICE GENERATION
+    // './api/media/media.ts': {
+    //   filterEndpoints: filterByTag('Media'),
+    //   exportName: 'mediaService'
+    // },
+    // './api/auth/auth.ts': {
+    //   filterEndpoints: filterByTag('Auth'),
+    //   exportName: 'authService'
+    // },
+    // './api/tag/tag.ts': {
+    //   filterEndpoints: filterByTag('Tag'),
+    //   exportName: 'tagService'
+    // },
+    // './api/mezonApp/mezonApp.ts': {
+    //   filterEndpoints: filterByTag('MezonApp'),
+    //   exportName: 'mezonAppService'
+    // },
+    // './api/linkType/linkType.ts': {
+    //   filterEndpoints: filterByTag('LinkType'),
+    //   exportName: 'linkTypeService'
+    // },
+    // './api/user/user.ts': {
+    //   filterEndpoints: filterByTag('User'),
+    //   exportName: 'userService'
+    // },
+    // './api/reviewHistory/reviewHistory.ts': {
+    //   filterEndpoints: filterByTag('Review History'),
+    //   exportName: 'reviewHistoryService'
+    // },
   },
 
   hooks: {
