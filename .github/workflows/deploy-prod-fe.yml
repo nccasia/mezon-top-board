@@ -1,0 +1,32 @@
+name: Deploy FE to Prodction Top Mezon AI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/deploy-prod-fe.yml'
+jobs:
+  deploy:
+    runs-on: top-prod
+    environment: production
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Cache Node Module
+      uses: actions/cache@v4  
+
+    - name: Update Env-Config
+      run: |
+        cd frontend/
+        echo '${{ secrets.ENV_PROD_FE }}' > .env
+
+    - name: Build FE & Deploy
+      run: |
+        cd frontend/
+        nvm use 20.18.1
+        yarn
+        yarn build
+        cp -r dist/* /var/www/top-mezon-ai/

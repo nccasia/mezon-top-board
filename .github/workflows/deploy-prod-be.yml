@@ -1,0 +1,33 @@
+name: Deploy BE to Prodction Top Mezon AI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+      - '.github/workflows/deploy-prod-be.yml'
+
+jobs:
+  deploy:
+    runs-on: top-prod
+    environment: production
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Cache Node Module
+      uses: actions/cache@v4  
+
+    - name: Update Env-Config
+      run: |
+        cd backend/
+        echo '${{ secrets.ENV_PROD_BE }}' > .env.prod
+
+    - name: Build BE & Deploy
+      run: |
+        cd backend/
+        nvm use 20.18.1
+        yarn
+        yarn build
+        pm2 restart 0
