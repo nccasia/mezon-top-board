@@ -16,9 +16,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Cache Node Module
-      uses: actions/cache@v4  
-
     - name: Update Env-Config
       run: |
         cd backend/
