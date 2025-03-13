@@ -7,7 +7,7 @@ import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import { IBotCardProps } from '@app/types/Botcard.types'
 import { randomColor } from '@app/utils/mezonApp'
 import { getUrlImage, uuidToNumber } from '@app/utils/stringHelper'
-import { Dropdown, Menu, Tag } from 'antd'
+import { Dropdown, Menu, Popover, Tag } from 'antd'
 import { title } from 'process'
 import { useNavigate } from 'react-router-dom'
 import {
@@ -35,25 +35,32 @@ function BotCard({ readonly = false, data }: IBotCardProps) {
   const title = data?.name || 'Check out this app!'
   const description = data?.description || 'Discover this amazing application.'
 
-  // Define the dropdown menu
   const shareMenu = (
-    <Menu>
-      <Menu.Item key='facebook'>
-        <FacebookShareButton url={shareUrl} hashtag={`#MezonApp`}>
-          <FacebookIcon size={32} round /> Facebook
+    <div className='bg-white shadow-lg rounded-lg'>
+      <div className='py-2 border-b text-sm font-medium text-gray-700'>Share</div>
+      <div key='facebook'>
+        <FacebookShareButton url={shareUrl} hashtag={`#MezonApp`} className='w-full'>
+          <div className='flex items-center gap-2 p-2 hover:bg-gray-300 rounded-lg transition-all duration-200'>
+            <FacebookIcon size={24} borderRadius={6} /> <span className='text-sm'>Facebook</span>
+          </div>
         </FacebookShareButton>
-      </Menu.Item>
-      <Menu.Item key='twitter'>
-        <TwitterShareButton url={shareUrl} title={title}>
-          <XIcon size={32} round /> X (Twitter)
+      </div>
+      <div key='x' >
+        <TwitterShareButton url={shareUrl} title={title} className='w-full'>
+          <div className='flex items-center gap-2 p-2 hover:bg-gray-300 rounded-lg transition-all duration-200'>
+            <XIcon size={24} borderRadius={6} />
+            <span className='text-sm'>X (Twitter)</span>
+          </div>
         </TwitterShareButton>
-      </Menu.Item>
-      <Menu.Item key='linkedin'>
-        <LinkedinShareButton url={shareUrl} title={title} summary={description}>
-          <LinkedinIcon size={32} round /> LinkedIn
+      </div>
+      <div key='linkedin'>
+        <LinkedinShareButton url={shareUrl} title={title} summary={description} className='w-full'>
+          <div className='flex items-center gap-2 p-2 hover:bg-gray-300 rounded-lg transition-all duration-200'>
+            <LinkedinIcon size={24} borderRadius={6} /> <span className='text-sm'>LinkedIn</span>
+          </div>
         </LinkedinShareButton>
-      </Menu.Item>
-    </Menu>
+      </div>
+    </div>
   )
   return (
     <div
@@ -87,9 +94,9 @@ function BotCard({ readonly = false, data }: IBotCardProps) {
         <Button variant='solid' color='secondary' size='large' onClick={handleInvite}>
           Invite
         </Button>
-        <Dropdown overlay={shareMenu} trigger={['click']}>
+        <Popover content={shareMenu} trigger='click' placement='bottomRight' arrow={false} overlayInnerStyle={{marginTop: '8px', minWidth: '200px', maxWidth: '300px'}}>
           <Button size='large' color='default' icon={<UploadOutlined />} onClick={handleShare} />
-        </Dropdown>
+        </Popover>
       </div>
     </div>
   )
