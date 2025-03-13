@@ -1,10 +1,15 @@
 import { EditOutlined } from '@ant-design/icons'
-import { SearchUserResponse, UpdateUserRequest, UserControllerSearchUserApiArg, useUserControllerSearchUserQuery } from '@app/services/api/user/user'
+import {
+  UpdateUserRequest,
+  UserControllerSearchUserApiArg,
+  useUserControllerSearchUserQuery
+} from '@app/services/api/user/user'
 import { useAppSelector } from '@app/store/hook'
 import { Alert, Breakpoint, Button, Form, Input, InputRef, Select, Spin, Table, Tag } from 'antd'
 import { useMemo, useRef, useState } from 'react'
 import { userRoleColors } from './components/UserTableColumns'
 import EditUserForm from './EditUserForm'
+import { mapDataSourceTable } from '@app/utils/table'
 
 const { Option } = Select
 
@@ -141,12 +146,12 @@ function UsersList() {
       {!isLoading && !error && (
         <Table
           columns={userTableColumns}
-          dataSource={users.map((user: SearchUserResponse) => ({ ...user, key: user.id }))}
+          dataSource={mapDataSourceTable(users as UpdateUserRequest[])}
           pagination={{
-            current: data?.pageNumber || 1, // ✅ Controlled by API
-            pageSize: data?.pageSize || 5, // ✅ Controlled by API
-            total: data?.totalCount || 0, // ✅ Controlled by API
-            onChange: handlePageChange // ✅ Handles Page Change
+            current: data?.pageNumber || 1, //  Controlled by API
+            pageSize: data?.pageSize || 5, //  Controlled by API
+            total: data?.totalCount || 0, //  Controlled by API
+            onChange: handlePageChange //  Handles Page Change
           }}
           bordered
           scroll={{ x: 'max-content' }} // Enables horizontal scrolling on overflow

@@ -1,9 +1,8 @@
 import { Role } from '@app/services/api/mezonApp/mezonApp'
 import { UpdateUserRequest, useUserControllerUpdateUserMutation } from '@app/services/api/user/user'
+import { handleMapOption } from '@app/utils/stringHelper'
 import { Button, Form, Input, Modal, Select } from 'antd'
 import { toast } from 'react-toastify'
-
-const { Option } = Select
 
 const EditUserForm = ({ user, onClose }: { user: UpdateUserRequest; onClose: () => void }) => {
   const [form] = Form.useForm()
@@ -54,10 +53,7 @@ const EditUserForm = ({ user, onClose }: { user: UpdateUserRequest; onClose: () 
 
         {/* Role Selection */}
         <Form.Item label='Role' name='role'>
-          <Select placeholder='Select role'>
-            <Option value={Role.Admin}>Admin</Option>
-            <Option value={Role.Developer}>Developer</Option>
-          </Select>
+          <Select placeholder='Select role' options={handleMapOption(Role)} />
         </Form.Item>
       </Form>
     </Modal>

@@ -1,14 +1,9 @@
-import {
-  BadRequestException,
-  ForbiddenException,
-  Injectable,
-} from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 
 import { EntityManager } from "typeorm";
 
 import { RequestWithId } from "@domain/common/dtos/request.dto";
 import { Result } from "@domain/common/dtos/result.dto";
-import { Role } from "@domain/common/enum/role";
 import { User } from "@domain/entities";
 
 import { ErrorMessages } from "@libs/constant/messages";
@@ -58,20 +53,12 @@ export class UserService {
     return new Result({ data: Mapper(GetUserDetailsResponse, user) });
   }
 
-  async deleteUser(adminId: string, req: RequestWithId) {
-    // Todo: move permission handler to decorator.
-    const admin = await this.userRepository.findById(adminId);
-    if (!admin || admin.role !== Role.ADMIN)
-      throw new ForbiddenException(ErrorMessages.PERMISSION_DENIED);
+  async deleteUser(req: RequestWithId) {
     await this.userRepository.softDelete(req.id);
     return new Result();
   }
 
-  async updateUser(adminId: string, req: UpdateUserRequest) {
-    // Todo: move permission handler to decorator.
-    const admin = await this.userRepository.findById(adminId);
-    if (!admin || admin.role !== Role.ADMIN)
-      throw new ForbiddenException(ErrorMessages.PERMISSION_DENIED);
+  async updateUser(req: UpdateUserRequest) {
     await this.userRepository.update(req.id, {
       name: req.name,
       bio: req.bio,

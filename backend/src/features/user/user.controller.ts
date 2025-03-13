@@ -45,11 +45,8 @@ export class UserController {
   @Put()
   @ApiBearerAuth()
   @RoleRequired([Role.ADMIN])
-  async updateUser(
-    @GetUserFromHeader() user: User,
-    @Body() body: UpdateUserRequest,
-  ) {
-    return this.userService.updateUser(user.id, body);
+  async updateUser(@Body() body: UpdateUserRequest) {
+    return this.userService.updateUser(body);
   }
 
   @Put("self-update")
@@ -64,10 +61,7 @@ export class UserController {
   @Delete()
   @ApiBearerAuth()
   @RoleRequired([Role.ADMIN])
-  async deleteUser(
-    @GetUserFromHeader() user: User,
-    @Body() body: RequestWithId,
-  ) {
-    return this.userService.deleteUser(user.id, body);
+  async deleteUser(@Body() body: RequestWithId) {
+    return this.userService.deleteUser(body);
   }
 }
