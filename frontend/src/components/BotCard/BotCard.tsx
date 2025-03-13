@@ -7,13 +7,22 @@ import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import { IBotCardProps } from '@app/types/Botcard.types'
 import { randomColor } from '@app/utils/mezonApp'
 import { getUrlImage, uuidToNumber } from '@app/utils/stringHelper'
-import { Tag } from 'antd'
+import { Dropdown, Menu, Tag } from 'antd'
+import { title } from 'process'
 import { useNavigate } from 'react-router-dom'
+import {
+  FacebookShareButton,
+  FacebookIcon,
+  TwitterShareButton,
+  LinkedinShareButton,
+  LinkedinIcon,
+  XIcon
+} from 'react-share'
 
 function BotCard({ readonly = false, data }: IBotCardProps) {
   const navigate = useNavigate()
   const handleInvite = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
+    e.stopPropagation()
     window.open(data?.installLink, '_blank')
   }
   const handleShare = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -21,7 +30,31 @@ function BotCard({ readonly = false, data }: IBotCardProps) {
   }
 
   const imgUrl = data?.featuredImage ? getUrlImage(data.featuredImage) : avatarBotDefault
+  // Share to social media
+  const shareUrl = data?.installLink || window.location.href
+  const title = data?.name || 'Check out this app!'
+  const description = data?.description || 'Discover this amazing application.'
 
+  // Define the dropdown menu
+  const shareMenu = (
+    <Menu>
+      <Menu.Item key='facebook'>
+        <FacebookShareButton url={shareUrl} hashtag={`#MezonApp`}>
+          <FacebookIcon size={32} round /> Facebook
+        </FacebookShareButton>
+      </Menu.Item>
+      <Menu.Item key='twitter'>
+        <TwitterShareButton url={shareUrl} title={title}>
+          <XIcon size={32} round /> X (Twitter)
+        </TwitterShareButton>
+      </Menu.Item>
+      <Menu.Item key='linkedin'>
+        <LinkedinShareButton url={shareUrl} title={title} summary={description}>
+          <LinkedinIcon size={32} round /> LinkedIn
+        </LinkedinShareButton>
+      </Menu.Item>
+    </Menu>
+  )
   return (
     <div
       className='shadow-md pb-8 pt-8 px-8 border border-gray-300 relative rounded-xl cursor-pointer'
@@ -36,7 +69,7 @@ function BotCard({ readonly = false, data }: IBotCardProps) {
           <div className='flex flex-col gap-3'>
             <MtbTypography variant='h4'>{data?.name}</MtbTypography>
             <div className='flex gap-1'>
-              {data?.status !== AppStatus.PUBLISHED && (<Tag color='red'>UNPUBLISHED</Tag>)}
+              {data?.status !== AppStatus.PUBLISHED && <Tag color='red'>UNPUBLISHED</Tag>}
               <MtbRate readonly={readonly} value={data?.rateScore}></MtbRate>
             </div>
             <div className='flex gap-2'>
@@ -54,7 +87,9 @@ function BotCard({ readonly = false, data }: IBotCardProps) {
         <Button variant='solid' color='secondary' size='large' onClick={handleInvite}>
           Invite
         </Button>
-        <Button size='large' color='default' icon={<UploadOutlined />} onClick={handleShare} />
+        <Dropdown overlay={shareMenu} trigger={['click']}>
+          <Button size='large' color='default' icon={<UploadOutlined />} onClick={handleShare} />
+        </Dropdown>
       </div>
     </div>
   )
