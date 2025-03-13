@@ -24,7 +24,6 @@ jobs:
     - name: Build BE & Deploy
       run: |
         cd backend/
-        nvm use 20.18.1
         yarn
         yarn build
         pm2 restart 0

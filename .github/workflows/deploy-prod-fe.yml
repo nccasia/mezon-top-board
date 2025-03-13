@@ -36,7 +36,6 @@ jobs:
     - name: Build FE & Deploy
       run: |
         cd frontend/
-        nvm use 20.18.1
         yarn
         yarn build
         cp -r dist/* /var/www/top-mezon-ai/
