@@ -25,41 +25,52 @@ function BotCard({ readonly = false, data }: IBotCardProps) {
     e.stopPropagation()
     window.open(data?.installLink, '_blank')
   }
-  const handleShare = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleShare = (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation()
   }
 
   const imgUrl = data?.featuredImage ? getUrlImage(data.featuredImage) : avatarBotDefault
   // Share to social media
-  const shareUrl = data?.installLink || window.location.href
+  const shareUrl = 'google.com'
   const title = data?.name || 'Check out this app!'
   const description = data?.description || 'Discover this amazing application.'
 
+  const shareOptions = [
+    {
+      key: 'facebook',
+      Component: FacebookShareButton,
+      icon: <FacebookIcon size={24} borderRadius={6} />,
+      text: 'Facebook',
+      props: { url: shareUrl, hashtag: '#MezonApp' }
+    },
+    {
+      key: 'x',
+      Component: TwitterShareButton,
+      icon: <XIcon size={24} borderRadius={6} />,
+      text: 'X (Twitter)',
+      props: { url: shareUrl, title }
+    },
+    {
+      key: 'linkedin',
+      Component: LinkedinShareButton,
+      icon: <LinkedinIcon size={24} borderRadius={6} />,
+      text: 'LinkedIn',
+      props: { url: shareUrl, title, summary: description }
+    }
+  ]
+
   const shareMenu = (
-    <div className='bg-white shadow-lg rounded-lg'>
+    <div className='bg-white shadow-lg rounded-lg' onClick={handleShare}>
       <div className='py-2 border-b text-sm font-medium text-gray-700'>Share</div>
-      <div key='facebook'>
-        <FacebookShareButton url={shareUrl} hashtag={`#MezonApp`} className='w-full'>
-          <div className='flex items-center gap-2 p-2 hover:bg-gray-300 rounded-lg transition-all duration-200'>
-            <FacebookIcon size={24} borderRadius={6} /> <span className='text-sm'>Facebook</span>
-          </div>
-        </FacebookShareButton>
-      </div>
-      <div key='x' >
-        <TwitterShareButton url={shareUrl} title={title} className='w-full'>
-          <div className='flex items-center gap-2 p-2 hover:bg-gray-300 rounded-lg transition-all duration-200'>
-            <XIcon size={24} borderRadius={6} />
-            <span className='text-sm'>X (Twitter)</span>
-          </div>
-        </TwitterShareButton>
-      </div>
-      <div key='linkedin'>
-        <LinkedinShareButton url={shareUrl} title={title} summary={description} className='w-full'>
-          <div className='flex items-center gap-2 p-2 hover:bg-gray-300 rounded-lg transition-all duration-200'>
-            <LinkedinIcon size={24} borderRadius={6} /> <span className='text-sm'>LinkedIn</span>
-          </div>
-        </LinkedinShareButton>
-      </div>
+      {shareOptions.map(({ key, Component, icon, text, props }) => (
+        <div key={key}>
+          <Component {...props} className='w-full'>
+            <div className='flex items-center gap-2 p-2 hover:bg-gray-300 rounded-lg transition-all duration-200'>
+              {icon} <span className='text-sm'>{text}</span>
+            </div>
+          </Component>
+        </div>
+      ))}
     </div>
   )
   return (
@@ -94,7 +105,13 @@ function BotCard({ readonly = false, data }: IBotCardProps) {
         <Button variant='solid' color='secondary' size='large' onClick={handleInvite}>
           Invite
         </Button>
-        <Popover content={shareMenu} trigger='click' placement='bottomRight' arrow={false} overlayInnerStyle={{marginTop: '8px', minWidth: '200px', maxWidth: '300px'}}>
+        <Popover
+          content={shareMenu}
+          trigger='click'
+          placement='bottomRight'
+          arrow={false}
+          overlayInnerStyle={{ marginTop: '8px', minWidth: '200px', maxWidth: '300px' }}
+        >
           <Button size='large' color='default' icon={<UploadOutlined />} onClick={handleShare} />
         </Popover>
       </div>
