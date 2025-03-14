@@ -1,5 +1,6 @@
 import { HttpResponse } from '@app/types/API.types'
 import { api } from '../../apiInstance'
+import { Role } from '../mezonApp/mezonApp'
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
     userControllerSearchUser: build.query<UserControllerSearchUserApiResponse, UserControllerSearchUserApiArg>({
@@ -70,6 +71,7 @@ export type UpdateUserRequest = {
   id: string
   name?: string
   bio?: string
+  role?: Role
 }
 export type RequestWithId = {
   id: string
