@@ -1,10 +1,10 @@
-import Banner from '@app/pages/AboutPage/components/Banner/Banner'
+import Hero from '@app/mtb-ui/Hero/Hero'
 import Main from '@app/pages/AboutPage/components/Main/Main'
 
 function AboutPage() {
   return (
     <div>
-      <Banner></Banner>
+      <Hero></Hero>
       <Main></Main>
     </div>
   )

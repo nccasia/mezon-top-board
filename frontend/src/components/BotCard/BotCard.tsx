@@ -21,15 +21,14 @@ function BotCard({ readonly = false, data }: IBotCardProps) {
   }
 
   const imgUrl = data?.featuredImage ? getUrlImage(data.featuredImage) : avatarBotDefault
-
   return (
     <div
       className='shadow-md pb-8 pt-8 px-8 border border-gray-300 relative rounded-xl cursor-pointer'
       onClick={() => navigate(`/${data?.id}`)}
     >
       <div className='flex flex-col md:flex-row items-start gap-6'>
-        <div className='w-32 md:w-48'>
-          <img src={imgUrl} alt='Bot' className='w-full h-auto rounded-lg' />
+        <div className='w-24 md:w-36 flex-shrink-0'>
+          <img src={imgUrl} alt='Bot' className='w-full h-auto object-cover' />
         </div>
 
         <div className='flex-1'>
