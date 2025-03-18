@@ -30,7 +30,7 @@ function Footer() {
           <MtbTypography variant='h5' customClassName='!mb-0 !text-gray-600'>Follow us</MtbTypography>
           <div className="flex gap-2">
           {footerLink.map((item, index) => (
-            <Tag key={index} className='!rounded-full !p-2 !bg-gray-300 !text-lg cursor-pointer hover:!bg-gray-100' onClick={() => window.open(item.link, '_blank')}>
+            <Tag key={index} className='!rounded-full !w-12 !h-12 !flex !items-center !justify-center !bg-gray-300 !text-lg cursor-pointer hover:!bg-gray-100' onClick={() => window.open(item.link, '_blank')}>
               {item.icon}
             </Tag>
           ))}

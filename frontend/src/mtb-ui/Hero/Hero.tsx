@@ -29,7 +29,7 @@ function Hero() {
           <img
             src={screenshot}
             alt='Mezon Top Board Preview'
-            className='w-full h-auto object-cover rounded-md shadow-md'
+            className='w-full h-auto object-cover rounded-xl shadow-md'
           />
         </figure>
       </div>

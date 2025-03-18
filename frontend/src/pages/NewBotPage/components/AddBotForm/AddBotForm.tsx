@@ -1,5 +1,5 @@
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
-import { Checkbox, Form, Input, Select, SelectProps } from 'antd'
+import { Checkbox, Form, Input, Select, SelectProps, Tag } from 'antd'
 import FormField from '@app/components/FormField/FormField'
 import { Controller, useFormContext } from 'react-hook-form'
 import Button from '@app/mtb-ui/Button'
@@ -127,89 +127,151 @@ function AddBotForm({ onResetAvatar }: IAddBotFormProps) {
     <div className='shadow-md p-8 rounded-md bg-white'>
       <Form layout='vertical' onFinish={handleSubmit(onSubmit)}>
         <MtbTypography variant='h4'>Your Bot Detail</MtbTypography>
-        <FormField label='Name' errorText={errors.name?.message}>
+        <FormField label='Name' description='Name your bot' errorText={errors.name?.message}>
           <Controller
             control={control}
             name='name'
-            render={({ field }) => <Input {...field} placeholder='Name' status={errorStatus(errors.name)} />}
+            render={({ field }) => <Input {...field} placeholder='MezonBot' status={errorStatus(errors.name)} />}
           />
         </FormField>
-        <FormField label='Headline' errorText={errors.headline?.message}>
+        <FormField
+          label='Headline'
+          description='Provide a short and catchy phrase that describes your bot.'
+          errorText={errors.headline?.message}
+        >
           <Controller
             control={control}
             name='headline'
-            render={({ field }) => <TextArea {...field} placeholder='Headline' status={errorStatus(errors.headline)} />}
+            render={({ field }) => (
+              <TextArea
+                {...field}
+                placeholder='A powerful and multi-functional role bot.'
+                status={errorStatus(errors.headline)}
+              />
+            )}
           />
         </FormField>
-        <FormField label='Full Description' errorText={errors.description?.message}>
+        <FormField
+          label='Full Description'
+          description='Tell us what your bot can do. We want to hear the whole story!'
+          errorText={errors.description?.message}
+        >
           <Controller
             control={control}
             name='description'
             render={({ field }) => (
-              <TextArea {...field} placeholder='Description' status={errorStatus(errors.description)} />
+              <TextArea
+                {...field}
+                placeholder='Your long description goes here.'
+                status={errorStatus(errors.description)}
+              />
             )}
           />
         </FormField>
         <FormField label='Auto-publish?' customClass='!items-center'>
           <Controller control={control} name='isAutoPublished' render={({ field }) => <Checkbox {...field} />} />
         </FormField>
-        <FormField label='Install Link' errorText={errors.installLink?.message}>
+        <FormField
+          label='Install Link'
+          description='A place where users can install your bot on their Discord server.'
+          errorText={errors.installLink?.message}
+        >
           <Controller
             control={control}
             name='installLink'
             render={({ field }) => (
-              <Input {...field} placeholder='Install Link' status={errorStatus(errors.installLink)} />
-            )}
-          />
-        </FormField>
-        <FormField label='Prefix' errorText={errors.prefix?.message}>
-          <Controller
-            control={control}
-            name='prefix'
-            render={({ field }) => <Input {...field} placeholder='Prefix' status={errorStatus(errors.prefix)} />}
-          />
-        </FormField>
-        <FormField label='Tags' errorText={errors.tagIds?.message}>
-          <Controller
-            control={control}
-            name='tagIds'
-            render={({ field }) => (
-              <Select
+              <Input
                 {...field}
-                allowClear
-                value={field.value || []}
-                mode='multiple'
-                options={options}
-                placeholder='Tags'
-                tagRender={tagRender}
-                status={errors?.tagIds?.message ? 'error' : ''}
-                onChange={(value) => {
-                  field.onChange(value)
-                  handleSelectTag(value)
-                }}
+                placeholder='https://mezon.ai/oauth2/authorize?client_id=1261258962204889149&scope=bot'
+                status={errorStatus(errors.installLink)}
               />
             )}
           />
         </FormField>
-        <FormField label='Support URL' errorText={errors.supportUrl?.message}>
+        <FormField
+          label='Prefix'
+          description='What keyword or phrase does your bot react to?'
+          errorText={errors.prefix?.message}
+        >
+          <Controller
+            control={control}
+            name='prefix'
+            render={({ field }) => <Input {...field} placeholder='*' status={errorStatus(errors.prefix)} />}
+          />
+        </FormField>
+        <FormField
+          label='Tags'
+          description='Select the top 12 categories that best represent your community.'
+          errorText={errors.tagIds?.message}
+        >
+          <Controller
+            control={control}
+            name='tagIds'
+            render={({ field }) => (
+              <>
+                <Select
+                  {...field}
+                  allowClear
+                  value={field.value || []}
+                  mode='multiple'
+                  options={options}
+                  placeholder='Search for tags'
+                  tagRender={tagRender}
+                  status={errors?.tagIds?.message ? 'error' : ''}
+                  onChange={(value) => {
+                    field.onChange(value)
+                    handleSelectTag(value)
+                  }}
+                />
+                {console.log('field.value', field.value)}
+                {field.value.length > 0 && (
+                  <div className='mt-2 flex flex-wrap gap-2'>
+                    {field.value.map((tag) => {
+                      const tagOption = options.find((opt) => opt.value === tag)
+                      return (
+                        <Tag key={tag} color='blue'>
+                          {tagOption?.label}
+                        </Tag>
+                      )
+                    })}
+                  </div>
+                )}
+              </>
+            )}
+          />
+        </FormField>
+        <FormField
+          label='Support URL'
+          description='People might have many questions about your bot, make sure you can answer them!'
+          errorText={errors.supportUrl?.message}
+        >
           <Controller
             control={control}
             name='supportUrl'
             render={({ field }) => (
-              <Input {...field} placeholder='Support URL' status={errorStatus(errors.supportUrl)} />
+              <Input {...field} placeholder='https://mezon.ai/support' status={errorStatus(errors.supportUrl)} />
             )}
           />
         </FormField>
-        <FormField label='Note' errorText={errors.remark?.message}>
+        <FormField
+          label='Note'
+          description='If you have any important information for the reviewer, you can share it here'
+          errorText={errors.remark?.message}
+        >
           <Controller
             control={control}
             name='remark'
             render={({ field }) => (
-              <TextArea {...field} rows={4} placeholder='Note' status={errorStatus(errors.remark)} />
+              <TextArea
+                {...field}
+                rows={4}
+                placeholder='Please share any important information or details about your bot that our reviewers should know'
+                status={errorStatus(errors.remark)}
+              />
             )}
           />
         </FormField>
-        <FormField label='Social Links'>
+        <FormField label='Social Links' description='Link your social channels'>
           <div className='flex items-center gap-4 w-full'>
             <div className='flex-1'>
               <Controller

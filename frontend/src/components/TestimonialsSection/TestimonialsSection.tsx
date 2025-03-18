@@ -5,7 +5,7 @@ function TestimonialsSection({ testimonials }: ITestimonialsSectionProps) {
     <div className='flex items-center justify-center py-20'>
       <div className='grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl'>
         {testimonials.map((item, index) => (
-          <div key={index} className='bg-gray-200 text-dark p-6 rounded-lg shadow-lg'>
+          <div key={index} className='bg-white text-dark p-6 rounded-xl shadow-xl'>
             <div className='flex items-center gap-3 mb-4'>
               <div className='w-8 h-8 bg-gray-700 rounded-full' />
               <div>
@@ -18,7 +18,7 @@ function TestimonialsSection({ testimonials }: ITestimonialsSectionProps) {
                 </svg>
               </a>
             </div>
-            <p className='text-sm whitespace-pre-line leading-normal text-gray-400'>{item.description}</p>
+            <p className='text-sm whitespace-pre-line leading-normal'>{item.description}</p>
           </div>
         ))}
       </div>
