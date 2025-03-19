@@ -44,3 +44,11 @@ a {
         white-space: normal;
     }
 }
+
+.custom-editor .ql-editor {
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    min-height: 120px;
+    max-height: 240px;
+}

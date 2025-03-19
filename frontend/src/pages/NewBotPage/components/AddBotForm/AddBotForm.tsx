@@ -17,6 +17,7 @@ import { ITagStore } from '@app/store/tag'
 import { ILinkTypeStore } from '@app/store/linkType'
 import { IAddBotFormProps, ISocialLinksData } from '@app/types/Botcard.types'
 import { toast } from 'react-toastify'
+import RichTextEditor from "@app/components/RichText/RichText";
 function AddBotForm({ onResetAvatar }: IAddBotFormProps) {
   const {
     control,
@@ -161,10 +162,10 @@ function AddBotForm({ onResetAvatar }: IAddBotFormProps) {
             control={control}
             name='description'
             render={({ field }) => (
-              <TextArea
-                {...field}
-                placeholder='Your long description goes here.'
-                status={errorStatus(errors.description)}
+              <RichTextEditor
+                  value={field.value || ""}
+                  onChange={field.onChange}
+                  customClass="custom-editor"
               />
             )}
           />
