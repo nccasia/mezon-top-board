@@ -73,12 +73,12 @@ function Main({ isSearchPage = false }: IMainProps) {
 
   return (
     <div className={`flex flex-col justify-center pt-8 pb-12 w-[75%] m-auto `}>
-      <Divider variant='solid' style={{ borderColor: 'gray' }}>
-        <MtbTypography
-          variant='h1'
-        >
-          Explore millions of Mezon Bots
-        </MtbTypography>
+      <Divider variant='solid' style={{ borderColor: 'gray', display: 'flex', justifyContent: 'center' }}>
+          {/* <MtbTypography variant='h1' customClassName='min-md:text-3xl font-bold max-md:text-xl max-sm:text-lg max-[425px]:text-md block'>Explore millions of Mezon Bots</MtbTypography> */}
+          <MtbTypography variant='h1' customClassName='legend-break-line'>Explore millions of Mezon Bots</MtbTypography>
+          {/* <h1 className='min-md:text-3xl font-bold max-md:text-xl max-sm:text-lg max-[425px]:text-md block'>
+            Explore millions of Mezon Bots
+          </h1> */}
       </Divider>
       <div className='pt-3'>
         <SearchBar

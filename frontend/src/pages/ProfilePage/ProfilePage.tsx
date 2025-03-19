@@ -61,7 +61,7 @@ function ProfilePage() {
               Add new bot
             </Button>
           </div>
-          <div className='flex gap-8 max-lg:flex-wrap max-2xl:flex-wrap justify-center  max-lg:text-center max-2xl:text-center'>
+          <div className='grid grid-cols-1 gap-8 min-lg:grid-cols-2 min-xl:grid-cols-3 max-w-full'>
             {mezonAppOfUser?.data?.map((item) => <CompactBotCard key={item.id} data={item}></CompactBotCard>)}
           </div>
         </div>

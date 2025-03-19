@@ -1,5 +1,5 @@
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
-import { Checkbox, Form, Input, Select, SelectProps, Tag } from 'antd'
+import { Checkbox, Form, Input, Select, SelectProps, Tag, TagProps } from 'antd'
 import FormField from '@app/components/FormField/FormField'
 import { Controller, useFormContext } from 'react-hook-form'
 import Button from '@app/mtb-ui/Button'
@@ -31,6 +31,7 @@ function AddBotForm({ onResetAvatar }: IAddBotFormProps) {
   const { linkTypeList } = useSelector<RootState, ILinkTypeStore>((s) => s.link)
   const selectedSocialLink = watch('socialLinks')
   const [socialLinksData, setSocialLinks] = useState<ISocialLinksData[]>([])
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   useEffect(() => {
     setValue('socialLinks', [])
@@ -91,7 +92,7 @@ function AddBotForm({ onResetAvatar }: IAddBotFormProps) {
     setSocialLinks(socialLinksData.filter((link) => link.id !== id))
   }
 
-  const tagRender: SelectProps['tagRender'] = (props) => {
+  const tagRender = (props: TagProps & { label?: string }) => {
     const { label, closable, onClose } = props
 
     return (
@@ -216,26 +217,35 @@ function AddBotForm({ onResetAvatar }: IAddBotFormProps) {
                   mode='multiple'
                   options={options}
                   placeholder='Search for tags'
-                  tagRender={tagRender}
+                  tagRender={() => <></>} // Hides tags inside the field
                   status={errors?.tagIds?.message ? 'error' : ''}
+                  open={dropdownOpen}
+                  onDropdownVisibleChange={(visible) => setDropdownOpen(visible)}
                   onChange={(value) => {
                     field.onChange(value)
                     handleSelectTag(value)
+                    setDropdownOpen(false); // Close the dropdown after selection
+
                   }}
                 />
-                {console.log('field.value', field.value)}
-                {field.value.length > 0 && (
+                {(field.value ?? []).length > 0 && (
                   <div className='mt-2 flex flex-wrap gap-2'>
-                    {field.value.map((tag) => {
+                    {(field.value ?? []).map((tag) => {
                       const tagOption = options.find((opt) => opt.value === tag)
-                      return (
-                        <Tag key={tag} color='blue'>
-                          {tagOption?.label}
-                        </Tag>
-                      )
+                      // Call customTagRender manually outside Select
+                      return tagRender({
+                        label: tagOption?.label,
+                        closable: true,
+                        onClose: () => {
+                          const updatedTags = (field.value ?? []).filter((t) => t !== tag)
+                          field.onChange(updatedTags)
+                          handleSelectTag(updatedTags)
+                        }
+                      })
                     })}
                   </div>
                 )}
+                {console.log('field', field)}
               </>
             )}
           />
