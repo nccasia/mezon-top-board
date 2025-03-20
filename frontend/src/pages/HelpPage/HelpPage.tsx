@@ -76,7 +76,7 @@ function HelpPage() {
             </p>
           </div>
         </section>
-        <section className="mt-4 w-full">
+        <section className="mt-10 xl:mx-12">
           <iframe
             className="w-full h-[300px]"
             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1647.5896225785345!2d106.73302339262241!3d10.838027852364212!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3175271112acd217%3A0x910c2c261e2f5159!2zVG_DoCBOaMOgIFNUIE1vcml0eg!5e0!3m2!1sen!2sus!4v1741322133599!5m2!1sen!2sus"

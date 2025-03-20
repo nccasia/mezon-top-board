@@ -100,7 +100,7 @@ function Header() {
         <ul className='flex flex-col gap-5 text-sm'>{renderMenu(true)}</ul>
         <div className='flex flex-col gap-3 mt-5'>
           {isLogin ? (
-            <Dropdown menu={{ items: itemsDropdown }} className='z-2'>
+            <Dropdown menu={{ items: itemsDropdown }} className={`z-2 !text-black pb-2 transition-all duration-300 border-b-3 max-lg:block max-2xl:block border-b-transparent`}>
               <a onClick={(e) => e.preventDefault()}>
                 <Space>
                   Welcome, {userInfo?.name}
