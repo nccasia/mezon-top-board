@@ -8,26 +8,23 @@ import { IMezonAppStore } from '@app/store/mezonApp'
 
 function DetailCard() {
   const { mezonAppDetail } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
+  console.log('mezonAppDetail', mezonAppDetail)
   return (
     <div className='shadow-sm rounded-2xl bg-white p-4'>
       <div className='pb-4'>
-        <MtbTypography label={<InfoCircleOutlined />} variant='h5'>
+        <MtbTypography label={<InfoCircleOutlined className='text-xl !text-pink-500' />} variant='h3'>
           Details
         </MtbTypography>
-        <div className='pt-2'>
-          <MtbTypography label={<DollarOutlined />} position='right' variant='h5' weight='normal'>
-            Prefix
-          </MtbTypography>
-          <MtbTypography variant='h5' weight='normal'>
-            Shards 1792
-          </MtbTypography>
-          <MtbTypography variant='h5' weight='normal'>
-            Server Count 3371839
-          </MtbTypography>
-        </div>
+        {mezonAppDetail.prefix && (
+          <div className='pt-2'>
+            <MtbTypography variant='h5' weight='normal'>
+              Prefix: {mezonAppDetail.prefix}
+            </MtbTypography>
+          </div>
+        )}
       </div>
       <div className='pb-4'>
-        <MtbTypography variant='h5' label={<RiseOutlined />}>
+        <MtbTypography variant='h3' label={<RiseOutlined className='text-xl !text-pink-500' />}>
           Socials
         </MtbTypography>
         <div>
@@ -41,22 +38,30 @@ function DetailCard() {
         </div>
       </div>
       <div className='pb-5'>
-        <MtbTypography variant='h5' label={<TagOutlined />}>
+        <MtbTypography variant='h3' label={<TagOutlined className='text-xl !text-pink-500'/>}>
           Categories
         </MtbTypography>
-        <div className='pt-1'>{mezonAppDetail?.tags?.map((tag) => <Tag key={tag.id} className='!cursor-pointer'>{tag?.name}</Tag>)}</div>
+        <div className='pt-1'>
+          {mezonAppDetail?.tags?.map((tag) => (
+            <Tag key={tag.id} className='!cursor-pointer'>
+              {tag?.name}
+            </Tag>
+          ))}
+        </div>
       </div>
       <div className='pb-4'>
-        <MtbTypography variant='h5' label={<UserOutlined />}>
+        <MtbTypography variant='h3' label={<UserOutlined className='text-xl !text-pink-500'/>}>
           Creators
         </MtbTypography>
         <div className={`pt-2`}>
-          <Tag className='!rounded-[50px] !px-6 !py-3'>
-            <div className='flex gap-4'>
-              <div className='w-[50px]'>
-                <img src={avatar} alt='' className='rounded-full' />
+          <Tag className='!rounded-lg !pr-6 !py-3 !shadow-md !bg-white flex items-center'>
+            <div className='flex gap-4 items-center'>
+              <div className='w-[40px] h-[40px] overflow-hidden rounded-xl'>
+                <img src={avatar} alt='' className='w-full h-full object-cover' />
               </div>
-              <MtbTypography variant='p'>{mezonAppDetail?.owner?.name}</MtbTypography>
+              <MtbTypography variant='p' customClassName='!text-dark'>
+                {mezonAppDetail?.owner?.name}
+              </MtbTypography>
             </div>
           </Tag>
         </div>

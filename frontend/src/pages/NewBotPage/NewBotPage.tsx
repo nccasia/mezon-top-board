@@ -23,6 +23,13 @@ function NewBotPage() {
   const methods = useForm<CreateMezonAppRequest>({
     defaultValues: {
       name: '',
+      headline: '',
+      description: '',
+      installLink: '',
+      prefix: '',
+      tagIds: [],
+      supportUrl: '',
+      remark: '',
       isAutoPublished: false,
       socialLinks: []
     },
@@ -30,6 +37,8 @@ function NewBotPage() {
   })
 
   const { setValue } = methods
+  const nameValue = methods.watch("name");
+  const headlineValue = methods.watch("headline");
 
   const [getTagList] = useLazyTagControllerGetTagsQuery()
   const [getSocialLink] = useLazyLinkTypeControllerGetAllLinksQuery()
@@ -73,8 +82,8 @@ function NewBotPage() {
             <img src={avatar} alt='Avatar' className='w-20 h-20 rounded-full' />
           </div>
           <div>
-            <MtbTypography variant='h4'>Name</MtbTypography>
-            <MtbTypography variant='p'>Headline (Short description)</MtbTypography>
+            <MtbTypography variant='h4'>{nameValue || "Name"}</MtbTypography>
+            <MtbTypography variant='p'>{headlineValue ||'Headline (Short description)'}</MtbTypography>
           </div>
         </div>
         <div>

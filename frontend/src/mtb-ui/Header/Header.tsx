@@ -44,16 +44,9 @@ function Header() {
     }
   }, [isLogin])
 
-  return (
-    <div
-      className={`flex bg-white z-1 items-center justify-between py-4 px-20 border-t-1 border-b-1 border-gray-200 cursor-pointer sticky top-0`}
-    >
-      <div className='flex items-center gap-3' onClick={() => navigate('/')}>
-        <div className='h-[50px]'>
-          <img src={logo} alt='' style={{ height: '100%', objectFit: 'contain' }} />
-        </div>
-      </div>
-      <div className='flex items-center justify-between gap-12.5 max-lg:hidden max-2xl:hidden'>
+  const renderHeaderItems = () => {
+    return (
+      <>
         {/* <div className={`flex items-center ${styles['custom-switch']}`}>
           <Switch
             checked={theme === 'dark'}
@@ -63,10 +56,10 @@ function Header() {
             className='!align-middle'
           />
         </div> */}
-        <ul className='flex gap-10'>{renderMenu(true)}</ul>
-        <div>
+        <ul className='flex flex-col lg:flex-row gap-5 text-sm'>{renderMenu(true)}</ul>
+        <div className='flex flex-col lg:flex-row gap-3 mt-5 lg:mt-0'>
           {isLogin ? (
-            <Dropdown menu={{ items: itemsDropdown }} className='z-2'>
+            <Dropdown menu={{ items: itemsDropdown }} className={`z-2 !text-black text-sm pb-2 lg:pb-0 transition-all duration-300 border-b-3 border-b-transparent`}>
               <a onClick={(e) => e.preventDefault()}>
                 <Space>
                   Welcome, {userInfo?.name}
@@ -75,11 +68,26 @@ function Header() {
               </a>
             </Dropdown>
           ) : (
-            <Button color='primary' size='large' onClick={handleLogin}>
+            <Button color='primary' variant='outlined' size='large' block onClick={handleLogin}>
               Log in
             </Button>
           )}
         </div>
+      </>
+    )
+  }
+
+  return (
+    <div
+      className={`flex bg-white z-1 items-center justify-between py-4 px-5 lg:px-20 border-t-1 border-b-1 border-gray-200 cursor-pointer sticky top-0`}
+    >
+      <div className='flex items-center gap-3' onClick={() => navigate('/')}>
+        <div className='h-[50px]'>
+          <img src={logo} alt='' style={{ height: '100%', objectFit: 'contain' }} />
+        </div>
+      </div>
+      <div className='flex items-center justify-between gap-12.5 max-lg:hidden max-2xl:hidden'>
+        {renderHeaderItems()}
       </div>
       <div className='2xl:hidden'>
         <MenuOutlined className='text-xl cursor-pointer' onClick={() => setOpen(true)} />
@@ -97,15 +105,7 @@ function Header() {
         open={open}
         width={400}
       >
-        <ul className='flex flex-col gap-5 text-sm'>{renderMenu(true)}</ul>
-        <div className='flex flex-col gap-3 mt-5'>
-          <Button color='primary' variant='solid' size='large' block>
-            Sign Up
-          </Button>
-          <Button color='default' variant='outlined' size='large' block onClick={handleLogin}>
-            Log in
-          </Button>
-        </div>
+        {renderHeaderItems()}
       </Drawer>
     </div>
   )

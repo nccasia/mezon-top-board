@@ -69,7 +69,7 @@ const SearchBar = ({
 
   return (
     <>
-      <div className='flex gap-15 items-center'>
+      <div className='flex md:flex-row flex-col gap-4 md:gap-15 items-center'>
         <div style={{ width: '100%' }}>
           <Input
             // {...props}

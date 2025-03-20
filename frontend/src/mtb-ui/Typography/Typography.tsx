@@ -54,7 +54,7 @@ function MtbTypography({
           }
         },
         token: {
-          fontFamily: 'Open Sans, sans-serif'
+          fontFamily: 'Open Sans, sans-serif',
         }
       }}
     >
