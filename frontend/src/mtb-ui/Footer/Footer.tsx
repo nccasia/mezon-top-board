@@ -55,8 +55,7 @@ function Footer() {
       <Divider className='bg-gray-400' />
       <ul className='flex justify-center pt-10 gap-6'>{renderMenu(false)}</ul>
       <div className='flex flex-col items-center pt-8 gap-2 '>
-        <MtbTypography variant='p' customClassName='!mb-0 !text-gray-600' weight='normal'>Address: 2nd Floor, CT3 The Pride, To Huu st, Ha Dong District, Ha Noi City, Viet Nam</MtbTypography>
-        {/* <p className='mb-0 text-gray-600'>Address: 2nd Floor, CT3 The Pride, To Huu st, Ha Dong District, Ha Noi City, Viet Nam</p> */}
+        <MtbTypography variant='p' customClassName='!mb-0 !text-gray-600 text-center max-md:mx-12' weight='normal'>Address: 2nd Floor, CT3 The Pride, To Huu st, Ha Dong District, Ha Noi City, Viet Nam</MtbTypography>
         <MtbTypography variant='p' customClassName='!mb-0 !text-gray-600' weight='normal'>(+84) 2466874606</MtbTypography>
       </div>
     </div>

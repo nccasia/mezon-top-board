@@ -99,12 +99,20 @@ function Header() {
       >
         <ul className='flex flex-col gap-5 text-sm'>{renderMenu(true)}</ul>
         <div className='flex flex-col gap-3 mt-5'>
-          <Button color='primary' variant='solid' size='large' block>
-            Sign Up
-          </Button>
-          <Button color='default' variant='outlined' size='large' block onClick={handleLogin}>
-            Log in
-          </Button>
+          {isLogin ? (
+            <Dropdown menu={{ items: itemsDropdown }} className='z-2'>
+              <a onClick={(e) => e.preventDefault()}>
+                <Space>
+                  Welcome, {userInfo?.name}
+                  <DownOutlined />
+                </Space>
+              </a>
+            </Dropdown>
+          ) : (
+            <Button color='primary' variant='outlined' size='large' block onClick={handleLogin}>
+              Log in
+            </Button>
+          )}
         </div>
       </Drawer>
     </div>
