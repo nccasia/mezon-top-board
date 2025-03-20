@@ -17,7 +17,6 @@ function AdminLayout() {
   // Check auth token
   useEffect(() => {
     if (!isLogin) {
-      window.location.href = '/';
     }
   }, []);
 

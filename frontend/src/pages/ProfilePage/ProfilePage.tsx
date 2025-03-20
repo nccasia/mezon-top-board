@@ -13,6 +13,7 @@ import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import CardInfo from './components/CardInfo'
+import { useAuth } from '@app/store/hook'
 
 function ProfilePage() {
   const navigate = useNavigate()
@@ -20,7 +21,7 @@ function ProfilePage() {
   const { handleSearch } = useMezonAppSearch(1, 5)
   const [getMyApp] = useLazyMezonAppControllerGetMyAppQuery()
   const { mezonAppOfUser } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
-  const { isLogin } = useSelector<RootState, IAuthStore>((s) => s.auth)
+  const { isLogin } = useAuth()
 
   const getData = async () => {
     await getTagList()
@@ -35,11 +36,6 @@ function ProfilePage() {
   }
 
   useEffect(() => {
-    if (!isLogin) {
-      navigate('/')
-      return
-    }
-
     getData()
   }, [isLogin])
 
