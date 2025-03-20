@@ -159,6 +159,7 @@ export type GetMezonAppDetailsResponse = {
   id: string
   name: string
   description: string
+  prefix: string
   headline: string
   featuredImage: string
   status: number
