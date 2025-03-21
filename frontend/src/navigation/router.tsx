@@ -7,22 +7,9 @@ import { RoutePath } from '@app/types/RoutePath.types'
 import { useSelector } from 'react-redux'
 import { RootState } from '@app/store'
 import { IAuthStore } from '@app/store/auth'
-import RequireAuth from '@app/components/RequireAuth/RequireAuth'
 
 export const renderRoutes = () => {
   const renderRouteChild = (route: RoutePath) => {
-    if (route.requireAuth) {
-      return (
-        <Route element={<RequireAuth />}>
-          <Route key={route.path} path={route.path} element={route.element}>
-            {route.children &&
-              route.children.map((childRoute, idx) => (
-                <Route key={`${route.path}-${idx}`} path={childRoute.path} element={childRoute.element} />
-              ))}
-          </Route>
-        </Route>
-      )
-    }
     return (
       <Route key={route.path} path={route.path} element={route.element}>
         {route.children &&
@@ -40,11 +27,9 @@ export const renderRoutes = () => {
       </Route>
 
       {/* ROUTE FOR ADMIN */}
-      <Route element={<RequireAuth />}>
         <Route path='/manage' element={<AdminLayout />}>
           {adminRoutePaths.map((route) => renderRouteChild(route))}
         </Route>
-      </Route>
     </>
   )
 }

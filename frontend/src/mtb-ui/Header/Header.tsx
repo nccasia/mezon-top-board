@@ -4,16 +4,16 @@ import Button from '@app/mtb-ui/Button'
 import { renderMenu } from '@app/navigation/router'
 import { useLazyUserControllerGetUserDetailsQuery } from '@app/services/api/user/user'
 import { RootState } from '@app/store'
-import { IAuthStore, setLogIn } from '@app/store/auth'
 import { IUserStore } from '@app/store/user'
 import { redirectToOAuth } from '@app/utils/auth'
 import { removeAccessTokens } from '@app/utils/storage'
 import { Drawer, Dropdown, MenuProps, Space } from 'antd'
 import { useCallback, useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import MtbTypography from '../Typography/Typography'
 import styles from './Header.module.scss'
+import { useAuth } from '@app/hook/useAuth'
 
 function Header() {
   const navigate = useNavigate()
@@ -21,13 +21,12 @@ function Header() {
   // const { theme, setTheme } = useTheme()
   const [getUserInfo] = useLazyUserControllerGetUserDetailsQuery()
   const { userInfo } = useSelector<RootState, IUserStore>((s) => s.user)
-  const { isLogin } = useSelector<RootState, IAuthStore>((s) => s.auth)
-  const dispatch = useDispatch()
+  const { isLogin, logout } = useAuth()
 
   const handleLogin = useCallback(() => redirectToOAuth(), [])
   const handleLogout = () => {
     removeAccessTokens()
-    dispatch(setLogIn(false))
+    logout()
   }
 
   const itemsDropdown: MenuProps['items'] = [

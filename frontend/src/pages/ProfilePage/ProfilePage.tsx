@@ -13,7 +13,8 @@ import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import CardInfo from './components/CardInfo'
-import { useAuth } from '@app/store/hook'
+import { useAuth } from '@app/hook/useAuth'
+import useAuthRedirect from '@app/hook/useAuthRedirect'
 
 function ProfilePage() {
   const navigate = useNavigate()
@@ -35,9 +36,7 @@ function ProfilePage() {
     }
   }
 
-  useEffect(() => {
-    getData()
-  }, [isLogin])
+  useAuthRedirect(isLogin, getData)
 
   return (
     <div className='pt-8 pb-12 w-[75%] m-auto'>
