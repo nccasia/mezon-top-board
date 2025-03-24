@@ -85,6 +85,7 @@ export type GetUserDetailsResponse = {
 export type SelfUpdateUserRequest = {
   name?: string
   bio?: string
+  profileImage?: string
 }
 export const {
   useUserControllerSearchUserQuery,

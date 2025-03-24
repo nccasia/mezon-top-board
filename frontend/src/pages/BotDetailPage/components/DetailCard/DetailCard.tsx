@@ -8,7 +8,6 @@ import { IMezonAppStore } from '@app/store/mezonApp'
 
 function DetailCard() {
   const { mezonAppDetail } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
-  console.log('mezonAppDetail', mezonAppDetail)
   return (
     <div className='shadow-sm rounded-2xl bg-white p-4'>
       <div className='pb-4'>

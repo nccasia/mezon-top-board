@@ -21,6 +21,9 @@ export class UpdateUserRequest extends RequestWithId {
     @ApiPropertyOptional()
     @IsOptional()
     role: Role;
+    @ApiPropertyOptional()
+    @IsOptional()
+    profileImage: string;
 }
 
 export class SelfUpdateUserRequest extends OmitType(UpdateUserRequest, ["id"]) { }

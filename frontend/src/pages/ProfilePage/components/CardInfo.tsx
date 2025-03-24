@@ -9,19 +9,23 @@ import { IUserStore } from '@app/store/user'
 const cardInfoLink = [
   {
     icon: <InfoCircleOutlined />,
-    name: 'Overview'
+    name: 'Overview',
+    path: '/your-bots'
   },
   {
     icon: <UserAddOutlined />,
-    name: 'Invitations'
+    name: 'Invitations',
+    path: '/your-bots'
   },
   {
     icon: <CreditCardOutlined />,
-    name: 'Subscriptions'
+    name: 'Subscriptions',
+    path: '/your-bots'
   },
   {
     icon: <SettingOutlined />,
-    name: 'Settings'
+    name: 'Settings',
+    path: '/your-bots/setting'
   }
 ]
 
@@ -39,11 +43,17 @@ function CardInfo() {
         <MtbTypography variant='p' customClassName='!pl-0' weight='bold' textStyle={[TypographyStyle.UPPERCASE]}>
           Generals
         </MtbTypography>
+        <MtbTypography variant='p' customClassName='!pl-0 !text-gray-500' size={14}>
+          {userInfo.bio}
+        </MtbTypography>
+        <p className='font-'></p>
         <ul className='pt-2'>
           {cardInfoLink.map((item, index) => (
             <li key={index} className='p-2 cursor-pointer align-middle hover:bg-red-400 transition-all'>
-              <span className='mr-4'>{item.icon}</span>
-              {item.name}
+              <a href={item.path} className='w-full inline-block'>
+                <span className='mr-4'>{item.icon}</span>
+                {item.name}
+              </a>
             </li>
           ))}
         </ul>
