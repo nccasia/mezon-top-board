@@ -21,12 +21,12 @@ function Header() {
   // const { theme, setTheme } = useTheme()
   const [getUserInfo] = useLazyUserControllerGetUserDetailsQuery()
   const { userInfo } = useSelector<RootState, IUserStore>((s) => s.user)
-  const { isLogin, logout } = useAuth()
+  const { isLogin, postLogout } = useAuth()
 
   const handleLogin = useCallback(() => redirectToOAuth(), [])
   const handleLogout = () => {
     removeAccessTokens()
-    logout()
+    postLogout()
   }
 
   const itemsDropdown: MenuProps['items'] = [
@@ -58,7 +58,10 @@ function Header() {
         <ul className='flex flex-col lg:flex-row gap-5 text-sm'>{renderMenu(true)}</ul>
         <div className='flex flex-col lg:flex-row gap-3 mt-5 lg:mt-0'>
           {isLogin ? (
-            <Dropdown menu={{ items: itemsDropdown }} className={`z-2 !text-black text-sm pb-2 lg:pb-0 transition-all duration-300 border-b-3 border-b-transparent`}>
+            <Dropdown
+              menu={{ items: itemsDropdown }}
+              className={`z-2 !text-black text-sm pb-2 lg:pb-0 transition-all duration-300 border-b-3 border-b-transparent`}
+            >
               <a onClick={(e) => e.preventDefault()}>
                 <Space>
                   Welcome, {userInfo?.name}

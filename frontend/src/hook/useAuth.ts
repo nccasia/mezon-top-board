@@ -7,8 +7,8 @@ export const useAuth = () => {
   const auth = useAppSelector<RootState, IAuthStore>((s) => s.auth)
   const dispatch = useDispatch()
 
-  const login = () => dispatch(setLogIn(true))
-  const logout = () => dispatch(setLogIn(false))
+  const postLogin = () => dispatch(setLogIn(true))
+  const postLogout = () => dispatch(setLogIn(false))
 
-  return { ...auth, login, logout }
+  return { ...auth, postLogin, postLogout }
 }

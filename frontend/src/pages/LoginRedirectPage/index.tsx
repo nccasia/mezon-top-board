@@ -13,7 +13,7 @@ export const LoginRedirectPage = () => {
   const navigate = useNavigate()
   const [verifyOauth2Service] = useAuthControllerVerifyOAuth2Mutation()
 
-  const {login} = useAuth()
+  const { postLogin } = useAuth()
 
   const urlParams = useMemo(
     () => ({
@@ -39,7 +39,7 @@ export const LoginRedirectPage = () => {
         return
       }
       storeAccessTokens(data.data)
-      login()
+      postLogin()
       toast.success('Login successfully!')
     } catch (_) {
       toast.error('Login failed!')

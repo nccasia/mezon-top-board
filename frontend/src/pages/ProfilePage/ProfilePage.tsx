@@ -36,7 +36,10 @@ function ProfilePage() {
     }
   }
 
-  useAuthRedirect(isLogin, getData)
+  useAuthRedirect(isLogin)
+  useEffect(() => {
+    getData()
+  }, [])
 
   return (
     <div className='pt-8 pb-12 w-[75%] m-auto'>

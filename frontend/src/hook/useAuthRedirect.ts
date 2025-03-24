@@ -1,19 +1,15 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 
-const useAuthRedirect = (isLogin: boolean, onAuthSuccess?: () => void) => {
-  const navigate = useNavigate();
+const useAuthRedirect = (isLogin: boolean) => {
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (!isLogin) {
-      navigate('/');
-      return;
+      navigate('/')
+      return
     }
+  }, [isLogin, navigate])
+}
 
-    if (onAuthSuccess) {
-      onAuthSuccess(); // Run callback when authenticated
-    }
-  }, [isLogin, navigate, onAuthSuccess]);
-};
-
-export default useAuthRedirect;
+export default useAuthRedirect
