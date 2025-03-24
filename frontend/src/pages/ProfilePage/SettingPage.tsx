@@ -109,8 +109,8 @@ function SettingPage() {
                 </Button>
               </Upload>
               <div className='flex items-center justify-center'>
-                <Button htmlType='submit' customClassName='w-[200px] mt-5'>
-                  {isUpdating ? '...Updating' : 'Save'}
+                <Button htmlType='submit' customClassName='w-[200px] mt-5' loading={isUpdating} disabled={isUpdating}>
+                  Save
                 </Button>
               </div>
             </Form>

@@ -32,7 +32,6 @@ const cardInfoLink = [
 
 function CardInfo() {
   const { userInfo } = useSelector<RootState, IUserStore>((s) => s.user)
-  console.log('userInfo inside CardInfo', userInfo)
   const imgUrl = userInfo?.profileImage ? getUrlImage(userInfo.profileImage) : avatar
 
   return (
