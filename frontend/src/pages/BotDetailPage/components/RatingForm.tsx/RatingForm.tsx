@@ -9,7 +9,7 @@ import FormField from '@app/components/FormField/FormField'
 import Button from '@app/mtb-ui/Button'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
 
-const CommentForm = () => {
+const RatingForm = () => {
   const [rating, setRating] = useState<number>(0)
   const [comment, setComment] = useState<string>('')
   const { userInfo } = useAppSelector<RootState, IUserStore>((s) => s.user)
@@ -41,4 +41,4 @@ const CommentForm = () => {
   )
 }
 
-export default CommentForm
+export default RatingForm
