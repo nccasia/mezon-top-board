@@ -1,21 +1,18 @@
+import FormField from '@app/components/FormField/FormField'
+import { useMezonAppSearch } from '@app/hook/useSearch'
+import Button from '@app/mtb-ui/Button'
 import SearchBar from '@app/mtb-ui/SearchBar/SearchBar'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
-import { Divider, Form, Input, Upload } from 'antd'
-import CardInfo from './components/CardInfo'
-import { useMezonAppSearch } from '@app/hook/useSearch'
-import { Controller, useForm } from 'react-hook-form'
-import FormField from '@app/components/FormField/FormField'
-import { errorStatus } from '@app/constants/common.constant'
-import { useEffect, useState } from 'react'
-import defaultUserAvatar from '@app/assets/images/default-user.webp'
 import { useMediaControllerCreateMediaMutation } from '@app/services/api/media/media'
-import { getUrlImage } from '@app/utils/stringHelper'
-import { toast } from 'react-toastify'
-import Button from '@app/mtb-ui/Button'
+import { useUserControllerSelfUpdateUserMutation } from '@app/services/api/user/user'
+import { RootState } from '@app/store'
 import { useAppSelector } from '@app/store/hook'
 import { IUserStore } from '@app/store/user'
-import { RootState } from '@app/store'
-import { useUserControllerSelfUpdateUserMutation } from '@app/services/api/user/user'
+import { Divider, Form, Input, Upload } from 'antd'
+import { useEffect } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { toast } from 'react-toastify'
+import CardInfo from './components/CardInfo'
 
 function SettingPage() {
   const { userInfo } = useAppSelector<RootState, IUserStore>((s) => s.user)
@@ -29,15 +26,22 @@ function SettingPage() {
   } = useForm({
     defaultValues: {
       name: '',
-      bio: ''
+      bio: '',
+      profileImage: ''
     }
   })
   useEffect(() => {
     reset({
       name: userInfo?.name || '',
-      bio: userInfo?.bio || ''
+      bio: userInfo?.bio || '',
+      profileImage: userInfo?.profileImage || ''
     })
   }, [userInfo, reset])
+
+  const { handleSearch } = useMezonAppSearch(1, 5)
+
+  const [uploadImage] = useMediaControllerCreateMediaMutation()
+
   const onSubmit = async (data: any) => {
     try {
       await selfUpdate({ selfUpdateUserRequest: { ...data } }).unwrap()
@@ -47,10 +51,6 @@ function SettingPage() {
       toast.error('Update failed. Please try again.')
     }
   }
-  const [avatar, setAvatar] = useState<string>(defaultUserAvatar)
-  const { handleSearch } = useMezonAppSearch(1, 5)
-
-  const [uploadImage] = useMediaControllerCreateMediaMutation()
 
   const handleUpload = async (options: any) => {
     const { file, onSuccess, onError } = options
@@ -61,8 +61,7 @@ function SettingPage() {
       const response = await uploadImage(formData).unwrap()
 
       if (response?.statusCode === 200) {
-        setAvatar(getUrlImage(response?.data?.filePath))
-        // setValue('profileImage', response?.data?.filePath)
+        setValue('profileImage', response?.data?.filePath)
       }
 
       onSuccess(response, file)

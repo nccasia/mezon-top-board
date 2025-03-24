@@ -27,9 +27,9 @@ export const manageUsersExtraReducers = (builder: ActionReducerMapBuilder<any>) 
       state.userInfo.name = payload.data.name || payload.data.email.split('@')[0]
     })
     .addMatcher(userService.endpoints.userControllerSelfUpdateUser.matchFulfilled, (state, { meta }) => {
-      const {name, bio} = meta.arg.originalArgs.selfUpdateUserRequest
+      const {name, bio, profileImage} = meta.arg.originalArgs.selfUpdateUserRequest
       state.userInfo.name = name
       state.userInfo.bio = bio
-
+      state.userInfo.profileImage = profileImage
     })
 }

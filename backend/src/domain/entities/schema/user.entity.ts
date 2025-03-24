@@ -29,6 +29,9 @@ export class User extends BaseSoftDelete {
     @Column({ nullable: true, default: null })
     public bio: string;
 
+    @Column({ nullable: true })
+    public profileImage: string;
+
     @OneToMany(() => Rating, (rating) => rating.user)
     public ratings: Rating[];
 

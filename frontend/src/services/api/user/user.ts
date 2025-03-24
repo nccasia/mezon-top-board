@@ -81,6 +81,7 @@ export type GetUserDetailsResponse = {
   name: string
   email: string
   bio: string
+  profileImage: string
 }
 export type SelfUpdateUserRequest = {
   name?: string
