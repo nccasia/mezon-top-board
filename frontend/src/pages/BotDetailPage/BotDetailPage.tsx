@@ -23,6 +23,7 @@ import { useLazyTagControllerGetTagsQuery } from '@app/services/api/tag/tag'
 import { useMezonAppSearch } from '@app/hook/useSearch'
 import { ApiError } from '@app/types/API.types'
 import { toast } from 'react-toastify'
+import RatingForm from './components/RatingForm.tsx/RatingForm'
 function BotDetailPage() {
   const [getMezonAppDetail, { isError, error }] = useLazyMezonAppControllerGetMezonAppDetailQuery()
   const [getrelatedMezonApp] = useLazyMezonAppControllerGetRelatedMezonAppQuery()
@@ -110,6 +111,8 @@ function BotDetailPage() {
                 ))}
               </div>
             </div>
+            <Divider className='bg-gray-200'></Divider>
+            <RatingForm />
             <Divider className='bg-gray-200'></Divider>
             <div className='flex flex-col gap-5'>
               {Array.from({ length: 5 }, (_, index) => (
