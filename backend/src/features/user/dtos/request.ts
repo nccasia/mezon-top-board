@@ -12,18 +12,18 @@ export class SearchUserRequest extends PaginationQuery {
 }
 
 export class UpdateUserRequest extends RequestWithId {
-    @ApiPropertyOptional()
-    @IsOptional()
-    name: string;
-    @ApiPropertyOptional()
-    @IsOptional()
-    bio: string;
-    @ApiPropertyOptional()
-    @IsOptional()
-    role: Role;
-    @ApiPropertyOptional()
-    @IsOptional()
-    profileImage: string;
+  @ApiPropertyOptional()
+  @IsOptional()
+  name: string;
+  @ApiPropertyOptional()
+  @IsOptional()
+  bio: string;
+  @ApiPropertyOptional()
+  @IsOptional()
+  role: Role;
+  @ApiPropertyOptional()
+  @IsOptional()
+  profileImage: string;
 }
 
-export class SelfUpdateUserRequest extends OmitType(UpdateUserRequest, ["id"]) { }
+export class SelfUpdateUserRequest extends OmitType(UpdateUserRequest, ["id", "role"]) { }
