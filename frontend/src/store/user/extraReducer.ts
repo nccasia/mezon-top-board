@@ -1,5 +1,5 @@
-import { UpdateUserRequest, userService } from '@app/services/api/user/user'
-import { ActionReducerMapBuilder } from '@reduxjs/toolkit'
+import { UpdateUserRequest, userService } from "@app/services/api/user/user"
+import { ActionReducerMapBuilder } from "@reduxjs/toolkit"
 
 export const manageUsersExtraReducers = (builder: ActionReducerMapBuilder<any>) => {
   builder
@@ -24,12 +24,12 @@ export const manageUsersExtraReducers = (builder: ActionReducerMapBuilder<any>) 
     })
     .addMatcher(userService.endpoints.userControllerGetUserDetails.matchFulfilled, (state, { payload }) => {
       state.userInfo = payload.data
-      state.userInfo.name = payload.data.name || payload.data.email.split('@')[0]
+      state.userInfo.name = payload.data.name || payload.data.email.split("@")[0]
     })
     .addMatcher(userService.endpoints.userControllerSelfUpdateUser.matchFulfilled, (state, { meta }) => {
-      const {name, bio, profileImage} = meta.arg.originalArgs.selfUpdateUserRequest
-      state.userInfo.name = name
-      state.userInfo.bio = bio
-      state.userInfo.profileImage = profileImage
+      const { name, bio, profileImage } = meta.arg.originalArgs.selfUpdateUserRequest
+      if (name) state.userInfo.name = name
+      if (bio) state.userInfo.bio = bio
+      if (profileImage) state.userInfo.profileImage = profileImage
     })
 }

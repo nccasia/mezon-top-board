@@ -17,58 +17,28 @@ import CardInfo from './components/CardInfo'
 function SettingPage() {
   const { userInfo } = useAppSelector<RootState, IUserStore>((s) => s.user)
   const [selfUpdate, { isLoading: isUpdating }] = useUserControllerSelfUpdateUserMutation()
-  const {
-    control,
-    setValue,
-    handleSubmit,
-    reset,
-    formState: { errors }
-  } = useForm({
+  const { control, handleSubmit, reset } = useForm({
     defaultValues: {
       name: '',
-      bio: '',
-      profileImage: ''
+      bio: ''
     }
   })
+
   useEffect(() => {
     reset({
       name: userInfo?.name || '',
-      bio: userInfo?.bio || '',
-      profileImage: userInfo?.profileImage || ''
+      bio: userInfo?.bio || ''
     })
   }, [userInfo, reset])
 
   const { handleSearch } = useMezonAppSearch(1, 5)
-
-  const [uploadImage] = useMediaControllerCreateMediaMutation()
 
   const onSubmit = async (data: any) => {
     try {
       await selfUpdate({ selfUpdateUserRequest: { ...data } }).unwrap()
       toast.success('Update successfully')
     } catch (error) {
-      console.error('Update failed:', error)
       toast.error('Update failed. Please try again.')
-    }
-  }
-
-  const handleUpload = async (options: any) => {
-    const { file, onSuccess, onError } = options
-
-    try {
-      const formData = new FormData()
-      formData.append('file', file)
-      const response = await uploadImage(formData).unwrap()
-
-      if (response?.statusCode === 200) {
-        setValue('profileImage', response?.data?.filePath)
-      }
-
-      onSuccess(response, file)
-      toast.success('Upload Success')
-    } catch (error) {
-      toast.error('Upload failed!')
-      onError(error)
     }
   }
 
@@ -103,11 +73,6 @@ function SettingPage() {
                   render={({ field }) => <Input {...field} placeholder='Your bio' />}
                 />
               </FormField>
-              <Upload customRequest={handleUpload} showUploadList={false}>
-                <Button color='primary' size='large' customClassName='mt-5'>
-                  Change image
-                </Button>
-              </Upload>
               <div className='flex items-center justify-center'>
                 <Button htmlType='submit' customClassName='w-[200px] mt-5' loading={isUpdating} disabled={isUpdating}>
                   Save
