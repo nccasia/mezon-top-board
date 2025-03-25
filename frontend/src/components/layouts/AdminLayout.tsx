@@ -12,7 +12,7 @@ function AdminLayout() {
   const pathSnippets = location.pathname.split('/').filter((i) => i)
   const { isLogin } = useAuth()
 
-  useAuthRedirect(isLogin)
+  useAuthRedirect()
 
   return (
     <Layout className={styles['admin-layout']}>

@@ -6,7 +6,6 @@ import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import { useLazyMezonAppControllerGetMyAppQuery } from '@app/services/api/mezonApp/mezonApp'
 import { useLazyTagControllerGetTagsQuery } from '@app/services/api/tag/tag'
 import { RootState } from '@app/store'
-import { IAuthStore } from '@app/store/auth'
 import { IMezonAppStore } from '@app/store/mezonApp'
 import { Divider } from 'antd'
 import { useEffect } from 'react'
@@ -36,7 +35,7 @@ function ProfilePage() {
     }
   }
 
-  useAuthRedirect(isLogin)
+  useAuthRedirect()
   useEffect(() => {
     getData()
   }, [])

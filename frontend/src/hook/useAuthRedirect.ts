@@ -1,12 +1,14 @@
-import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import { useAuth } from "./useAuth"
 
-const useAuthRedirect = (isLogin: boolean) => {
+const useAuthRedirect = () => {
   const navigate = useNavigate()
+  const { isLogin } = useAuth()
 
   useEffect(() => {
     if (!isLogin) {
-      navigate('/')
+      navigate("/")
       return
     }
   }, [isLogin, navigate])
