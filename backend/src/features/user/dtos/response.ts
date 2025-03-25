@@ -27,6 +27,9 @@ export class SearchUserResponse {
     @Expose()
     @ApiProperty()
     public role: string;
+    @Expose()
+    @ApiProperty()
+    public profileImage: string;
 }
 
 export class ReviewerResponse {

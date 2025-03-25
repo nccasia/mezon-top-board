@@ -68,7 +68,7 @@ export class UserService {
   }
 
   async seflUpdateUser(userId: string, req: SelfUpdateUserRequest) {
-    await this.userRepository.update(userId, { name: req.name, bio: req.bio });
+    await this.userRepository.update(userId, { name: req.name, bio: req.bio, profileImage: req.profileImage });
     return new Result();
   }
 }

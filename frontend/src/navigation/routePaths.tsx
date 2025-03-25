@@ -7,6 +7,7 @@ import { LoginRedirectPage } from '@app/pages/LoginRedirectPage'
 import NewBotPage from '@app/pages/NewBotPage/NewBotPage'
 import NotFoundPage from '@app/pages/NotFoundPage/NotFoundPage'
 import ProfilePage from '@app/pages/ProfilePage/ProfilePage'
+import SettingPage from '@app/pages/ProfilePage/SettingPage'
 import SearchPage from '@app/pages/SearchPage/SearchPage'
 import TermsPage from '@app/pages/TermsPage/TermsPage'
 import { RoutePath } from '@app/types/RoutePath.types'
@@ -42,6 +43,12 @@ export const routePaths: RoutePath[] = [
     label: 'Your Bots',
     isShowMenu: true,
     requireAuth: true
+  },
+  {
+    path: '/your-bots/setting',
+    element: <SettingPage></SettingPage>,
+    label: 'Setting page',
+    isShowMenu: false
   },
   {
     path: '/search',
