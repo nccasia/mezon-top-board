@@ -40,7 +40,8 @@ export const routePaths: RoutePath[] = [
     path: '/your-bots',
     element: <ProfilePage></ProfilePage>,
     label: 'Your Bots',
-    isShowMenu: true
+    isShowMenu: true,
+    requireAuth: true
   },
   {
     path: '/search',
