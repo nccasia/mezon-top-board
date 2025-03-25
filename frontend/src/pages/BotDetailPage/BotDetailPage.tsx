@@ -68,7 +68,7 @@ function BotDetailPage() {
       </MtbTypography>
       <div className='flex gap-10 pt-5 pb-5'>
         <div className='flex-3'>
-          <p className='text-justify'>{mezonAppDetail.description}</p>
+          <div dangerouslySetInnerHTML={{ __html: mezonAppDetail.description }}></div>
           <div className='pt-5'>
             <MtbTypography variant='h3'>More like this</MtbTypography>
             <Divider className='bg-gray-200'></Divider>
