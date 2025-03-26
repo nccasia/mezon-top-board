@@ -112,7 +112,7 @@ function BotDetailPage() {
               </div>
             </div>
             <Divider className='bg-gray-200'></Divider>
-            <RatingForm appId={botId} />
+            <RatingForm />
             <Divider className='bg-gray-200'></Divider>
             <div className='flex flex-col gap-5'>
               {Array.from({ length: 5 }, (_, index) => (

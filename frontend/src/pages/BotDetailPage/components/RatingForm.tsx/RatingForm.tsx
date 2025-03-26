@@ -1,19 +1,18 @@
-import { useState } from 'react'
-import { Form, Input } from 'antd'
-import MtbRate from '@app/mtb-ui/Rate/Rate'
-import { RootState } from '@app/store'
-import { IUserStore } from '@app/store/user'
-import { useAppSelector } from '@app/store/hook'
 import avatar from '@app/assets/images/default-user.webp'
-import FormField from '@app/components/FormField/FormField'
 import Button from '@app/mtb-ui/Button'
+import MtbRate from '@app/mtb-ui/Rate/Rate'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
+import { CreateRatingRequest, useRatingControllerCreateRatingMutation } from '@app/services/api/rating/rating'
+import { RootState } from '@app/store'
+import { useAppSelector } from '@app/store/hook'
+import { IUserStore } from '@app/store/user'
+import { Form, Input } from 'antd'
 import { Controller, useForm } from 'react-hook-form'
-import { useRatingControllerCreateRatingMutation } from '@app/services/api/rating/rating'
+import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
-const RatingForm = ({ appId }) => {
-  // const [comment, setComment] = useState<string>('')
+const RatingForm = () => {
+  const { botId: appId } = useParams<string>()
   const { userInfo } = useAppSelector<RootState, IUserStore>((s) => s.user)
   const { control, handleSubmit, reset } = useForm({
     defaultValues: {
@@ -21,18 +20,17 @@ const RatingForm = ({ appId }) => {
       score: 0
     }
   })
-  const [
-    createRating,
-    { isLoading },
-  ] = useRatingControllerCreateRatingMutation()
+  const [createRating] = useRatingControllerCreateRatingMutation()
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: Omit<CreateRatingRequest, "appId">) => {
     try {
-      const response = await createRating({ createRatingRequest: { ...data, appId } }).unwrap()
+      if (!appId) throw new Error("Bad Request!")
+      await createRating({ createRatingRequest: { ...data, appId } }).unwrap()
       toast.success('Successfully')
       reset()
-    } catch (error) {
-      toast.error(error.data.message)
+    } catch (error: any) {
+      if (!Array.isArray(error.data.message)) toast.error(error.data.message)
+      else toast.error(error.data.message[0])
     }
   }
 
