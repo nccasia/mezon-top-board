@@ -1,9 +1,10 @@
+import logo from '@app/assets/images/topLogo.png'
+import { useAuth } from '@app/hook/useAuth'
+import useAuthRedirect from '@app/hook/useAuthRedirect'
 import { adminRoutePaths } from '@app/navigation/adminRoutePaths'
 import { Breadcrumb, Image, Layout, Menu } from 'antd'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
-import styles from './AdminLayout.module.scss' // Import the styles
-import useAuthRedirect from '@app/hook/useAuthRedirect'
-import { useAuth } from '@app/hook/useAuth'
+import styles from './AdminLayout.module.scss'; // Import the styles
 
 const { Header, Footer, Sider, Content } = Layout
 
@@ -21,7 +22,7 @@ function AdminLayout() {
           <Image
             width={50}
             height={50}
-            src='/src/assets/images/topLogo.png'
+            src={logo}
             alt='Top Logo'
             fallback='https://via.placeholder.com/50' // Default image if the source fails
           />
