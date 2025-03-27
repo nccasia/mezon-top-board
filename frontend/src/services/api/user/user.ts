@@ -16,10 +16,10 @@ const injectedRtkApi = api.injectEndpoints({
       })
     }),
     userControllerUpdateUser: build.mutation<UserControllerUpdateUserApiResponse, UserControllerUpdateUserApiArg>({
-      query: (queryArg) => ({ url: `/api/user`, method: 'PUT', body: queryArg.updateUserRequest })
+      query: (queryArg) => ({ url: `/api/user`, method: "PUT", body: queryArg.updateUserRequest })
     }),
     userControllerDeleteUser: build.mutation<UserControllerDeleteUserApiResponse, UserControllerDeleteUserApiArg>({
-      query: (queryArg) => ({ url: `/api/user`, method: 'DELETE', body: queryArg.requestWithId })
+      query: (queryArg) => ({ url: `/api/user`, method: "DELETE", body: queryArg.requestWithId })
     }),
     userControllerGetUserDetails: build.query<
       UserControllerGetUserDetailsApiResponse,
@@ -27,11 +27,17 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: () => ({ url: `/api/user/me` })
     }),
+    userControllerGetUserPublicInfo: build.query<
+      UserControllerGetUserPublicInfoApiResponse,
+      UserControllerGetUserPublicInfoApiArg
+    >({
+      query: (queryArg) => ({ url: `/api/user/public`, params: { userId: queryArg.userId } })
+    }),
     userControllerSelfUpdateUser: build.mutation<
       UserControllerSelfUpdateUserApiResponse,
       UserControllerSelfUpdateUserApiArg
     >({
-      query: (queryArg) => ({ url: `/api/user/self-update`, method: 'PUT', body: queryArg.selfUpdateUserRequest })
+      query: (queryArg) => ({ url: `/api/user/self-update`, method: "PUT", body: queryArg.selfUpdateUserRequest })
     })
   }),
   overrideExisting: false
@@ -56,6 +62,10 @@ export type UserControllerDeleteUserApiArg = {
 }
 export type UserControllerGetUserDetailsApiResponse = HttpResponse<GetUserDetailsResponse>
 export type UserControllerGetUserDetailsApiArg = void
+export type UserControllerGetUserPublicInfoApiResponse = HttpResponse<GetUserPublicInfoResponse>
+export type UserControllerGetUserPublicInfoApiArg = {
+  userId: string
+}
 export type UserControllerSelfUpdateUserApiResponse = unknown
 export type UserControllerSelfUpdateUserApiArg = {
   selfUpdateUserRequest: SelfUpdateUserRequest
@@ -83,6 +93,12 @@ export type GetUserDetailsResponse = {
   bio: string
   profileImage: string
 }
+export type GetUserPublicInfoResponse = {
+  id: string
+  name: string
+  bio: string
+  profileImage: string
+}
 export type SelfUpdateUserRequest = {
   name?: string
   bio?: string
@@ -95,5 +111,7 @@ export const {
   useUserControllerDeleteUserMutation,
   useUserControllerGetUserDetailsQuery,
   useLazyUserControllerGetUserDetailsQuery,
+  useUserControllerGetUserPublicInfoQuery,
+  useLazyUserControllerGetUserPublicInfoQuery,
   useUserControllerSelfUpdateUserMutation
 } = injectedRtkApi

@@ -22,22 +22,22 @@ const cardInfoLink = [
   {
     icon: <InfoCircleOutlined />,
     name: 'Overview',
-    path: '/your-bots'
+    path: '/profile'
   },
   {
     icon: <UserAddOutlined />,
     name: 'Invitations',
-    path: '/your-bots'
+    path: '/profile'
   },
   {
     icon: <CreditCardOutlined />,
     name: 'Subscriptions',
-    path: '/your-bots'
+    path: '/profile'
   },
   {
     icon: <SettingOutlined />,
     name: 'Settings',
-    path: '/your-bots/setting'
+    path: '/profile/setting'
   }
 ]
 

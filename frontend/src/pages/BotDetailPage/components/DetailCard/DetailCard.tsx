@@ -37,7 +37,7 @@ function DetailCard() {
         </div>
       </div>
       <div className='pb-5'>
-        <MtbTypography variant='h3' label={<TagOutlined className='text-xl !text-pink-500'/>}>
+        <MtbTypography variant='h3' label={<TagOutlined className='text-xl !text-pink-500' />}>
           Categories
         </MtbTypography>
         <div className='pt-1'>
@@ -49,20 +49,22 @@ function DetailCard() {
         </div>
       </div>
       <div className='pb-4'>
-        <MtbTypography variant='h3' label={<UserOutlined className='text-xl !text-pink-500'/>}>
+        <MtbTypography variant='h3' label={<UserOutlined className='text-xl !text-pink-500' />}>
           Creators
         </MtbTypography>
         <div className={`pt-2`}>
-          <Tag className='!rounded-lg !pr-6 !py-3 !shadow-md !bg-white flex items-center'>
-            <div className='flex gap-4 items-center'>
-              <div className='w-[40px] h-[40px] overflow-hidden rounded-xl'>
-                <img src={avatar} alt='' className='w-full h-full object-cover' />
+          <a href={`/profile/${mezonAppDetail?.owner?.id}`}>
+            <Tag className='!rounded-lg !pr-6 !py-3 !shadow-md !bg-white flex items-center'>
+              <div className='flex gap-4 items-center'>
+                <div className='w-[40px] h-[40px] overflow-hidden rounded-xl'>
+                  <img src={avatar} alt='' className='w-full h-full object-cover' />
+                </div>
+                <MtbTypography variant='p' customClassName='!text-dark'>
+                  {mezonAppDetail?.owner?.name}
+                </MtbTypography>
               </div>
-              <MtbTypography variant='p' customClassName='!text-dark'>
-                {mezonAppDetail?.owner?.name}
-              </MtbTypography>
-            </div>
-          </Tag>
+            </Tag>
+          </a>
         </div>
       </div>
     </div>
