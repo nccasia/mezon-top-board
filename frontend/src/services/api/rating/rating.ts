@@ -43,6 +43,7 @@ export type Rating = {
   userId: string
   score: number
   comment: string
+  updatedAt: string
   user: User
   app: App
 }

@@ -2,6 +2,7 @@ import { LikeOutlined } from '@ant-design/icons'
 import avatar from '@app/assets/images/default-user.webp'
 import MtbRate from '@app/mtb-ui/Rate/Rate'
 import { Rating } from '@app/services/api/rating/rating'
+import moment from 'moment'
 function Comment({rating} : {rating: Rating}) {
   return (
     <>
@@ -13,7 +14,7 @@ function Comment({rating} : {rating: Rating}) {
           <p>{rating.user.name}</p>
           <div className='flex gap-5'>
             <MtbRate value={rating.score} readonly={true}></MtbRate>
-            <p>over 4 years ago</p>
+            <p>{moment(rating.updatedAt).fromNow()}</p>
           </div>
           <p>{rating.comment}</p>
           <p>
