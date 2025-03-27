@@ -49,3 +49,5 @@ export class ReviewerResponse {
 
 export class GetUserDetailsResponse extends OmitType(SearchUserResponse, ["role"]) {
 }
+export class GetUserPublicInfoResponse extends OmitType(SearchUserResponse, ["role", "email"]) {
+}
