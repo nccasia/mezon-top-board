@@ -1,8 +1,8 @@
-import { Tag, Divider } from 'antd'
+import { Tag, Divider, Spin } from 'antd'
 import BotCard from '@app/components/BotCard/BotCard'
 import DetailCard from './components/DetailCard/DetailCard'
 import CompactBotCard from '@app/components/CompactBotCard/CompactBotCard'
-import { ratings } from '@app/constants/common.constant'
+import { ratings as summaryRatings } from '@app/constants/common.constant'
 import Comment from './components/Comment/Comment'
 import MtbProgress from '@app/mtb-ui/ProgressBar/ProgressBar'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
@@ -24,13 +24,19 @@ import { useMezonAppSearch } from '@app/hook/useSearch'
 import { ApiError } from '@app/types/API.types'
 import { toast } from 'react-toastify'
 import RatingForm from './components/RatingForm.tsx/RatingForm'
+import { useLazyRatingControllerGetRatingsByAppQuery } from '@app/services/api/rating/rating'
+import { IUserStore } from '@app/store/user'
+import { IRatingStore } from '@app/store/rating'
 function BotDetailPage() {
   const [getMezonAppDetail, { isError, error }] = useLazyMezonAppControllerGetMezonAppDetailQuery()
   const [getrelatedMezonApp] = useLazyMezonAppControllerGetRelatedMezonAppQuery()
   const [getTagList] = useLazyTagControllerGetTagsQuery()
+  const [getRatingsByApp, { isLoading: isLoadingReview }] = useLazyRatingControllerGetRatingsByAppQuery()
 
   const { botId } = useParams()
   const { mezonAppDetail, relatedMezonApp } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
+  const { ratings } = useSelector<RootState, IRatingStore>((s) => s.rating)
+
   const { tagList } = useSelector<RootState, ITagStore>((s) => s.tag)
   const { handleSearch } = useMezonAppSearch(1, 5)
   const [searchParams] = useSearchParams()
@@ -39,6 +45,7 @@ function BotDetailPage() {
     if (botId) {
       getMezonAppDetail({ id: botId })
       getrelatedMezonApp({ id: botId })
+      getRatingsByApp({ appId: botId })
     }
   }, [botId])
 
@@ -102,7 +109,7 @@ function BotDetailPage() {
                 </p>
               </div>
               <div className='flex-1 flex flex-col gap-1'>
-                {ratings.map((rating) => (
+                {summaryRatings.map((rating) => (
                   <div key={rating.stars} className='flex items-center gap-2 pb-2'>
                     <p className='whitespace-nowrap'>{rating.stars} stars</p>
                     <MtbProgress percent={rating.percent} strokeColor={'red'} showInfo={false}></MtbProgress>
@@ -115,9 +122,9 @@ function BotDetailPage() {
             <RatingForm />
             <Divider className='bg-gray-200'></Divider>
             <div className='flex flex-col gap-5'>
-              {Array.from({ length: 5 }, (_, index) => (
-                <Comment key={index}></Comment>
-              ))}
+              {(isLoadingReview && Object.keys(ratings).length == 0) ? (<Spin size='large' />) : (ratings?.data?.map(rating => (
+                <Comment rating={rating}></Comment>
+              )) || null)}
             </div>
           </div>
         </div>

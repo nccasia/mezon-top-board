@@ -1,5 +1,6 @@
 import { HttpResponse } from '@app/types/API.types'
 import { api } from '../../apiInstance'
+import { Rating } from '../rating/rating'
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
     mezonAppControllerListAdminMezonApp: build.query<
@@ -181,14 +182,6 @@ export type LinkType = {
   name: string
   icon: string
   links: Link[]
-}
-export type Rating = {
-  appId: string
-  userId: string
-  score: number
-  comment: string
-  user: User
-  app: App
 }
 export type Media = {
   fileName: string
