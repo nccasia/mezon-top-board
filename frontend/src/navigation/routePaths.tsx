@@ -41,7 +41,7 @@ export const routePaths: RoutePath[] = [
   {
     path: '/profile',
     element: <ProfilePage></ProfilePage>,
-    label: 'Your Bots',
+    label: 'My Profile',
     isShowMenu: true,
     requireAuth: true
   },

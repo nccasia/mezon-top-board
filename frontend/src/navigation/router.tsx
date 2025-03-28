@@ -39,7 +39,7 @@ export const renderMenu = (isHasActive: boolean) => {
   const { isLogin } = useSelector<RootState, IAuthStore>((s) => s.auth)
 
   return routePaths
-    .filter((route) => isLogin || route.path !== '/your-bots')
+    .filter((route) => isLogin || route.path !== '/profile')
     .map((route, index) => {
       if (route.isShowMenu) {
         const isActive = location.pathname === route.path && isHasActive
