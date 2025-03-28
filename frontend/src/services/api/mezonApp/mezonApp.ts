@@ -1,5 +1,5 @@
-import { HttpResponse } from '@app/types/API.types'
-import { api } from '../../apiInstance'
+import { HttpResponse } from "@app/types/API.types"
+import { api } from "../../apiInstance"
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
     mezonAppControllerListAdminMezonApp: build.query<
@@ -31,6 +31,17 @@ const injectedRtkApi = api.injectEndpoints({
         }
       })
     }),
+    mezonAppControllerGetUserPublicApp: build.query<
+      MezonAppControllerGetUserPublicAppApiResponse,
+      MezonAppControllerGetUserPublicAppApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/mezon-app/public`,
+        params: {
+          userId: queryArg.userId
+        }
+      })
+    }),
     mezonAppControllerGetMezonAppDetail: build.query<
       MezonAppControllerGetMezonAppDetailApiResponse,
       MezonAppControllerGetMezonAppDetailApiArg
@@ -46,19 +57,19 @@ const injectedRtkApi = api.injectEndpoints({
       MezonAppControllerDeleteMezonAppApiResponse,
       MezonAppControllerDeleteMezonAppApiArg
     >({
-      query: (queryArg) => ({ url: `/api/mezon-app`, method: 'DELETE', body: queryArg.requestWithId }),
+      query: (queryArg) => ({ url: `/api/mezon-app`, method: "DELETE", body: queryArg.requestWithId })
     }),
     mezonAppControllerCreateMezonApp: build.mutation<
       MezonAppControllerCreateMezonAppApiResponse,
       MezonAppControllerCreateMezonAppApiArg
     >({
-      query: (queryArg) => ({ url: `/api/mezon-app`, method: 'POST', body: queryArg.createMezonAppRequest })
+      query: (queryArg) => ({ url: `/api/mezon-app`, method: "POST", body: queryArg.createMezonAppRequest })
     }),
     mezonAppControllerUpdateMezonApp: build.mutation<
       MezonAppControllerUpdateMezonAppApiResponse,
       MezonAppControllerUpdateMezonAppApiArg
     >({
-      query: (queryArg) => ({ url: `/api/mezon-app`, method: 'PUT', body: queryArg.updateMezonAppRequest })
+      query: (queryArg) => ({ url: `/api/mezon-app`, method: "PUT", body: queryArg.updateMezonAppRequest })
     }),
     mezonAppControllerGetRelatedMezonApp: build.query<
       MezonAppControllerGetRelatedMezonAppApiResponse,
@@ -99,7 +110,7 @@ export type MezonAppControllerListAdminMezonAppApiArg = {
   pageSize: number
   pageNumber: number
   sortField: string
-  sortOrder: 'ASC' | 'DESC'
+  sortOrder: "ASC" | "DESC"
 }
 export type MezonAppControllerGetMyAppApiResponse = unknown
 export type MezonAppControllerGetMyAppApiArg = {
@@ -109,7 +120,11 @@ export type MezonAppControllerGetMyAppApiArg = {
   pageSize: number
   pageNumber: number
   sortField: string
-  sortOrder: 'ASC' | 'DESC'
+  sortOrder: "ASC" | "DESC"
+}
+export type MezonAppControllerGetUserPublicAppApiResponse = HttpResponse<GetMezonAppDetailsResponse[]>
+export type MezonAppControllerGetUserPublicAppApiArg = {
+  userId: string
 }
 export type MezonAppControllerGetMezonAppDetailApiResponse = HttpResponse<GetMezonAppDetailsResponse>
 export type MezonAppControllerGetMezonAppDetailApiArg = {
@@ -166,8 +181,8 @@ export type GetMezonAppDetailsResponse = {
   owner: OwnerInMezonAppDetailResponse
   tags: TagInMezonAppDetailResponse[]
   socialLinks: SocialLinkInMezonAppDetailResponse[]
-  rateScore: number;
-  installLink: string;
+  rateScore: number
+  installLink: string
 }
 export type RequestWithId = {
   id: string
@@ -290,14 +305,16 @@ export enum Status {
   $3 = 3
 }
 export enum Role {
-  Admin = 'ADMIN',
-  Developer = 'DEVELOPER'
+  Admin = "ADMIN",
+  Developer = "DEVELOPER"
 }
 export const {
   useMezonAppControllerListAdminMezonAppQuery,
   useLazyMezonAppControllerListAdminMezonAppQuery,
   useMezonAppControllerGetMyAppQuery,
   useLazyMezonAppControllerGetMyAppQuery,
+  useMezonAppControllerGetUserPublicAppQuery,
+  useLazyMezonAppControllerGetUserPublicAppQuery,
   useMezonAppControllerGetMezonAppDetailQuery,
   useLazyMezonAppControllerGetMezonAppDetailQuery,
   useMezonAppControllerDeleteMezonAppMutation,

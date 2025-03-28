@@ -2,7 +2,7 @@ import { DownOutlined, MenuOutlined } from '@ant-design/icons'
 import logo from '@app/assets/images/topLogo.png'
 import Button from '@app/mtb-ui/Button'
 import { renderMenu } from '@app/navigation/router'
-import { useLazyUserControllerGetUserDetailsQuery } from '@app/services/api/user/user'
+import { GetUserDetailsResponse, useLazyUserControllerGetUserDetailsQuery } from '@app/services/api/user/user'
 import { RootState } from '@app/store'
 import { IUserStore } from '@app/store/user'
 import { redirectToOAuth } from '@app/utils/auth'
@@ -14,13 +14,14 @@ import { useNavigate } from 'react-router-dom'
 import MtbTypography from '../Typography/Typography'
 import styles from './Header.module.scss'
 import { useAuth } from '@app/hook/useAuth'
+import useLocalStorage from '@app/hook/useLocalStorage'
 
 function Header() {
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   // const { theme, setTheme } = useTheme()
-  const [getUserInfo] = useLazyUserControllerGetUserDetailsQuery()
-  const { userInfo } = useSelector<RootState, IUserStore>((s) => s.user)
+  const [getUserInfo, { data: userDetailsApiResponse }] = useLazyUserControllerGetUserDetailsQuery()
+  const [userInfo, setUserInfo] = useLocalStorage("userInfo", {})
   const { isLogin, postLogout } = useAuth()
 
   const handleLogin = useCallback(() => redirectToOAuth(), [])
@@ -41,7 +42,11 @@ function Header() {
     if (isLogin) {
       getUserInfo()
     }
-  }, [isLogin])
+
+    if (userDetailsApiResponse?.data) {
+      setUserInfo((prev: GetUserDetailsResponse) => (prev !== userDetailsApiResponse.data ? userDetailsApiResponse.data : prev))
+    }
+  }, [isLogin, userDetailsApiResponse])
 
   const renderHeaderItems = () => {
     return (

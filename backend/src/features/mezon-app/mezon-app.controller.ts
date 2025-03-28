@@ -20,6 +20,7 @@ import { Logger } from "@libs/logger";
 
 import {
   CreateMezonAppRequest,
+  GetUserPublicMezonAppRequest,
   SearchMezonAppRequest,
   UpdateMezonAppRequest,
 } from "./dtos/request";
@@ -62,6 +63,17 @@ export class MezonAppController {
   ) {
     try {
       return this.mezonAppService.getMyApp(user.id, query);
+    } catch (error) {
+      this.logger.error("An error occured", error);
+      throw error;
+    }
+  }
+
+  @Get("public")
+  @ApiBearerAuth()
+  getUserPublicApp(@Query() query: GetUserPublicMezonAppRequest) {
+    try {
+      return this.mezonAppService.getUserPublicApps(query);
     } catch (error) {
       this.logger.error("An error occured", error);
       throw error;

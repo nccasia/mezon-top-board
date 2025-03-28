@@ -15,6 +15,14 @@ export class SearchMezonAppRequest extends PaginationQuery {
     tags: string[];
 }
 
+export class GetUserPublicMezonAppRequest extends PaginationQuery {
+  @ApiPropertyOptional({
+    description: "userId",
+  })
+  @IsOptional()
+  userId: string;
+}
+
 class SocialLinkDto {
     @ApiPropertyOptional()
     @IsString()

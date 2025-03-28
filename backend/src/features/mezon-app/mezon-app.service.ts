@@ -15,6 +15,7 @@ import { filterBuilder, searchBuilder } from "@libs/utils/queryBuilder";
 
 import {
   CreateMezonAppRequest,
+  GetUserPublicMezonAppRequest,
   SearchMezonAppRequest,
   UpdateMezonAppRequest,
 } from "./dtos/request";
@@ -119,19 +120,23 @@ export class MezonAppService {
   }
 
   async searchMezonApp(query: SearchMezonAppRequest) {
-    let whereCondition = this.appRepository.getRepository()
-      .createQueryBuilder('app')
-      .leftJoinAndSelect('app.tags', 'tag')
-      .leftJoinAndSelect('app.ratings', 'rating')
-      .where('app.status = :status', { status: AppStatus.PUBLISHED });
+    let whereCondition = this.appRepository
+      .getRepository()
+      .createQueryBuilder("app")
+      .leftJoinAndSelect("app.tags", "tag")
+      .leftJoinAndSelect("app.ratings", "rating")
+      .where("app.status = :status", { status: AppStatus.PUBLISHED });
 
     // Priorize to search by keyword if field and search exist at the same time.
     if (query.search)
       whereCondition.andWhere(
-        new Brackets(qb => {
-          qb.where("app.name ILIKE :keyword", { keyword: `%${query.search}%` })
-            .orWhere("app.headline ILIKE :keyword", { keyword: `%${query.search}%` });
-        })
+        new Brackets((qb) => {
+          qb.where("app.name ILIKE :keyword", {
+            keyword: `%${query.search}%`,
+          }).orWhere("app.headline ILIKE :keyword", {
+            keyword: `%${query.search}%`,
+          });
+        }),
       );
 
     if (query.tags?.length) {
@@ -282,18 +287,22 @@ export class MezonAppService {
   }
 
   async listAdminMezonApp(query: SearchMezonAppRequest) {
-    let whereCondition = this.appRepository.getRepository()
-      .createQueryBuilder('app')
-      .leftJoinAndSelect('app.tags', 'tag')
-      .leftJoinAndSelect('app.ratings', 'rating')
+    let whereCondition = this.appRepository
+      .getRepository()
+      .createQueryBuilder("app")
+      .leftJoinAndSelect("app.tags", "tag")
+      .leftJoinAndSelect("app.ratings", "rating");
 
     // Priorize to search by keyword if field and search exist at the same time.
     if (query.search)
       whereCondition.andWhere(
-        new Brackets(qb => {
-          qb.where("app.name ILIKE :keyword", { keyword: `%${query.search}%` })
-            .orWhere("app.headline ILIKE :keyword", { keyword: `%${query.search}%` });
-        })
+        new Brackets((qb) => {
+          qb.where("app.name ILIKE :keyword", {
+            keyword: `%${query.search}%`,
+          }).orWhere("app.headline ILIKE :keyword", {
+            keyword: `%${query.search}%`,
+          });
+        }),
       );
 
     if (query.tags?.length) {
@@ -317,24 +326,55 @@ export class MezonAppService {
   }
 
   async getMyApp(userId: string, query: SearchMezonAppRequest) {
-    let whereCondition = this.appRepository.getRepository()
-      .createQueryBuilder('app')
-      .leftJoinAndSelect('app.tags', 'tag')
-      .leftJoinAndSelect('app.ratings', 'rating')
-      .where('app.ownerId = :ownerId', { ownerId: userId });
+    let whereCondition = this.appRepository
+      .getRepository()
+      .createQueryBuilder("app")
+      .leftJoinAndSelect("app.tags", "tag")
+      .leftJoinAndSelect("app.ratings", "rating")
+      .where("app.ownerId = :ownerId", { ownerId: userId });
 
     // Priorize to search by keyword if field and search exist at the same time.
     if (query.search)
       whereCondition.andWhere(
-        new Brackets(qb => {
-          qb.where("app.name ILIKE :keyword", { keyword: `%${query.search}%` })
-            .orWhere("app.headline ILIKE :keyword", { keyword: `%${query.search}%` });
-        })
+        new Brackets((qb) => {
+          qb.where("app.name ILIKE :keyword", {
+            keyword: `%${query.search}%`,
+          }).orWhere("app.headline ILIKE :keyword", {
+            keyword: `%${query.search}%`,
+          });
+        }),
       );
 
     if (query.tags?.length) {
       whereCondition.andWhere("tag.id IN (:...tagIds)", { tagIds: query.tags });
     }
+
+    console.log("whereCondition", whereCondition.getQueryAndParameters());
+
+    return paginate<App, SearchMezonAppResponse>(
+      () => whereCondition.getManyAndCount(),
+      query.pageSize,
+      query.pageNumber,
+      (entity) => {
+        const mappedMezonApp = Mapper(SearchMezonAppResponse, entity);
+        mappedMezonApp.rateScore = this.getAverageRating(entity);
+        mappedMezonApp.tags = entity.tags.map((tag) => ({
+          id: tag.id,
+          name: tag.name,
+        }));
+        return mappedMezonApp;
+      },
+    );
+  }
+
+  async getUserPublicApps(query: GetUserPublicMezonAppRequest) {
+    let whereCondition = this.appRepository
+      .getRepository()
+      .createQueryBuilder("app")
+      .leftJoinAndSelect("app.tags", "tag")
+      .leftJoinAndSelect("app.ratings", "rating")
+      .where("app.ownerId = :ownerId", { ownerId: query.userId })
+      .andWhere("app.status = :status", { status: AppStatus.PUBLISHED });
 
     console.log("whereCondition", whereCondition.getQueryAndParameters());
 

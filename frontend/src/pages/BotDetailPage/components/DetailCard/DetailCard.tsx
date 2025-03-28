@@ -5,9 +5,11 @@ import avatar from '@app/assets/images/default-user.webp'
 import { useSelector } from 'react-redux'
 import { RootState } from '@app/store'
 import { IMezonAppStore } from '@app/store/mezonApp'
+import useLocalStorage from '@app/hook/useLocalStorage'
 
 function DetailCard() {
   const { mezonAppDetail } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
+  const [userInfo, setUserInfo] = useLocalStorage("userInfo", {})
   return (
     <div className='shadow-sm rounded-2xl bg-white p-4'>
       <div className='pb-4'>
@@ -53,7 +55,7 @@ function DetailCard() {
           Creators
         </MtbTypography>
         <div className={`pt-2`}>
-          <a href={`/profile/${mezonAppDetail?.owner?.id}`}>
+          <a href={`/profile/${userInfo.id === mezonAppDetail?.owner?.id ? "" : mezonAppDetail?.owner?.id}`}>
             <Tag className='!rounded-lg !pr-6 !py-3 !shadow-md !bg-white flex items-center'>
               <div className='flex gap-4 items-center'>
                 <div className='w-[40px] h-[40px] overflow-hidden rounded-xl'>

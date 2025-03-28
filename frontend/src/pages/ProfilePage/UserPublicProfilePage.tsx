@@ -1,24 +1,22 @@
 import { useMezonAppSearch } from "@app/hook/useSearch"
 import SearchBar from "@app/mtb-ui/SearchBar/SearchBar"
 import MtbTypography from "@app/mtb-ui/Typography/Typography"
-import { useLazyUserControllerGetUserDetailsQuery, useLazyUserControllerGetUserPublicInfoQuery } from "@app/services/api/user/user"
-import { RootState } from "@app/store"
-import { useAppSelector } from "@app/store/hook"
-import { IUserStore } from "@app/store/user"
+import { useLazyUserControllerGetUserPublicInfoQuery } from "@app/services/api/user/user"
 import { Divider } from "antd"
 import { useEffect } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { useParams } from "react-router-dom"
 import { toast } from "react-toastify"
 import UserPublicInfoCard from "./components/UserPublicInfoCard"
+import { useLazyMezonAppControllerGetUserPublicAppQuery } from "@app/services/api/mezonApp/mezonApp"
+import CompactBotCard from "@app/components/CompactBotCard/CompactBotCard"
 
 function UserPublicProfilePage() {
-    const navigate = useNavigate()
     const { handleSearch } = useMezonAppSearch(1, 5)
     const { userId } = useParams()
-    const { userInfo: currentUser } = useAppSelector<RootState, IUserStore>((s) => s.user)
-    const [getUserInfo] = useLazyUserControllerGetUserDetailsQuery()
-    const [queryGetUserPublicInfo, { data: queryResponse }] = useLazyUserControllerGetUserPublicInfoQuery()
-    const userPublicInfo = queryResponse?.data
+    const [queryGetUserPublicInfo, { data: queryUserResponse }] = useLazyUserControllerGetUserPublicInfoQuery()
+    const [queryGetUserPublicApp, {data: queryAppsResponse}] = useLazyMezonAppControllerGetUserPublicAppQuery()
+    const userPublicInfo = queryUserResponse?.data
+    const userPublicApp = queryAppsResponse?.data
     const getUserPublicInfo = async () => {
         try {
             if (!userId) throw new Error("userId is invalid")
@@ -27,13 +25,20 @@ function UserPublicProfilePage() {
             toast.error("Error")
         }
     }
-
-    if (Object.keys(currentUser).length > 0 && userPublicInfo && Object.keys(userPublicInfo).length > 0 && currentUser.id === userPublicInfo?.id) navigate('/profile')
+    
+    const getUserPublicApp = async () => {
+        try {
+            if (!userId) throw new Error("userId is invalid")
+            queryGetUserPublicApp({ userId }).unwrap()
+        } catch (error) {
+            toast.error("Error")
+        }
+    }
 
     useEffect(() => {
-        getUserInfo()
         getUserPublicInfo()
-    }, [userId, getUserInfo])
+        getUserPublicApp()
+    }, [userId])
 
     return (
         <div className='pt-8 pb-12 w-[75%] m-auto'>
@@ -51,7 +56,7 @@ function UserPublicProfilePage() {
                         <MtbTypography variant='h2'>Welcome to {userPublicInfo?.name}'s profile</MtbTypography>
                     </div>
                     <div className='grid grid-cols-1 gap-8 min-lg:grid-cols-2 min-xl:grid-cols-3 max-w-full'>
-                        LIST OF THIS USER'S BOTS
+                        {userPublicApp?.map((item) => <CompactBotCard key={item.id} data={item}></CompactBotCard>)}
                     </div>
                 </div>
             </div>
