@@ -27,6 +27,12 @@ const injectedRtkApi = api.injectEndpoints({
     >({
       query: () => ({ url: `/api/user/me` })
     }),
+    userControllerGetPublicProfile: build.query<
+      UserControllerGetPublicProfileApiResponse,
+      UserControllerGetPublicProfileApiArg
+    >({
+      query: (queryArg) => ({ url: `/api/user/public`, params: { userId: queryArg.userId } })
+    }),
     userControllerSelfUpdateUser: build.mutation<
       UserControllerSelfUpdateUserApiResponse,
       UserControllerSelfUpdateUserApiArg
@@ -56,6 +62,10 @@ export type UserControllerDeleteUserApiArg = {
 }
 export type UserControllerGetUserDetailsApiResponse = HttpResponse<GetUserDetailsResponse>
 export type UserControllerGetUserDetailsApiArg = void
+export type UserControllerGetPublicProfileApiResponse = HttpResponse<GetPublicProfileResponse>
+export type UserControllerGetPublicProfileApiArg = {
+  userId: string
+}
 export type UserControllerSelfUpdateUserApiResponse = unknown
 export type UserControllerSelfUpdateUserApiArg = {
   selfUpdateUserRequest: SelfUpdateUserRequest
@@ -83,6 +93,12 @@ export type GetUserDetailsResponse = {
   bio: string
   profileImage: string
 }
+export type GetPublicProfileResponse = {
+  id: string
+  name: string
+  bio: string
+  profileImage: string
+}
 export type SelfUpdateUserRequest = {
   name?: string
   bio?: string
@@ -95,5 +111,7 @@ export const {
   useUserControllerDeleteUserMutation,
   useUserControllerGetUserDetailsQuery,
   useLazyUserControllerGetUserDetailsQuery,
+  useUserControllerGetPublicProfileQuery,
+  useLazyUserControllerGetPublicProfileQuery,
   useUserControllerSelfUpdateUserMutation
 } = injectedRtkApi

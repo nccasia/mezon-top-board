@@ -17,7 +17,7 @@ import {
   SelfUpdateUserRequest,
   UpdateUserRequest,
 } from "./dtos/request";
-import { GetUserDetailsResponse, SearchUserResponse } from "./dtos/response";
+import { GetUserDetailsResponse, GetPublicProfileResponse, SearchUserResponse } from "./dtos/response";
 
 @Injectable()
 export class UserService {
@@ -53,6 +53,12 @@ export class UserService {
     return new Result({ data: Mapper(GetUserDetailsResponse, user) });
   }
 
+  async getPublicProfile(userId: string) {
+    const user = await this.userRepository.findById(userId);
+    if (!user) throw new BadRequestException(ErrorMessages.NOT_FOUND_MSG);
+    return new Result({ data: Mapper(GetPublicProfileResponse, user) });
+  }
+
   async deleteUser(req: RequestWithId) {
     await this.userRepository.softDelete(req.id);
     return new Result();
@@ -68,7 +74,11 @@ export class UserService {
   }
 
   async seflUpdateUser(userId: string, req: SelfUpdateUserRequest) {
-    await this.userRepository.update(userId, { name: req.name, bio: req.bio, profileImage: req.profileImage });
+    await this.userRepository.update(userId, {
+      name: req.name,
+      bio: req.bio,
+      profileImage: req.profileImage,
+    });
     return new Result();
   }
 }

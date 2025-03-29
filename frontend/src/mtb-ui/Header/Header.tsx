@@ -38,6 +38,7 @@ function Header() {
   ]
 
   useEffect(() => {
+    // TODO: Prevent multiple calls to getUserInfo (Set expiration time for data)
     if (isLogin) {
       getUserInfo()
     }

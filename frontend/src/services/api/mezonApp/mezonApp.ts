@@ -79,6 +79,7 @@ const injectedRtkApi = api.injectEndpoints({
       query: (queryArg) => ({
         url: `/api/mezon-app/search`,
         params: {
+          ownerId: queryArg.ownerId,
           search: queryArg.search,
           tags: queryArg.tags,
           pageSize: queryArg.pageSize,
@@ -137,6 +138,7 @@ export type MezonAppControllerSearchMezonAppApiResponse = HttpResponse<GetMezonA
 export type MezonAppControllerSearchMezonAppApiArg = {
   /** Keyword to search mezonApps by name or headline */
   search?: string
+  ownerId?: string
   tags?: string[]
   pageSize: number
   pageNumber: number

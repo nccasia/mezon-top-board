@@ -38,16 +38,22 @@ export const routePaths: RoutePath[] = [
     isShowMenu: true
   },
   {
-    path: '/your-bots',
+    path: '/profile',
     element: <ProfilePage></ProfilePage>,
-    label: 'Your Bots',
+    label: 'My Profile',
     isShowMenu: true,
     requireAuth: true
   },
   {
-    path: '/your-bots/setting',
+    path: '/profile/setting',
     element: <SettingPage></SettingPage>,
     label: 'Setting page',
+    isShowMenu: false
+  },
+  {
+    path: '/profile/:userId',
+    element: <ProfilePage></ProfilePage>,
+    label: '',
     isShowMenu: false
   },
   {
