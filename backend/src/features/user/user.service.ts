@@ -17,7 +17,7 @@ import {
   SelfUpdateUserRequest,
   UpdateUserRequest,
 } from "./dtos/request";
-import { GetUserDetailsResponse, GetUserPublicInfoResponse, SearchUserResponse } from "./dtos/response";
+import { GetUserDetailsResponse, GetPublicProfileResponse, SearchUserResponse } from "./dtos/response";
 
 @Injectable()
 export class UserService {
@@ -53,10 +53,10 @@ export class UserService {
     return new Result({ data: Mapper(GetUserDetailsResponse, user) });
   }
 
-  async getUserPublicInfo(userId: string) {
+  async getPublicProfile(userId: string) {
     const user = await this.userRepository.findById(userId);
     if (!user) throw new BadRequestException(ErrorMessages.NOT_FOUND_MSG);
-    return new Result({ data: Mapper(GetUserPublicInfoResponse, user) });
+    return new Result({ data: Mapper(GetPublicProfileResponse, user) });
   }
 
   async deleteUser(req: RequestWithId) {

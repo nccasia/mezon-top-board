@@ -8,7 +8,6 @@ import NewBotPage from '@app/pages/NewBotPage/NewBotPage'
 import NotFoundPage from '@app/pages/NotFoundPage/NotFoundPage'
 import ProfilePage from '@app/pages/ProfilePage/ProfilePage'
 import SettingPage from '@app/pages/ProfilePage/SettingPage'
-import UserPublicProfilePage from '@app/pages/ProfilePage/UserPublicProfilePage'
 import SearchPage from '@app/pages/SearchPage/SearchPage'
 import TermsPage from '@app/pages/TermsPage/TermsPage'
 import { RoutePath } from '@app/types/RoutePath.types'
@@ -53,8 +52,8 @@ export const routePaths: RoutePath[] = [
   },
   {
     path: '/profile/:userId',
-    element: <UserPublicProfilePage></UserPublicProfilePage>,
-    label: 'Setting page',
+    element: <ProfilePage></ProfilePage>,
+    label: '',
     isShowMenu: false
   },
   {

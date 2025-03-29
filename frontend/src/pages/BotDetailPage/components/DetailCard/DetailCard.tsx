@@ -5,11 +5,11 @@ import avatar from '@app/assets/images/default-user.webp'
 import { useSelector } from 'react-redux'
 import { RootState } from '@app/store'
 import { IMezonAppStore } from '@app/store/mezonApp'
-import useLocalStorage from '@app/hook/useLocalStorage'
+import { IUserStore } from '@app/store/user'
 
 function DetailCard() {
   const { mezonAppDetail } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
-  const [userInfo, setUserInfo] = useLocalStorage("userInfo", {})
+  const { userInfo } = useSelector<RootState, IUserStore>((s) => s.user)
   return (
     <div className='shadow-sm rounded-2xl bg-white p-4'>
       <div className='pb-4'>

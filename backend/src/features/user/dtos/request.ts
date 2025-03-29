@@ -11,7 +11,7 @@ export class SearchUserRequest extends PaginationQuery {
     search: string;
 }
 
-export class GetUserPublicInfoRequest {
+export class GetPublicProfileInfoRequest {
   @ApiPropertyOptional({
     description: "userId",
   })

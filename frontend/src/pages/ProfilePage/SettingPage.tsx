@@ -3,16 +3,15 @@ import { useMezonAppSearch } from '@app/hook/useSearch'
 import Button from '@app/mtb-ui/Button'
 import SearchBar from '@app/mtb-ui/SearchBar/SearchBar'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
-import { useMediaControllerCreateMediaMutation } from '@app/services/api/media/media'
 import { useUserControllerSelfUpdateUserMutation } from '@app/services/api/user/user'
 import { RootState } from '@app/store'
 import { useAppSelector } from '@app/store/hook'
 import { IUserStore } from '@app/store/user'
-import { Divider, Form, Input, Upload } from 'antd'
+import { Divider, Form, Input } from 'antd'
 import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
-import CardInfo from './components/CardInfo'
+import { CardInfo } from './components'
 
 function SettingPage() {
   const { userInfo } = useAppSelector<RootState, IUserStore>((s) => s.user)
@@ -51,7 +50,7 @@ function SettingPage() {
       <Divider className='bg-gray-100'></Divider>
       <div className='flex justify-between gap-15 max-lg:flex-col max-2xl:flex-col'>
         <div className='flex-1'>
-          <CardInfo></CardInfo>
+          <CardInfo userInfo={userInfo}></CardInfo>
         </div>
         <div className='flex-2'>
           <div className='flex justify-between items-center pb-10'>

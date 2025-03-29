@@ -8,15 +8,16 @@ import { GetUserFromHeader } from "@libs/decorator/getUserFromHeader.decorator";
 import { Logger } from "@libs/logger";
 
 import {
-  GetUserPublicInfoRequest,
+  GetPublicProfileInfoRequest,
   SearchUserRequest,
   SelfUpdateUserRequest,
   UpdateUserRequest,
 } from "./dtos/request";
-import { GetUserDetailsResponse, GetUserPublicInfoResponse, SearchUserResponse } from "./dtos/response";
+import { GetUserDetailsResponse, GetPublicProfileResponse, SearchUserResponse } from "./dtos/response";
 import { UserService } from "./user.service";
 import { RoleRequired } from "@libs/decorator/roles.decorator";
 import { Role } from "@domain/common/enum/role";
+import { Public } from "@libs/decorator/authorization.decorator";
 
 @Controller("user")
 @ApiTags("User")
@@ -45,9 +46,10 @@ export class UserController {
 
   @Get("public")
   @ApiBearerAuth()
-  @ApiResponse({ type: GetUserPublicInfoResponse })
-  async getUserPublicDetails(@Query() query: GetUserPublicInfoRequest) {
-    return this.userService.getUserPublicInfo(query.userId);
+  @Public()
+  @ApiResponse({ type: GetPublicProfileResponse })
+  async getUserPublicDetails(@Query() query: GetPublicProfileInfoRequest) {
+    return this.userService.getPublicProfile(query.userId);
   }
 
   @Put()
