@@ -2,7 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 
 import { Expose, Type } from "class-transformer";
 
-import { OwnerInMezonAppDetailResponse } from "@features/user/dtos/response";
+import { OwnerInAppRatingResponse } from "@features/user/dtos/response";
 
 export class GetAppRatingResponse {
   @Expose()
@@ -19,6 +19,6 @@ export class GetAppRatingResponse {
   public updatedAt: Date;
   @Expose()
   @ApiProperty()
-  @Type(() => OwnerInMezonAppDetailResponse)
-  public user: OwnerInMezonAppDetailResponse;
+  @Type(() => OwnerInAppRatingResponse)
+  public user: OwnerInAppRatingResponse;
 }

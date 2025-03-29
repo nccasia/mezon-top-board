@@ -202,6 +202,7 @@ export type User = {
   apps: App[]
   links: Link[]
   medias: Media[]
+  profileImage: string
 }
 export type Link = {
   url: string

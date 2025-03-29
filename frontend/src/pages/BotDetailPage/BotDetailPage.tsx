@@ -1,32 +1,30 @@
-import { Tag, Divider, Spin } from 'antd'
 import BotCard from '@app/components/BotCard/BotCard'
-import DetailCard from './components/DetailCard/DetailCard'
 import CompactBotCard from '@app/components/CompactBotCard/CompactBotCard'
-import { ratings as summaryRatings } from '@app/constants/common.constant'
-import Comment from './components/Comment/Comment'
-import MtbProgress from '@app/mtb-ui/ProgressBar/ProgressBar'
-import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import { TypographyStyle } from '@app/enums/typography.enum'
+import { useMezonAppSearch } from '@app/hook/useSearch'
+import MtbProgress from '@app/mtb-ui/ProgressBar/ProgressBar'
+import MtbRate from '@app/mtb-ui/Rate/Rate'
 import SearchBar from '@app/mtb-ui/SearchBar/SearchBar'
+import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import {
   useLazyMezonAppControllerGetMezonAppDetailQuery,
   useLazyMezonAppControllerGetRelatedMezonAppQuery
 } from '@app/services/api/mezonApp/mezonApp'
-import { useParams, useSearchParams } from 'react-router-dom'
-import { useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { useLazyRatingControllerGetRatingsByAppQuery } from '@app/services/api/rating/rating'
+import { useLazyTagControllerGetTagsQuery } from '@app/services/api/tag/tag'
 import { RootState } from '@app/store'
 import { IMezonAppStore } from '@app/store/mezonApp'
-import MtbRate from '@app/mtb-ui/Rate/Rate'
-import { ITagStore } from '@app/store/tag'
-import { useLazyTagControllerGetTagsQuery } from '@app/services/api/tag/tag'
-import { useMezonAppSearch } from '@app/hook/useSearch'
-import { ApiError } from '@app/types/API.types'
-import { toast } from 'react-toastify'
-import RatingForm from './components/RatingForm.tsx/RatingForm'
-import { useLazyRatingControllerGetRatingsByAppQuery } from '@app/services/api/rating/rating'
-import { IUserStore } from '@app/store/user'
 import { IRatingStore } from '@app/store/rating'
+import { ITagStore } from '@app/store/tag'
+import { ApiError } from '@app/types/API.types'
+import { Divider, Spin } from 'antd'
+import { useEffect } from 'react'
+import { useSelector } from 'react-redux'
+import { useParams, useSearchParams } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import Comment from './components/Comment/Comment'
+import DetailCard from './components/DetailCard/DetailCard'
+import RatingForm from './components/RatingForm/RatingForm'
 function BotDetailPage() {
   const [getMezonAppDetail, { isError, error }] = useLazyMezonAppControllerGetMezonAppDetailQuery()
   const [getrelatedMezonApp] = useLazyMezonAppControllerGetRelatedMezonAppQuery()
@@ -36,6 +34,10 @@ function BotDetailPage() {
   const { botId } = useParams()
   const { mezonAppDetail, relatedMezonApp } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
   const { ratings } = useSelector<RootState, IRatingStore>((s) => s.rating)
+  const ratingCounts = ratings?.data?.reduce((acc, rating) => {
+    acc[rating.score] = (acc[rating.score] || 0) + 1
+    return acc
+  }, { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 } as Record<number, number>) || { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
 
   const { tagList } = useSelector<RootState, ITagStore>((s) => s.tag)
   const { handleSearch } = useMezonAppSearch(1, 5)
@@ -53,7 +55,7 @@ function BotDetailPage() {
     if (!tagList?.data?.length) {
       getTagList()
     }
-  }, [tagList])
+  }, [])
 
   useEffect(() => {
     if (isError && error) {
@@ -109,17 +111,28 @@ function BotDetailPage() {
                 </p>
               </div>
               <div className='flex-1 flex flex-col gap-1'>
-                {summaryRatings.map((rating) => (
-                  <div key={rating.stars} className='flex items-center gap-2 pb-2'>
-                    <p className='whitespace-nowrap'>{rating.stars} stars</p>
-                    <MtbProgress percent={rating.percent} strokeColor={'red'} showInfo={false}></MtbProgress>
-                    <p className='align-middle'>{rating.value}</p>
-                  </div>
-                ))}
+                {
+                  Object.keys(ratingCounts).reverse().map((key) => {
+                    const ratingValue = Number(key)
+                    const ratingCount = ratingCounts[ratingValue] || 0
+                    const totalRatings = Object.values(ratingCounts).reduce((acc, count) => acc + count, 0)
+                    const percent = ((ratingCount / totalRatings) * 100).toFixed(2)
+
+                    return (
+                      <div key={ratingValue} className='flex items-center gap-2 pb-2'>
+                        <p className='whitespace-nowrap'>{ratingValue} stars</p>
+                        <MtbProgress percent={Number(percent)} strokeColor={'red'} showInfo={false}></MtbProgress>
+                        <p className='align-middle'>{ratingCount}</p>
+                      </div>
+                    )
+                  })
+                }
               </div>
             </div>
             <Divider className='bg-gray-200'></Divider>
-            <RatingForm />
+            <RatingForm onSubmitted={() => {
+              getRatingsByApp({ appId: botId || '' })
+            }} />
             <Divider className='bg-gray-200'></Divider>
             <div className='flex flex-col gap-5'>
               {(isLoadingReview && Object.keys(ratings).length == 0) ? (<Spin size='large' />) : (ratings?.data?.map(rating => (

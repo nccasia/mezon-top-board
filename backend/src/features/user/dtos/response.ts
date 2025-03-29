@@ -1,4 +1,4 @@
-import { ApiProperty, OmitType } from "@nestjs/swagger";
+import { ApiProperty, OmitType, PickType } from "@nestjs/swagger";
 
 import { Expose } from "class-transformer";
 
@@ -50,3 +50,9 @@ export class ReviewerResponse {
 export class GetUserDetailsResponse extends OmitType(SearchUserResponse, ["role"]) {
 }
 export class GetPublicProfileResponse extends OmitType(SearchUserResponse, ["role", "email"]) { }
+
+export class OwnerInAppRatingResponse extends PickType(SearchUserResponse, [
+    "id",
+    "name",
+    "profileImage",
+]) { }

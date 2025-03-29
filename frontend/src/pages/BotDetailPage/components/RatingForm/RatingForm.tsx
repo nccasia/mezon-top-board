@@ -10,8 +10,10 @@ import { Form, Input } from 'antd'
 import { Controller, useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
+import { RatingFormProps } from './RatingForm.types'
+import { getUrlImage } from '@app/utils/stringHelper'
 
-const RatingForm = () => {
+const RatingForm = ({ onSubmitted }: RatingFormProps) => {
   const { botId: appId } = useParams<string>()
   const { userInfo } = useAppSelector<RootState, IUserStore>((s) => s.user)
   const { control, handleSubmit, reset } = useForm({
@@ -26,6 +28,7 @@ const RatingForm = () => {
     try {
       if (!appId) throw new Error("Bad Request!")
       await createRating({ createRatingRequest: { ...data, appId } }).unwrap()
+      if (onSubmitted) onSubmitted(data)
       toast.success('Successfully')
       reset()
     } catch (error: any) {
@@ -36,7 +39,7 @@ const RatingForm = () => {
 
   return (
     <div className='flex items-start gap-8 p-4 rounded-lg'>
-      <img src={avatar} alt={userInfo.name} className='w-15 h-15 rounded-full object-cover mt-1' />
+      <img src={getUrlImage(userInfo?.profileImage) || avatar} alt={userInfo.name} className='w-15 h-15 rounded-full object-cover mt-1' />
       <div className='flex-1 flex flex-col gap-2'>
         <MtbTypography variant='h4'>{userInfo.name}</MtbTypography>
         <Form onFinish={handleSubmit(onSubmit)}>
