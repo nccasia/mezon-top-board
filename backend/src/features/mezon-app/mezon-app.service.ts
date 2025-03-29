@@ -138,6 +138,12 @@ export class MezonAppService {
       whereCondition.andWhere("tag.id IN (:...tagIds)", { tagIds: query.tags });
     }
 
+    if (query?.ownerId) {
+      whereCondition.andWhere("app.ownerId = :ownerId", {
+        ownerId: query.ownerId,
+      });
+    }
+
     return paginate<App, SearchMezonAppResponse>(
       () => whereCondition.getManyAndCount(),
       query.pageSize,

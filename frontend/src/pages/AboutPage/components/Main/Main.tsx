@@ -39,7 +39,7 @@ function Main() {
         'app, we provide the tools, resources, and community to support your journey.'
     }
   ]
-  
+
   return (
     <div className='flex flex-col justify-center pt-8 pb-12 w-[80%] m-auto'>
       <div className='flex flex-col items-center text-center mt-10'>
@@ -68,8 +68,13 @@ function Main() {
           </Button>
         </div>
       </div>
-      <div className='flex flex-col items-center object-cover pt-10'>
-        <img src={mezonScreenshot} alt='' width='60%' />
+      <div className='flex flex-col items-center pt-10'>
+        <img
+          src={mezonScreenshot}
+          alt=''
+          width='60%'
+          className='w-[100%] max-w-[600px] object-cover rounded-xl shadow-xl max-md:w-[100%]'
+        />
       </div>
     </div>
   )

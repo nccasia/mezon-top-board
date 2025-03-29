@@ -16,7 +16,7 @@ function MtbRate({ readonly = false, color, size, isShowTooltip = false, customC
         } as CSSProperties
       }
     >
-      <Rate {...props} tooltips={isShowTooltip ? desc : []} defaultValue={isReadOnly} disabled={readonly} allowHalf />
+      <Rate {...props} tooltips={isShowTooltip ? desc : []} defaultValue={isReadOnly} disabled={readonly} />
     </div>
   )
 }

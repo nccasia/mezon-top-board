@@ -1,9 +1,9 @@
-import Banner from './components/Banner/Banner'
+import Hero from '@app/mtb-ui/Hero/Hero'
 import Main from './components/Main/Main'
 function HomePage() {
   return (
     <div>
-      <Banner></Banner>
+      <Hero></Hero>
       <Main></Main>
     </div>
   )

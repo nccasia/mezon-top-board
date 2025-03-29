@@ -13,6 +13,11 @@ export class SearchMezonAppRequest extends PaginationQuery {
     @ApiPropertyOptional()
     @IsOptional()
     tags: string[];
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    @IsUUID()
+    ownerId: string;
 }
 
 class SocialLinkDto {

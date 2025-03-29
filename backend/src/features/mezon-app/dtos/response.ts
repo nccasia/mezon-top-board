@@ -18,6 +18,10 @@ export class GetMezonAppDetailsResponse {
 
     @Expose()
     @ApiProperty()
+    public prefix: string;
+    
+    @Expose()
+    @ApiProperty()
     public installLink: string;
 
     @Expose()

@@ -2,18 +2,22 @@ import { ReactNode } from 'react'
 
 interface FormFieldProps {
   label?: string
+  description?: string
   children: ReactNode
   errorText?: string
   customClass?: string
 }
 
-function FormField({ label, children, errorText, customClass }: FormFieldProps) {
+function FormField({ label, description = '', children, errorText, customClass }: FormFieldProps) {
   return (
-    <div className={`flex items-start pt-10 ${customClass}`}>
-      <p className='text-[18px] flex-1'>{label}</p>
-      <div className="flex flex-col flex-5">
+    <div className={`flex items-start pt-10 gap-6 ${customClass}`}>
+      <div className='flex flex-col flex-3'>
+        <p className='text-[18px] '>{label}</p>
+        <p className='text-[14px] text-gray-500'>{description}</p>
+      </div>
+      <div className='flex flex-col flex-9'>
         {children}
-        {errorText && <p className="text-red-500 text-sm pt-2">{errorText}</p>}
+        {errorText && <p className='text-red-500 text-sm pt-2'>{errorText}</p>}
       </div>
     </div>
   )

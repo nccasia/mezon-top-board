@@ -26,6 +26,8 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: backend
+    volumes:
+      - ./backend/uploads:/uploads
     depends_on:
       postgres:
         condition: service_healthy

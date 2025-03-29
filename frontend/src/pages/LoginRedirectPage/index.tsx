@@ -1,3 +1,4 @@
+import { useAuth } from '@app/hook/useAuth'
 import { useAuthControllerVerifyOAuth2Mutation } from '@app/services/api/auth/auth'
 import { setLogIn } from '@app/store/auth'
 import { storeAccessTokens } from '@app/utils/storage'
@@ -12,7 +13,7 @@ export const LoginRedirectPage = () => {
   const navigate = useNavigate()
   const [verifyOauth2Service] = useAuthControllerVerifyOAuth2Mutation()
 
-  const dispatch = useDispatch()
+  const { postLogin } = useAuth()
 
   const urlParams = useMemo(
     () => ({
@@ -38,7 +39,7 @@ export const LoginRedirectPage = () => {
         return
       }
       storeAccessTokens(data.data)
-      dispatch(setLogIn(true))
+      postLogin()
       toast.success('Login successfully!')
     } catch (_) {
       toast.error('Login failed!')

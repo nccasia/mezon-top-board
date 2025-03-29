@@ -4,16 +4,16 @@ import Button from '@app/mtb-ui/Button'
 import { renderMenu } from '@app/navigation/router'
 import { useLazyUserControllerGetUserDetailsQuery } from '@app/services/api/user/user'
 import { RootState } from '@app/store'
-import { IAuthStore, setLogIn } from '@app/store/auth'
 import { IUserStore } from '@app/store/user'
 import { redirectToOAuth } from '@app/utils/auth'
 import { removeAccessTokens } from '@app/utils/storage'
 import { Drawer, Dropdown, MenuProps, Space } from 'antd'
 import { useCallback, useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import MtbTypography from '../Typography/Typography'
 import styles from './Header.module.scss'
+import { useAuth } from '@app/hook/useAuth'
 
 function Header() {
   const navigate = useNavigate()
@@ -21,13 +21,12 @@ function Header() {
   // const { theme, setTheme } = useTheme()
   const [getUserInfo] = useLazyUserControllerGetUserDetailsQuery()
   const { userInfo } = useSelector<RootState, IUserStore>((s) => s.user)
-  const { isLogin } = useSelector<RootState, IAuthStore>((s) => s.auth)
-  const dispatch = useDispatch()
+  const { isLogin, postLogout } = useAuth()
 
   const handleLogin = useCallback(() => redirectToOAuth(), [])
   const handleLogout = () => {
     removeAccessTokens()
-    dispatch(setLogIn(false))
+    postLogout()
   }
 
   const itemsDropdown: MenuProps['items'] = [
@@ -39,21 +38,15 @@ function Header() {
   ]
 
   useEffect(() => {
+    // TODO: Prevent multiple calls to getUserInfo (Set expiration time for data)
     if (isLogin) {
       getUserInfo()
     }
   }, [isLogin])
 
-  return (
-    <div
-      className={`flex bg-white z-1 items-center justify-between py-4 px-20 border-t-1 border-b-1 border-gray-200 cursor-pointer sticky top-0`}
-    >
-      <div className='flex items-center gap-3' onClick={() => navigate('/')}>
-        <div className='h-[50px]'>
-          <img src={logo} alt='' style={{ height: '100%', objectFit: 'contain' }} />
-        </div>
-      </div>
-      <div className='flex items-center justify-between gap-12.5 max-lg:hidden max-2xl:hidden'>
+  const renderHeaderItems = () => {
+    return (
+      <>
         {/* <div className={`flex items-center ${styles['custom-switch']}`}>
           <Switch
             checked={theme === 'dark'}
@@ -63,10 +56,13 @@ function Header() {
             className='!align-middle'
           />
         </div> */}
-        <ul className='flex gap-10'>{renderMenu(true)}</ul>
-        <div>
+        <ul className='flex flex-col lg:flex-row gap-5 text-sm'>{renderMenu(true)}</ul>
+        <div className='flex flex-col lg:flex-row gap-3 mt-5 lg:mt-0'>
           {isLogin ? (
-            <Dropdown menu={{ items: itemsDropdown }} className='z-2'>
+            <Dropdown
+              menu={{ items: itemsDropdown }}
+              className={`z-2 !text-black text-sm pb-2 lg:pb-0 transition-all duration-300 border-b-3 border-b-transparent`}
+            >
               <a onClick={(e) => e.preventDefault()}>
                 <Space>
                   Welcome, {userInfo?.name}
@@ -75,11 +71,26 @@ function Header() {
               </a>
             </Dropdown>
           ) : (
-            <Button color='primary' size='large' onClick={handleLogin}>
+            <Button color='primary' variant='outlined' size='large' block onClick={handleLogin}>
               Log in
             </Button>
           )}
         </div>
+      </>
+    )
+  }
+
+  return (
+    <div
+      className={`flex bg-white z-1 items-center justify-between py-4 px-5 lg:px-20 border-t-1 border-b-1 border-gray-200 cursor-pointer sticky top-0`}
+    >
+      <div className='flex items-center gap-3' onClick={() => navigate('/')}>
+        <div className='h-[50px]'>
+          <img src={logo} alt='' style={{ height: '100%', objectFit: 'contain' }} />
+        </div>
+      </div>
+      <div className='flex items-center justify-between gap-12.5 max-lg:hidden max-2xl:hidden'>
+        {renderHeaderItems()}
       </div>
       <div className='2xl:hidden'>
         <MenuOutlined className='text-xl cursor-pointer' onClick={() => setOpen(true)} />
@@ -97,15 +108,7 @@ function Header() {
         open={open}
         width={400}
       >
-        <ul className='flex flex-col gap-5 text-sm'>{renderMenu(true)}</ul>
-        <div className='flex flex-col gap-3 mt-5'>
-          <Button color='primary' variant='solid' size='large' block>
-            Sign Up
-          </Button>
-          <Button color='default' variant='outlined' size='large' block onClick={handleLogin}>
-            Log in
-          </Button>
-        </div>
+        {renderHeaderItems()}
       </Drawer>
     </div>
   )

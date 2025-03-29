@@ -1,5 +1,6 @@
 import { HttpResponse } from '@app/types/API.types'
 import { api } from '../../apiInstance'
+import { Rating } from '../rating/rating'
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
     mezonAppControllerListAdminMezonApp: build.query<
@@ -78,6 +79,7 @@ const injectedRtkApi = api.injectEndpoints({
       query: (queryArg) => ({
         url: `/api/mezon-app/search`,
         params: {
+          ownerId: queryArg.ownerId,
           search: queryArg.search,
           tags: queryArg.tags,
           pageSize: queryArg.pageSize,
@@ -136,6 +138,7 @@ export type MezonAppControllerSearchMezonAppApiResponse = HttpResponse<GetMezonA
 export type MezonAppControllerSearchMezonAppApiArg = {
   /** Keyword to search mezonApps by name or headline */
   search?: string
+  ownerId?: string
   tags?: string[]
   pageSize: number
   pageNumber: number
@@ -159,6 +162,7 @@ export type GetMezonAppDetailsResponse = {
   id: string
   name: string
   description: string
+  prefix: string
   headline: string
   featuredImage: string
   status: number
@@ -181,14 +185,6 @@ export type LinkType = {
   icon: string
   links: Link[]
 }
-export type Rating = {
-  appId: string
-  userId: string
-  score: number
-  comment: string
-  user: User
-  app: App
-}
 export type Media = {
   fileName: string
   mimeType: string
@@ -206,6 +202,7 @@ export type User = {
   apps: App[]
   links: Link[]
   medias: Media[]
+  profileImage: string
 }
 export type Link = {
   url: string

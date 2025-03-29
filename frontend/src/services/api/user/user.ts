@@ -1,5 +1,6 @@
 import { HttpResponse } from '@app/types/API.types'
 import { api } from '../../apiInstance'
+import { Role } from '../mezonApp/mezonApp'
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
     userControllerSearchUser: build.query<UserControllerSearchUserApiResponse, UserControllerSearchUserApiArg>({
@@ -25,6 +26,12 @@ const injectedRtkApi = api.injectEndpoints({
       UserControllerGetUserDetailsApiArg
     >({
       query: () => ({ url: `/api/user/me` })
+    }),
+    userControllerGetPublicProfile: build.query<
+      UserControllerGetPublicProfileApiResponse,
+      UserControllerGetPublicProfileApiArg
+    >({
+      query: (queryArg) => ({ url: `/api/user/public`, params: { userId: queryArg.userId } })
     }),
     userControllerSelfUpdateUser: build.mutation<
       UserControllerSelfUpdateUserApiResponse,
@@ -55,6 +62,10 @@ export type UserControllerDeleteUserApiArg = {
 }
 export type UserControllerGetUserDetailsApiResponse = HttpResponse<GetUserDetailsResponse>
 export type UserControllerGetUserDetailsApiArg = void
+export type UserControllerGetPublicProfileApiResponse = HttpResponse<GetPublicProfileResponse>
+export type UserControllerGetPublicProfileApiArg = {
+  userId: string
+}
 export type UserControllerSelfUpdateUserApiResponse = unknown
 export type UserControllerSelfUpdateUserApiArg = {
   selfUpdateUserRequest: SelfUpdateUserRequest
@@ -70,6 +81,7 @@ export type UpdateUserRequest = {
   id: string
   name?: string
   bio?: string
+  role?: Role
 }
 export type RequestWithId = {
   id: string
@@ -79,10 +91,18 @@ export type GetUserDetailsResponse = {
   name: string
   email: string
   bio: string
+  profileImage: string
+}
+export type GetPublicProfileResponse = {
+  id: string
+  name: string
+  bio: string
+  profileImage: string
 }
 export type SelfUpdateUserRequest = {
   name?: string
   bio?: string
+  profileImage?: string
 }
 export const {
   useUserControllerSearchUserQuery,
@@ -91,5 +111,7 @@ export const {
   useUserControllerDeleteUserMutation,
   useUserControllerGetUserDetailsQuery,
   useLazyUserControllerGetUserDetailsQuery,
+  useUserControllerGetPublicProfileQuery,
+  useLazyUserControllerGetPublicProfileQuery,
   useUserControllerSelfUpdateUserMutation
 } = injectedRtkApi
