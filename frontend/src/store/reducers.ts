@@ -12,5 +12,6 @@ export const rootReducer = combineReducers({
   link: linkTypeReducer,
   user: userReducer,
   auth: authReducer,
+  
   [api.reducerPath]: api.reducer
 })
