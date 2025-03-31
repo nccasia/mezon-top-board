@@ -1,6 +1,6 @@
 import Button from '@app/mtb-ui/Button'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
-import { Upload } from 'antd'
+import { Spin, Upload } from 'antd'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import AddBotForm from './components/AddBotForm/AddBotForm'
@@ -17,8 +17,12 @@ import { useLazyLinkTypeControllerGetAllLinksQuery } from '@app/services/api/lin
 import { useMediaControllerCreateMediaMutation } from '@app/services/api/media/media'
 import { getUrlImage } from '@app/utils/stringHelper'
 import { avatarBotDefault } from '@app/assets'
+import { EditOutlined, LoadingOutlined } from '@ant-design/icons'
+import { useRenderAvatar } from '@app/hook/useRenderAvatar'
 function NewBotPage() {
   const [avatar, setAvatar] = useState<string>(avatarBotDefault)
+  const { renderedAvatar, setIsUpdating } = useRenderAvatar(avatar, true)
+
   const { tagList } = useSelector<RootState, ITagStore>((s) => s.tag)
   const methods = useForm<CreateMezonAppRequest>({
     defaultValues: {
@@ -42,7 +46,7 @@ function NewBotPage() {
 
   const [getTagList] = useLazyTagControllerGetTagsQuery()
   const [getSocialLink] = useLazyLinkTypeControllerGetAllLinksQuery()
-  const [uploadImage] = useMediaControllerCreateMediaMutation()
+  const [uploadImage, { isLoading: isUpdating }] = useMediaControllerCreateMediaMutation()
 
   useEffect(() => {
     if (isEmpty(tagList.data)) getTagList()
@@ -59,11 +63,13 @@ function NewBotPage() {
     try {
       const formData = new FormData()
       formData.append('file', file)
+      setIsUpdating(true)
       const response = await uploadImage(formData).unwrap()
 
       if (response?.statusCode === 200) {
         setAvatar(getUrlImage(response?.data?.filePath))
         setValue('featuredImage', response?.data?.filePath)
+        setIsUpdating(false)
       }
 
       onSuccess(response, file)
@@ -79,19 +85,14 @@ function NewBotPage() {
       <div className='flex items-center justify-between'>
         <div className='flex gap-6'>
           <div className='w-[80px] object-cover'>
-            <img src={avatar} alt='Avatar' className='w-20 h-20 rounded-full' />
+            <Upload customRequest={handleUpload} showUploadList={false}>
+              {renderedAvatar}
+            </Upload>
           </div>
           <div>
             <MtbTypography variant='h4'>{nameValue || "Name"}</MtbTypography>
-            <MtbTypography variant='p'>{headlineValue ||'Headline (Short description)'}</MtbTypography>
+            <MtbTypography variant='p'>{headlineValue || 'Headline (Short description)'}</MtbTypography>
           </div>
-        </div>
-        <div>
-          <Upload customRequest={handleUpload} showUploadList={false}>
-            <Button color='primary' size='large'>
-              Change image
-            </Button>
-          </Upload>
         </div>
       </div>
       <div className='pt-8'>
