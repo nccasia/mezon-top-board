@@ -6,7 +6,7 @@ import { toast } from 'react-toastify'
 import AddBotForm from './components/AddBotForm/AddBotForm'
 import { useLazyTagControllerGetTagsQuery } from '@app/services/api/tag/tag'
 import { FormProvider, useForm } from 'react-hook-form'
-import { CreateMezonAppRequest } from '@app/services/api/mezonApp/mezonApp'
+import { CreateMezonAppRequest, useLazyMezonAppControllerGetMezonAppDetailQuery } from '@app/services/api/mezonApp/mezonApp'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { ADD_BOT_SCHEMA } from '@app/validations/addBot.validations'
 import { useSelector } from 'react-redux'
@@ -17,9 +17,13 @@ import { useLazyLinkTypeControllerGetAllLinksQuery } from '@app/services/api/lin
 import { useMediaControllerCreateMediaMutation } from '@app/services/api/media/media'
 import { getUrlImage } from '@app/utils/stringHelper'
 import { avatarBotDefault } from '@app/assets'
+import useQueryParam from '@app/hook/useQueryParam'
+import { IMezonAppStore } from '@app/store/mezonApp'
 function NewBotPage() {
-  const [avatar, setAvatar] = useState<string>(avatarBotDefault)
+  const { mezonAppDetail } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
   const { tagList } = useSelector<RootState, ITagStore>((s) => s.tag)
+  const imgUrl = mezonAppDetail.featuredImage ? getUrlImage(mezonAppDetail.featuredImage) : avatarBotDefault
+  const [avatar, setAvatar] = useState<string>(imgUrl)
   const methods = useForm<CreateMezonAppRequest>({
     defaultValues: {
       name: '',
@@ -35,19 +39,24 @@ function NewBotPage() {
     },
     resolver: yupResolver(ADD_BOT_SCHEMA)
   })
-
-  const { setValue } = methods
+  const id = useQueryParam().get("id")
+  const { setValue, reset } = methods
   const nameValue = methods.watch("name");
   const headlineValue = methods.watch("headline");
 
   const [getTagList] = useLazyTagControllerGetTagsQuery()
   const [getSocialLink] = useLazyLinkTypeControllerGetAllLinksQuery()
   const [uploadImage] = useMediaControllerCreateMediaMutation()
+  const [getMezonAppDetails] = useLazyMezonAppControllerGetMezonAppDetailQuery()
 
   useEffect(() => {
     if (isEmpty(tagList.data)) getTagList()
+    if (id) getMezonAppDetails({ id })
+    const {owner, tags, rateScore, ...rest} = mezonAppDetail
+    reset({ ...rest })
+    setAvatar(imgUrl)
     getSocialLink()
-  }, [])
+  }, [JSON.stringify(mezonAppDetail)])
 
   const resetAvatar = () => {
     setAvatar(avatarBotDefault)
@@ -96,7 +105,7 @@ function NewBotPage() {
       </div>
       <div className='pt-8'>
         <FormProvider {...methods}>
-          <AddBotForm onResetAvatar={resetAvatar}></AddBotForm>
+          <AddBotForm onResetAvatar={resetAvatar} isEdit={Boolean(id)}></AddBotForm>
         </FormProvider>
       </div>
     </div>

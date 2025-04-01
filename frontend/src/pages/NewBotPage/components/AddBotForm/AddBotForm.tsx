@@ -9,7 +9,8 @@ import { useEffect, useMemo, useState } from 'react'
 import {
   CreateMezonAppRequest,
   SocialLinkDto,
-  useMezonAppControllerCreateMezonAppMutation
+  useMezonAppControllerCreateMezonAppMutation,
+  useMezonAppControllerUpdateMezonAppMutation
 } from '@app/services/api/mezonApp/mezonApp'
 import { useSelector } from 'react-redux'
 import { RootState } from '@app/store'
@@ -18,7 +19,8 @@ import { ILinkTypeStore } from '@app/store/linkType'
 import { IAddBotFormProps, ISocialLinksData } from '@app/types/Botcard.types'
 import { toast } from 'react-toastify'
 import RichTextEditor from "@app/components/RichText/RichText";
-function AddBotForm({ onResetAvatar }: IAddBotFormProps) {
+import useQueryParam from '@app/hook/useQueryParam'
+function AddBotForm({ onResetAvatar, isEdit }: IAddBotFormProps) {
   const {
     control,
     handleSubmit,
@@ -28,6 +30,7 @@ function AddBotForm({ onResetAvatar }: IAddBotFormProps) {
     formState: { errors }
   } = useFormContext<CreateMezonAppRequest>()
   const [addBot] = useMezonAppControllerCreateMezonAppMutation()
+  const [updateBot] = useMezonAppControllerUpdateMezonAppMutation()
   const { tagList } = useSelector<RootState, ITagStore>((s) => s.tag)
   const { linkTypeList } = useSelector<RootState, ILinkTypeStore>((s) => s.link)
   const selectedSocialLink = watch('socialLinks')
@@ -37,6 +40,8 @@ function AddBotForm({ onResetAvatar }: IAddBotFormProps) {
   useEffect(() => {
     setValue('socialLinks', [])
   }, [socialLinksData, setValue])
+
+  const id = isEdit ? useQueryParam().get("id") : null
 
   const onSubmit = (data: CreateMezonAppRequest) => {
     const formattedSocialLinks = socialLinksData.map((link) => ({
@@ -51,10 +56,16 @@ function AddBotForm({ onResetAvatar }: IAddBotFormProps) {
       socialLinks: formattedSocialLinks
     }
 
-    addBot({ createMezonAppRequest: addBotData })
-    toast.success('Add new bot success')
-    onResetAvatar()
-    reset()
+    if (!isEdit) {
+      addBot({ createMezonAppRequest: addBotData })
+      toast.success('Add new bot success')
+      onResetAvatar()
+      reset()
+    } else {
+      if (id) {
+      updateBot({ updateMezonAppRequest: { ...data, id } })}
+      toast.success('Edit bot success')
+    }
   }
 
   const options = useMemo(() => {
@@ -163,9 +174,9 @@ function AddBotForm({ onResetAvatar }: IAddBotFormProps) {
             name='description'
             render={({ field }) => (
               <RichTextEditor
-                  value={field.value || ""}
-                  onChange={field.onChange}
-                  customClass="custom-editor"
+                value={field.value || ""}
+                onChange={field.onChange}
+                customClass="custom-editor"
               />
             )}
           />
