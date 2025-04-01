@@ -17,11 +17,9 @@ import { useLazyLinkTypeControllerGetAllLinksQuery } from '@app/services/api/lin
 import { useMediaControllerCreateMediaMutation } from '@app/services/api/media/media'
 import { getUrlImage } from '@app/utils/stringHelper'
 import { avatarBotDefault } from '@app/assets'
-import { EditOutlined, LoadingOutlined } from '@ant-design/icons'
-import { useRenderAvatar } from '@app/hook/useRenderAvatar'
+import MTBAvatar from '@app/mtb-ui/Avatar/MTBAvatar'
 function NewBotPage() {
   const [avatar, setAvatar] = useState<string>(avatarBotDefault)
-  const { renderedAvatar, setIsUpdating } = useRenderAvatar(avatar, true)
 
   const { tagList } = useSelector<RootState, ITagStore>((s) => s.tag)
   const methods = useForm<CreateMezonAppRequest>({
@@ -46,7 +44,7 @@ function NewBotPage() {
 
   const [getTagList] = useLazyTagControllerGetTagsQuery()
   const [getSocialLink] = useLazyLinkTypeControllerGetAllLinksQuery()
-  const [uploadImage, { isLoading: isUpdating }] = useMediaControllerCreateMediaMutation()
+  const [uploadImage, { isLoading: isUpdatingAvatar }] = useMediaControllerCreateMediaMutation()
 
   useEffect(() => {
     if (isEmpty(tagList.data)) getTagList()
@@ -63,13 +61,11 @@ function NewBotPage() {
     try {
       const formData = new FormData()
       formData.append('file', file)
-      setIsUpdating(true)
       const response = await uploadImage(formData).unwrap()
 
       if (response?.statusCode === 200) {
         setAvatar(getUrlImage(response?.data?.filePath))
         setValue('featuredImage', response?.data?.filePath)
-        setIsUpdating(false)
       }
 
       onSuccess(response, file)
@@ -86,7 +82,7 @@ function NewBotPage() {
         <div className='flex gap-6'>
           <div className='w-[80px] object-cover'>
             <Upload customRequest={handleUpload} showUploadList={false}>
-              {renderedAvatar}
+              <MTBAvatar imgUrl={avatar} isAllowUpdate={true} isUpdatingAvatar={isUpdatingAvatar} />
             </Upload>
           </div>
           <div>

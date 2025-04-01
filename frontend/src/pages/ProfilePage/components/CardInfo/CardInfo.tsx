@@ -15,13 +15,12 @@ import { getUrlImage } from '@app/utils/stringHelper'
 import { Spin, Upload } from 'antd'
 import { toast } from 'react-toastify'
 import { CardInfoProps } from './CardInfo.types'
-import { useRenderAvatar } from '@app/hook/useRenderAvatar'
+import MTBAvatar from '@app/mtb-ui/Avatar/MTBAvatar'
 
 function CardInfo({ isPublic, userInfo }: CardInfoProps) {
   const imgUrl = userInfo?.profileImage ? getUrlImage(userInfo.profileImage) : avatar
   const [selfUpdate] = useUserControllerSelfUpdateUserMutation()
-  const [uploadImage] = useMediaControllerCreateMediaMutation()
-  const { renderedAvatar, setIsUpdating } = useRenderAvatar(imgUrl, !isPublic)
+  const [uploadImage, { isLoading: isUpdatingAvatar }] = useMediaControllerCreateMediaMutation()
 
   const cardInfoLink = [
     {
@@ -59,12 +58,10 @@ function CardInfo({ isPublic, userInfo }: CardInfoProps) {
     try {
       const formData = new FormData()
       formData.append('file', file)
-      setIsUpdating(true)
       const response = await uploadImage(formData).unwrap()
 
       if (response?.statusCode === 200) {
         await selfUpdate({ selfUpdateUserRequest: { profileImage: response?.data?.filePath } }).unwrap()
-        setIsUpdating(false)
       }
 
       onSuccess(response, file)
@@ -79,7 +76,7 @@ function CardInfo({ isPublic, userInfo }: CardInfoProps) {
     <div className='flex flex-col gap-7 p-4 shadow-sm rounded-2xl'>
       <div className='flex items-center gap-4 max-lg:flex-col max-2xl:flex-col'>
         <Upload disabled={isPublic} listType='picture-circle' customRequest={handleUpload} showUploadList={false}>
-          {renderedAvatar}
+          <MTBAvatar imgUrl={imgUrl} isAllowUpdate={!isPublic} isUpdatingAvatar={isUpdatingAvatar} />
         </Upload>
         <div className='text-lg font-semibold'>{userInfo?.name}</div>
       </div >
