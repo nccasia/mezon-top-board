@@ -119,19 +119,23 @@ export class MezonAppService {
   }
 
   async searchMezonApp(query: SearchMezonAppRequest) {
-    let whereCondition = this.appRepository.getRepository()
-      .createQueryBuilder('app')
-      .leftJoinAndSelect('app.tags', 'tag')
-      .leftJoinAndSelect('app.ratings', 'rating')
-      .where('app.status = :status', { status: AppStatus.PUBLISHED });
+    let whereCondition = this.appRepository
+      .getRepository()
+      .createQueryBuilder("app")
+      .leftJoinAndSelect("app.tags", "tag")
+      .leftJoinAndSelect("app.ratings", "rating")
+      .where("app.status = :status", { status: AppStatus.PUBLISHED });
 
     // Priorize to search by keyword if field and search exist at the same time.
     if (query.search)
       whereCondition.andWhere(
-        new Brackets(qb => {
-          qb.where("app.name ILIKE :keyword", { keyword: `%${query.search}%` })
-            .orWhere("app.headline ILIKE :keyword", { keyword: `%${query.search}%` });
-        })
+        new Brackets((qb) => {
+          qb.where("app.name ILIKE :keyword", {
+            keyword: `%${query.search}%`,
+          }).orWhere("app.headline ILIKE :keyword", {
+            keyword: `%${query.search}%`,
+          });
+        }),
       );
 
     if (query.tags?.length) {
@@ -231,7 +235,7 @@ export class MezonAppService {
 
     const { tagIds, socialLinks, ...updateData } = req;
 
-    let tags = app.tags;
+    let tags = [];
     let links = app.socialLinks;
 
     if (tagIds) {
@@ -282,24 +286,28 @@ export class MezonAppService {
 
     this.appRepository
       .getRepository()
-      .merge(app, { ...updateData, tags, socialLinks: links });
-
+      .merge(app, { ...updateData, socialLinks: links });
+    app.tags = tags;
     return this.appRepository.getRepository().save(app);
   }
 
   async listAdminMezonApp(query: SearchMezonAppRequest) {
-    let whereCondition = this.appRepository.getRepository()
-      .createQueryBuilder('app')
-      .leftJoinAndSelect('app.tags', 'tag')
-      .leftJoinAndSelect('app.ratings', 'rating')
+    let whereCondition = this.appRepository
+      .getRepository()
+      .createQueryBuilder("app")
+      .leftJoinAndSelect("app.tags", "tag")
+      .leftJoinAndSelect("app.ratings", "rating");
 
     // Priorize to search by keyword if field and search exist at the same time.
     if (query.search)
       whereCondition.andWhere(
-        new Brackets(qb => {
-          qb.where("app.name ILIKE :keyword", { keyword: `%${query.search}%` })
-            .orWhere("app.headline ILIKE :keyword", { keyword: `%${query.search}%` });
-        })
+        new Brackets((qb) => {
+          qb.where("app.name ILIKE :keyword", {
+            keyword: `%${query.search}%`,
+          }).orWhere("app.headline ILIKE :keyword", {
+            keyword: `%${query.search}%`,
+          });
+        }),
       );
 
     if (query.tags?.length) {
@@ -323,19 +331,23 @@ export class MezonAppService {
   }
 
   async getMyApp(userId: string, query: SearchMezonAppRequest) {
-    let whereCondition = this.appRepository.getRepository()
-      .createQueryBuilder('app')
-      .leftJoinAndSelect('app.tags', 'tag')
-      .leftJoinAndSelect('app.ratings', 'rating')
-      .where('app.ownerId = :ownerId', { ownerId: userId });
+    let whereCondition = this.appRepository
+      .getRepository()
+      .createQueryBuilder("app")
+      .leftJoinAndSelect("app.tags", "tag")
+      .leftJoinAndSelect("app.ratings", "rating")
+      .where("app.ownerId = :ownerId", { ownerId: userId });
 
     // Priorize to search by keyword if field and search exist at the same time.
     if (query.search)
       whereCondition.andWhere(
-        new Brackets(qb => {
-          qb.where("app.name ILIKE :keyword", { keyword: `%${query.search}%` })
-            .orWhere("app.headline ILIKE :keyword", { keyword: `%${query.search}%` });
-        })
+        new Brackets((qb) => {
+          qb.where("app.name ILIKE :keyword", {
+            keyword: `%${query.search}%`,
+          }).orWhere("app.headline ILIKE :keyword", {
+            keyword: `%${query.search}%`,
+          });
+        }),
       );
 
     if (query.tags?.length) {
