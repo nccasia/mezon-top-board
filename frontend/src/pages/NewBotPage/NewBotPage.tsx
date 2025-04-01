@@ -96,7 +96,7 @@ function NewBotPage() {
       </div>
       <div className='pt-8'>
         <FormProvider {...methods}>
-          <AddBotForm onResetAvatar={resetAvatar}></AddBotForm>
+          <AddBotForm></AddBotForm>
         </FormProvider>
       </div>
     </div>
