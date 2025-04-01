@@ -19,6 +19,7 @@ import { getUrlImage } from '@app/utils/stringHelper'
 import { avatarBotDefault } from '@app/assets'
 import useQueryParam from '@app/hook/useQueryParam'
 import { IMezonAppStore } from '@app/store/mezonApp'
+import { useParams } from 'react-router-dom'
 function NewBotPage() {
   const { mezonAppDetail } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
   const { tagList } = useSelector<RootState, ITagStore>((s) => s.tag)
@@ -39,7 +40,7 @@ function NewBotPage() {
     },
     resolver: yupResolver(ADD_BOT_SCHEMA)
   })
-  const id = useQueryParam().get("id")
+  const { botId } = useParams()
   const { setValue, reset } = methods
   const nameValue = methods.watch("name");
   const headlineValue = methods.watch("headline");
@@ -51,12 +52,19 @@ function NewBotPage() {
 
   useEffect(() => {
     if (isEmpty(tagList.data)) getTagList()
-    if (id) getMezonAppDetails({ id })
-    const {owner, tags, rateScore, ...rest} = mezonAppDetail
-    reset({ ...rest })
-    setAvatar(imgUrl)
     getSocialLink()
-  }, [JSON.stringify(mezonAppDetail)])
+  }, [])
+
+  useEffect(() => {
+    if (!botId) return
+    getMezonAppDetails({ id: botId })
+  }, [botId])
+
+  useEffect(() => {
+    const { owner, tags, rateScore, ...rest } = mezonAppDetail
+    if (mezonAppDetail) reset({ ...rest, tagIds: tags?.map(tag => tag.id) })
+    setAvatar(imgUrl)
+  }, [mezonAppDetail])
 
   const resetAvatar = () => {
     setAvatar(avatarBotDefault)
@@ -92,7 +100,7 @@ function NewBotPage() {
           </div>
           <div>
             <MtbTypography variant='h4'>{nameValue || "Name"}</MtbTypography>
-            <MtbTypography variant='p'>{headlineValue ||'Headline (Short description)'}</MtbTypography>
+            <MtbTypography variant='p'>{headlineValue || 'Headline (Short description)'}</MtbTypography>
           </div>
         </div>
         <div>
@@ -105,7 +113,7 @@ function NewBotPage() {
       </div>
       <div className='pt-8'>
         <FormProvider {...methods}>
-          <AddBotForm onResetAvatar={resetAvatar} isEdit={Boolean(id)}></AddBotForm>
+          <AddBotForm onResetAvatar={resetAvatar} isEdit={Boolean(botId)}></AddBotForm>
         </FormProvider>
       </div>
     </div>

@@ -1,25 +1,25 @@
-import MtbTypography from '@app/mtb-ui/Typography/Typography'
-import { Checkbox, Form, Input, Select, SelectProps, Tag, TagProps } from 'antd'
 import FormField from '@app/components/FormField/FormField'
-import { Controller, useFormContext } from 'react-hook-form'
-import Button from '@app/mtb-ui/Button'
+import RichTextEditor from "@app/components/RichText/RichText"
 import { errorStatus } from '@app/constants/common.constant'
-import TextArea from 'antd/es/input/TextArea'
-import { useEffect, useMemo, useState } from 'react'
+import Button from '@app/mtb-ui/Button'
+import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import {
   CreateMezonAppRequest,
   SocialLinkDto,
   useMezonAppControllerCreateMezonAppMutation,
   useMezonAppControllerUpdateMezonAppMutation
 } from '@app/services/api/mezonApp/mezonApp'
-import { useSelector } from 'react-redux'
 import { RootState } from '@app/store'
-import { ITagStore } from '@app/store/tag'
 import { ILinkTypeStore } from '@app/store/linkType'
+import { ITagStore } from '@app/store/tag'
 import { IAddBotFormProps, ISocialLinksData } from '@app/types/Botcard.types'
+import { Checkbox, Form, Input, Select, TagProps } from 'antd'
+import TextArea from 'antd/es/input/TextArea'
+import { useEffect, useMemo, useState } from 'react'
+import { Controller, useFormContext } from 'react-hook-form'
+import { useSelector } from 'react-redux'
+import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import RichTextEditor from "@app/components/RichText/RichText";
-import useQueryParam from '@app/hook/useQueryParam'
 function AddBotForm({ onResetAvatar, isEdit }: IAddBotFormProps) {
   const {
     control,
@@ -41,7 +41,7 @@ function AddBotForm({ onResetAvatar, isEdit }: IAddBotFormProps) {
     setValue('socialLinks', [])
   }, [socialLinksData, setValue])
 
-  const id = isEdit ? useQueryParam().get("id") : null
+  const { botId } = isEdit ? useParams<{ botId: string }>() : { botId: undefined }
 
   const onSubmit = (data: CreateMezonAppRequest) => {
     const formattedSocialLinks = socialLinksData.map((link) => ({
@@ -61,11 +61,12 @@ function AddBotForm({ onResetAvatar, isEdit }: IAddBotFormProps) {
       toast.success('Add new bot success')
       onResetAvatar()
       reset()
-    } else {
-      if (id) {
-      updateBot({ updateMezonAppRequest: { ...data, id } })}
-      toast.success('Edit bot success')
+      return
     }
+
+    if (!botId) return
+    updateBot({ updateMezonAppRequest: { ...data, id: botId } })
+    toast.success('Edit bot success')
   }
 
   const options = useMemo(() => {

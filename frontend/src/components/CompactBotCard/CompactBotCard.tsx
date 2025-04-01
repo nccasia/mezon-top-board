@@ -14,7 +14,7 @@ function CompactBotCard({ data, isPublic = true }: ICompactBotCardProps) {
     }
   }
   const imgUrl = data?.featuredImage ? getUrlImage(data.featuredImage) : avatarBotDefault
-  
+
   const handleMenuClick: MenuProps['onClick'] = (e) => {
     e.domEvent.stopPropagation()
   };
@@ -23,9 +23,9 @@ function CompactBotCard({ data, isPublic = true }: ICompactBotCardProps) {
     {
       label: 'Edit',
       key: '1',
-      icon: <EditOutlined/>,
+      icon: <EditOutlined />,
       onClick: () => {
-        navigate(`/new-bot?id=${data?.id}`)
+        navigate(`/new-bot/${data?.id}`)
       }
     },
     {
