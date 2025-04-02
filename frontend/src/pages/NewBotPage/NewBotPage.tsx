@@ -23,7 +23,8 @@ import { useParams } from 'react-router-dom'
 function NewBotPage() {
   const { mezonAppDetail } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
   const { tagList } = useSelector<RootState, ITagStore>((s) => s.tag)
-  const imgUrl = mezonAppDetail.featuredImage ? getUrlImage(mezonAppDetail.featuredImage) : avatarBotDefault
+  const { botId } = useParams()
+  const imgUrl = botId && mezonAppDetail.featuredImage ? getUrlImage(mezonAppDetail.featuredImage) : avatarBotDefault
   const [avatar, setAvatar] = useState<string>(imgUrl)
   const methods = useForm<CreateMezonAppRequest>({
     defaultValues: {
@@ -40,7 +41,7 @@ function NewBotPage() {
     },
     resolver: yupResolver(ADD_BOT_SCHEMA)
   })
-  const { botId } = useParams()
+  
   const { setValue, reset } = methods
   const nameValue = methods.watch("name");
   const headlineValue = methods.watch("headline");
@@ -56,13 +57,16 @@ function NewBotPage() {
   }, [])
 
   useEffect(() => {
-    if (!botId) return
+    if (!botId) {
+      reset()
+      return
+    }
     getMezonAppDetails({ id: botId })
   }, [botId])
 
   useEffect(() => {
-    const { owner, tags, rateScore, ...rest } = mezonAppDetail
-    if (mezonAppDetail) reset({ ...rest, tagIds: tags?.map(tag => tag.id) })
+    const { owner, tags, rateScore, featuredImage, ...rest } = mezonAppDetail
+    if (mezonAppDetail && botId) reset({ ...rest, tagIds: tags?.map(tag => tag.id) })
     setAvatar(imgUrl)
   }, [mezonAppDetail])
 

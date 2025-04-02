@@ -41,7 +41,7 @@ function AddBotForm({ onResetAvatar, isEdit }: IAddBotFormProps) {
     setValue('socialLinks', [])
   }, [socialLinksData, setValue])
 
-  const { botId } = isEdit ? useParams<{ botId: string }>() : { botId: undefined }
+  const { botId } = useParams()
 
   const onSubmit = (data: CreateMezonAppRequest) => {
     const formattedSocialLinks = socialLinksData.map((link) => ({
@@ -55,15 +55,13 @@ function AddBotForm({ onResetAvatar, isEdit }: IAddBotFormProps) {
       ...restData,
       socialLinks: formattedSocialLinks
     }
-
-    if (!isEdit) {
+    if (!isEdit && !botId) {
       addBot({ createMezonAppRequest: addBotData })
       toast.success('Add new bot success')
       onResetAvatar()
       reset()
       return
     }
-
     if (!botId) return
     updateBot({ updateMezonAppRequest: { ...data, id: botId } })
     toast.success('Edit bot success')
