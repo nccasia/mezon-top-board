@@ -47,7 +47,7 @@ function CompactBotCard({ data, isPublic = true }: ICompactBotCardProps) {
     <div className='shadow-sm rounded-2xl p-4 bg-white cursor-pointer' onClick={handleNavigateDetail}>
       <div className='relative'>
         <div className='w-20 m-auto'>
-          <img src={imgUrl} alt='' className='rounded-full object-cover w-full' width={'100%'} />
+          <img src={imgUrl} alt='' className='aspect-square rounded-full object-cover w-full' width={'100%'} />
         </div>
         {!isPublic && <Dropdown.Button buttonsRender={([leftBtn, rightBtn]) => [null, <span onClick={(e) => e.stopPropagation()} className='!absolute !top-0 !right-0'>{rightBtn}</span>]} trigger={["click"]} menu={menuProps}>
         </Dropdown.Button>}

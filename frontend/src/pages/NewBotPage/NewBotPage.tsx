@@ -1,6 +1,6 @@
 import Button from '@app/mtb-ui/Button'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
-import { Upload } from 'antd'
+import { Spin, Upload } from 'antd'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import AddBotForm from './components/AddBotForm/AddBotForm'
@@ -17,6 +17,7 @@ import { useLazyLinkTypeControllerGetAllLinksQuery } from '@app/services/api/lin
 import { useMediaControllerCreateMediaMutation } from '@app/services/api/media/media'
 import { getUrlImage } from '@app/utils/stringHelper'
 import { avatarBotDefault } from '@app/assets'
+import MTBAvatar from '@app/mtb-ui/Avatar/MTBAvatar'
 import useQueryParam from '@app/hook/useQueryParam'
 import { IMezonAppStore } from '@app/store/mezonApp'
 import { useParams } from 'react-router-dom'
@@ -48,7 +49,7 @@ function NewBotPage() {
 
   const [getTagList] = useLazyTagControllerGetTagsQuery()
   const [getSocialLink] = useLazyLinkTypeControllerGetAllLinksQuery()
-  const [uploadImage] = useMediaControllerCreateMediaMutation()
+  const [uploadImage, { isLoading: isUpdatingAvatar }] = useMediaControllerCreateMediaMutation()
   const [getMezonAppDetails] = useLazyMezonAppControllerGetMezonAppDetailQuery()
 
   useEffect(() => {
@@ -100,19 +101,14 @@ function NewBotPage() {
       <div className='flex items-center justify-between'>
         <div className='flex gap-6'>
           <div className='w-[80px] object-cover'>
-            <img src={avatar} alt='Avatar' className='w-20 h-20 rounded-full' />
+            <Upload customRequest={handleUpload} showUploadList={false}>
+              <MTBAvatar imgUrl={avatar} isAllowUpdate={true} isUpdatingAvatar={isUpdatingAvatar} />
+            </Upload>
           </div>
           <div>
             <MtbTypography variant='h4'>{nameValue || "Name"}</MtbTypography>
             <MtbTypography variant='p'>{headlineValue || 'Headline (Short description)'}</MtbTypography>
           </div>
-        </div>
-        <div>
-          <Upload customRequest={handleUpload} showUploadList={false}>
-            <Button color='primary' size='large'>
-              Change image
-            </Button>
-          </Upload>
         </div>
       </div>
       <div className='pt-8'>
