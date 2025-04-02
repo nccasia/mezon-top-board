@@ -59,7 +59,7 @@ export const routePaths: RoutePath[] = [
   {
     path: '/search',
     element: <SearchPage></SearchPage>,
-    label: '',
+    label: 'Search',
     isShowMenu: false
   },
   {
@@ -77,15 +77,17 @@ export const routePaths: RoutePath[] = [
   {
     path: 'new-bot',
     element: <NewBotPage></NewBotPage>,
-    label: '',
+    label: 'New Bot',
     isShowMenu: false
   },
   {
     path: 'login',
+    label: 'Login',
     element: <LoginPage />
   },
   {
     path: '*',
+    label: 'Not Found',
     element: <NotFoundPage />
   }
 ]
