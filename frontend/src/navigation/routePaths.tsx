@@ -81,6 +81,12 @@ export const routePaths: RoutePath[] = [
     isShowMenu: false
   },
   {
+    path: '/new-bot/:botId',
+    element: <NewBotPage></NewBotPage>,
+    label: '',
+    isShowMenu: false
+  },
+  {
     path: 'login',
     element: <LoginPage />
   },

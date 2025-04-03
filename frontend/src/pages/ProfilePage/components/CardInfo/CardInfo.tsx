@@ -15,11 +15,12 @@ import { getUrlImage } from '@app/utils/stringHelper'
 import { Spin, Upload } from 'antd'
 import { toast } from 'react-toastify'
 import { CardInfoProps } from './CardInfo.types'
+import MTBAvatar from '@app/mtb-ui/Avatar/MTBAvatar'
 
 function CardInfo({ isPublic, userInfo }: CardInfoProps) {
   const imgUrl = userInfo?.profileImage ? getUrlImage(userInfo.profileImage) : avatar
-  const [selfUpdate, { isLoading: isUpdating }] = useUserControllerSelfUpdateUserMutation()
-  const [uploadImage] = useMediaControllerCreateMediaMutation()
+  const [selfUpdate] = useUserControllerSelfUpdateUserMutation()
+  const [uploadImage, { isLoading: isUpdatingAvatar }] = useMediaControllerCreateMediaMutation()
 
   const cardInfoLink = [
     {
@@ -71,38 +72,11 @@ function CardInfo({ isPublic, userInfo }: CardInfoProps) {
     }
   }
 
-  const renderAvatar = (imgUrl: string, isAllowUpdate = false) => {
-    const renderOverlay = () => {
-      if (!isAllowUpdate) return null;
-
-      return isUpdating ? (
-        <div className='absolute inset-0 flex items-center justify-center bg-opacity-40 rounded-full'>
-          <Spin indicator={<LoadingOutlined className='text-white text-2xl' />} />
-        </div>
-      ) : (
-        <div className='absolute inset-0 bg-opacity-40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity'>
-          <EditOutlined className='text-white text-lg' />
-        </div>
-      );
-    };
-
-    return (
-      <div className={`relative w-full group ${isAllowUpdate ? 'cursor-pointer' : 'cursor-default'}`}>
-        <img
-          src={imgUrl}
-          alt='avatar'
-          className={`rounded-full w- full aspect-square object-cover ${isUpdating ? 'opacity-50' : ''}`}
-        />
-        {renderOverlay()}
-      </div>
-    );
-  };
-
   return (
     <div className='flex flex-col gap-7 p-4 shadow-sm rounded-2xl'>
       <div className='flex items-center gap-4 max-lg:flex-col max-2xl:flex-col'>
         <Upload disabled={isPublic} listType='picture-circle' customRequest={handleUpload} showUploadList={false}>
-          {renderAvatar(imgUrl, !isPublic)}
+          <MTBAvatar imgUrl={imgUrl} isAllowUpdate={!isPublic} isUpdatingAvatar={isUpdatingAvatar} />
         </Upload>
         <div className='text-lg font-semibold'>{userInfo?.name}</div>
       </div >

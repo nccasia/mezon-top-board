@@ -6,20 +6,22 @@ import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import {
   CreateMezonAppRequest,
   SocialLinkDto,
-  useMezonAppControllerCreateMezonAppMutation
+  useMezonAppControllerCreateMezonAppMutation,
+  useMezonAppControllerUpdateMezonAppMutation
 } from '@app/services/api/mezonApp/mezonApp'
 import { RootState } from '@app/store'
 import { ILinkTypeStore } from '@app/store/linkType'
 import { ITagStore } from '@app/store/tag'
-import { ISocialLinksData } from '@app/types/Botcard.types'
+import { IAddBotFormProps, ISocialLinksData } from '@app/types/Botcard.types'
 import { Checkbox, Form, Input, Select, TagProps } from 'antd'
 import TextArea from 'antd/es/input/TextArea'
 import { useEffect, useMemo, useState } from 'react'
 import { Controller, useFormContext } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
-function AddBotForm() {
+function AddBotForm({ isEdit }: IAddBotFormProps) {
   const {
     control,
     handleSubmit,
@@ -29,6 +31,7 @@ function AddBotForm() {
   } = useFormContext<CreateMezonAppRequest>()
   const [addBot] = useMezonAppControllerCreateMezonAppMutation()
   const navigate = useNavigate()
+  const [updateBot] = useMezonAppControllerUpdateMezonAppMutation()
   const { tagList } = useSelector<RootState, ITagStore>((s) => s.tag)
   const { linkTypeList } = useSelector<RootState, ILinkTypeStore>((s) => s.link)
   const selectedSocialLink = watch('socialLinks')
@@ -38,6 +41,8 @@ function AddBotForm() {
   useEffect(() => {
     setValue('socialLinks', [])
   }, [socialLinksData, setValue])
+
+  const { botId } = useParams()
 
   const onSubmit = async (data: CreateMezonAppRequest) => {
     try {
@@ -52,12 +57,17 @@ function AddBotForm() {
         ...restData,
         socialLinks: formattedSocialLinks
       }
-
-      const response = await addBot({ createMezonAppRequest: addBotData }).unwrap()
-      toast.success('Add new bot success')
-      if (response.id) {
-        navigate(`/${response.id}`)
+      if (!isEdit && !botId) {
+        const response = await addBot({ createMezonAppRequest: addBotData }).unwrap()
+        toast.success('Add new bot success')
+        if (response.id) {
+          navigate(`/${response.id}`)
+        }
+        return
       }
+      if (!botId) return
+      updateBot({ updateMezonAppRequest: { ...data, id: botId } })
+      toast.success('Edit bot success')
     } catch (error) {
       toast.error('Fail')
     }
