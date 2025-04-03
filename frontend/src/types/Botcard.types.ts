@@ -14,10 +14,9 @@ export interface ISocialLinksData {
 
 export interface ICompactBotCardProps {
   data?: GetRelatedMezonAppResponse
-  isPublic: boolean
+  isPublic?: boolean
 }
 
 export interface IAddBotFormProps {
-  onResetAvatar: () => void
   isEdit: boolean
 }

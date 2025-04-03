@@ -21,6 +21,7 @@ export const mezonAppExtraReducers = (builder: ActionReducerMapBuilder<any>) => 
     .addMatcher(mezonAppService.endpoints.mezonAppControllerDeleteMezonApp.matchFulfilled, (state, action) => {
       const deletedId = action.meta.arg.originalArgs.requestWithId.id;
       state.mezonApp.data = state.mezonApp.data.filter((app: App) => app.id !== deletedId);
+      state.mezonAppOfUser.data = state.mezonAppOfUser.data.filter((app: App) => app.id !== deletedId)
     })
     .addMatcher(mezonAppService.endpoints.mezonAppControllerCreateMezonApp.matchFulfilled, (state, { payload }) => {
       if (state.mezonApp?.data) {
