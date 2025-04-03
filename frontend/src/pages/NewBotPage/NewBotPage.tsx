@@ -113,7 +113,7 @@ function NewBotPage() {
       </div>
       <div className='pt-8'>
         <FormProvider {...methods}>
-          <AddBotForm onResetAvatar={resetAvatar} isEdit={Boolean(botId)}></AddBotForm>
+          <AddBotForm isEdit={Boolean(botId)}></AddBotForm>
         </FormProvider>
       </div>
     </div>

@@ -18,18 +18,19 @@ import TextArea from 'antd/es/input/TextArea'
 import { useEffect, useMemo, useState } from 'react'
 import { Controller, useFormContext } from 'react-hook-form'
 import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
-function AddBotForm({ onResetAvatar, isEdit }: IAddBotFormProps) {
+function AddBotForm({ isEdit }: IAddBotFormProps) {
   const {
     control,
     handleSubmit,
     watch,
     setValue,
-    reset,
     formState: { errors }
   } = useFormContext<CreateMezonAppRequest>()
   const [addBot] = useMezonAppControllerCreateMezonAppMutation()
+  const navigate = useNavigate()
   const [updateBot] = useMezonAppControllerUpdateMezonAppMutation()
   const { tagList } = useSelector<RootState, ITagStore>((s) => s.tag)
   const { linkTypeList } = useSelector<RootState, ILinkTypeStore>((s) => s.link)
@@ -43,28 +44,33 @@ function AddBotForm({ onResetAvatar, isEdit }: IAddBotFormProps) {
 
   const { botId } = useParams()
 
-  const onSubmit = (data: CreateMezonAppRequest) => {
-    const formattedSocialLinks = socialLinksData.map((link) => ({
-      url: link.url,
-      linkTypeId: link.id
-    }))
+  const onSubmit = async (data: CreateMezonAppRequest) => {
+    try {
+      const formattedSocialLinks = socialLinksData.map((link) => ({
+        url: link.url,
+        linkTypeId: link.id
+      }))
 
-    const { socialLinks, ...restData } = data
+      const { socialLinks, ...restData } = data
 
-    const addBotData = {
-      ...restData,
-      socialLinks: formattedSocialLinks
+      const addBotData = {
+        ...restData,
+        socialLinks: formattedSocialLinks
+      }
+      if (!isEdit && !botId) {
+        const response = await addBot({ createMezonAppRequest: addBotData }).unwrap()
+        toast.success('Add new bot success')
+        if (response.id) {
+          navigate(`/${response.id}`)
+        }
+        return
+      }
+      if (!botId) return
+      updateBot({ updateMezonAppRequest: { ...data, id: botId } })
+      toast.success('Edit bot success')
+    } catch (error) {
+      toast.error('Fail')
     }
-    if (!isEdit && !botId) {
-      addBot({ createMezonAppRequest: addBotData })
-      toast.success('Add new bot success')
-      onResetAvatar()
-      reset()
-      return
-    }
-    if (!botId) return
-    updateBot({ updateMezonAppRequest: { ...data, id: botId } })
-    toast.success('Edit bot success')
   }
 
   const options = useMemo(() => {
