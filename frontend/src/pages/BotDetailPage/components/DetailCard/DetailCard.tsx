@@ -1,5 +1,5 @@
 import { DollarOutlined, InfoCircleOutlined, RiseOutlined, TagOutlined, UserOutlined } from '@ant-design/icons'
-import { Tag } from 'antd'
+import { Spin, Tag } from 'antd'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import avatar from '@app/assets/images/default-user.webp'
 import { useSelector } from 'react-redux'
@@ -14,7 +14,7 @@ function DetailCard() {
   const { mezonAppDetail } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
   const { userInfo } = useSelector<RootState, IUserStore>((s) => s.user)
   const [creatorInfo, setCreatorInfo] = useState<GetPublicProfileResponse>()
-  const [queryGetPublicProfile, { data: publicUserInfo }] = useLazyUserControllerGetPublicProfileQuery()
+  const [queryGetPublicProfile, { data: publicUserInfo, isLoading }] = useLazyUserControllerGetPublicProfileQuery()
 
   const initRequests = async () => {
     if (mezonAppDetail?.owner?.id) {
@@ -23,7 +23,7 @@ function DetailCard() {
   }
   useEffect(() => {
     initRequests()
-  }, [mezonAppDetail?.owner?.id])
+  }, [mezonAppDetail?.id])
 
   useEffect(() => {
     if (publicUserInfo?.data) {
@@ -80,7 +80,9 @@ function DetailCard() {
             <Tag className='!rounded-lg !pr-6 !py-3 !shadow-md !bg-white flex items-center'>
               <div className='flex gap-4 items-center'>
                 <div className='w-[40px] h-[40px] overflow-hidden rounded-xl'>
-                  <img src={creatorInfo?.profileImage ? getUrlImage(creatorInfo?.profileImage) : avatar} alt='' className='w-full h-full object-cover' />
+                  {isLoading ? <Spin/>
+                    : <img src={creatorInfo?.profileImage ? getUrlImage(creatorInfo?.profileImage) : avatar} alt='' className='w-full h-full object-cover' />
+                  }
                 </div>
                 <MtbTypography variant='p' customClassName='!text-dark'>
                   {mezonAppDetail?.owner?.name}
