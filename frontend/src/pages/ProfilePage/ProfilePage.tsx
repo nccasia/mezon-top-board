@@ -21,13 +21,13 @@ import { CardInfo } from './components'
 function ProfilePage() {
   const navigate = useNavigate()
   const { isLogin } = useAuth()
-  const { userInfo: myInfo } = useAppSelector<RootState, IUserStore>((s) => s.user)
+  const { userInfo: myInfo, publicProfile: publicUserInfo } = useAppSelector<RootState, IUserStore>((s) => s.user)
   const { userId } = useParams()
   const { handleSearch } = useMezonAppSearch(1, 5)
   const [getTagList] = useLazyTagControllerGetTagsQuery()
   const [getMyApp] = useLazyMezonAppControllerGetMyAppQuery()
   const [getMezonApp] = useLazyMezonAppControllerSearchMezonAppQuery()
-  const [queryGetPublicProfile, { data: publicUserInfo }] = useLazyUserControllerGetPublicProfileQuery()
+  const [queryGetPublicProfile] = useLazyUserControllerGetPublicProfileQuery()
   const { mezonApp: userMezonApp } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
   const { mezonAppOfUser: myMezonApp } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
   const [userInfo, setUserInfo] = useState<GetPublicProfileResponse>()
@@ -76,8 +76,8 @@ function ProfilePage() {
       return;
     }
 
-    if (publicUserInfo?.data) {
-      setUserInfo(publicUserInfo?.data)
+    if (publicUserInfo) {
+      setUserInfo(publicUserInfo)
     }
   }, [myInfo, publicUserInfo]);
 
