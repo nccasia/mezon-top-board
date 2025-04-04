@@ -75,6 +75,7 @@ export class MezonAppService {
     detail.owner = {
       id: owner.id,
       name: owner.name,
+      profileImage: owner.profileImage,
     };
     detail.tags = mezonApp.tags.map((tag) => ({ id: tag.id, name: tag.name }));
     detail.socialLinks = mezonApp.socialLinks.map((link) => ({
