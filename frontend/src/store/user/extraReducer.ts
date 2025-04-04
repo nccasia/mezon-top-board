@@ -32,4 +32,8 @@ export const manageUsersExtraReducers = (builder: ActionReducerMapBuilder<any>) 
       if (bio) state.userInfo.bio = bio
       if (profileImage) state.userInfo.profileImage = profileImage
     })
+    .addMatcher(userService.endpoints.userControllerGetPublicProfile.matchFulfilled, (state, { payload }) => {
+      state.publicProfile = payload.data
+      state.publicProfile.name = payload.data.name || "User"
+    })
 }

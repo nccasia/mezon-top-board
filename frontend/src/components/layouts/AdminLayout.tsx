@@ -9,6 +9,7 @@ import styles from './AdminLayout.module.scss'; // Import the styles
 const { Header, Footer, Sider, Content } = Layout
 
 function AdminLayout() {
+  document.title = 'Management - Mezon Top Board'
   const location = useLocation()
   const pathSnippets = location.pathname.split('/').filter((i) => i)
   const { isLogin } = useAuth()
@@ -29,9 +30,9 @@ function AdminLayout() {
           <h1>Mezon Top Board</h1>
         </div>
         <Menu theme='dark' mode='vertical' defaultSelectedKeys={['/admin']} selectedKeys={[location.pathname]}>
-          {adminRoutePaths.map((route) => (
+          {adminRoutePaths.filter((route) => route.isShowMenu).map((route) => (
             <Menu.Item key={route.path} icon={route.icon}>
-              <NavLink to={route.path}>{route.label}</NavLink>
+              <NavLink to={route.path}>{route.label || route.strLabel}</NavLink>
             </Menu.Item>
           ))}
         </Menu>

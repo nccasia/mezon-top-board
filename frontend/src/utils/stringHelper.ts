@@ -64,3 +64,10 @@ export function uuidToNumber(uuid: string) {
   }
   return total;
 }
+
+export const fillHbsFormat = (str: string, data: Record<string, any>) => {
+  return str.replace(/{{(.*?)}}/g, (_, key) => {
+    const trimmedKey = key.trim()
+    return data[trimmedKey] !== undefined ? data[trimmedKey] : `{{${trimmedKey}}}`
+  })
+}
