@@ -1,5 +1,5 @@
-import { DollarOutlined, InfoCircleOutlined, RiseOutlined, TagOutlined, UserOutlined } from '@ant-design/icons'
-import { Spin, Tag } from 'antd'
+import { QuestionCircleTwoTone, InfoCircleOutlined, RiseOutlined, TagOutlined, UserOutlined } from '@ant-design/icons'
+import { Tag } from 'antd'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import avatar from '@app/assets/images/default-user.webp'
 import { useSelector } from 'react-redux'
@@ -31,6 +31,13 @@ function DetailCard() {
           Socials
         </MtbTypography>
         <div>
+          {mezonAppDetail?.supportUrl && (
+            <MtbTypography variant='h5' weight='normal' label={<QuestionCircleTwoTone twoToneColor="#FF0000" />}>
+              <a href={mezonAppDetail?.supportUrl} target='_blank' rel='noopener noreferrer' className='!text-black'>
+                <u>{mezonAppDetail.name}'s Support link</u>
+              </a>
+            </MtbTypography>
+          )}
           {mezonAppDetail?.socialLinks?.map((link) => (
             <MtbTypography key={link.id} variant='h5' weight='normal' label={link.icon}>
               <a href={link.url} target='_blank' rel='noopener noreferrer' className='!text-black'>
