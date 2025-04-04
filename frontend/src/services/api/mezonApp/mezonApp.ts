@@ -148,6 +148,7 @@ export type MezonAppControllerSearchMezonAppApiArg = {
 export type OwnerInMezonAppDetailResponse = {
   id: string
   name: string
+  profileImage: string
 }
 export type TagInMezonAppDetailResponse = {
   id: string
