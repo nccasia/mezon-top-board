@@ -18,6 +18,5 @@ export interface ICompactBotCardProps {
 }
 
 export interface IAddBotFormProps {
-  onResetAvatar: () => void
   isEdit: boolean
 }

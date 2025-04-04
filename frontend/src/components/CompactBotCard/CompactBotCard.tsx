@@ -1,10 +1,11 @@
-import { DeleteOutlined, EditOutlined, RiseOutlined, StarOutlined } from '@ant-design/icons'
+import { DeleteOutlined, EditOutlined, ExclamationCircleOutlined, RiseOutlined, StarOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { ICompactBotCardProps } from '@app/types/Botcard.types'
 import { getUrlImage } from '@app/utils/stringHelper'
 import { avatarBotDefault } from '@app/assets'
-import { Dropdown, MenuProps } from 'antd'
+import { Dropdown, MenuProps, Modal } from 'antd'
 import { toast } from 'react-toastify'
+import { useMezonAppControllerDeleteMezonAppMutation } from '@app/services/api/mezonApp/mezonApp'
 
 function CompactBotCard({ data, isPublic = true }: ICompactBotCardProps) {
   const navigate = useNavigate()
@@ -18,7 +19,28 @@ function CompactBotCard({ data, isPublic = true }: ICompactBotCardProps) {
   const handleMenuClick: MenuProps['onClick'] = (e) => {
     e.domEvent.stopPropagation()
   };
+  const [deleteBot] = useMezonAppControllerDeleteMezonAppMutation()
+  const { confirm } = Modal;
 
+
+  const handleDeleteBot = (botId: string) => {
+    confirm({
+      title: "Are you sure you want to delete this bot?",
+      icon: <ExclamationCircleOutlined />,
+      content: "This action cannot be undone.",
+      okText: "Yes, delete it",
+      okType: "danger",
+      cancelText: "Cancel",
+      onOk: async () => {
+        try {
+          await deleteBot({ requestWithId: { id: botId } }).unwrap();
+          toast.success("Bot deleted successfully.");
+        } catch (error) {
+          toast.error("Failed to delete bot.");
+        }
+      },
+    });
+  };
   const items: MenuProps['items'] = [
     {
       label: 'Edit',
@@ -34,7 +56,11 @@ function CompactBotCard({ data, isPublic = true }: ICompactBotCardProps) {
       danger: true,
       icon: <DeleteOutlined />,
       onClick: () => {
-        toast.info('Delete bot.');
+        if (!data?.id) {
+          toast.error("Invalid bot ID.");
+          return
+        }
+        handleDeleteBot(data?.id);
       }
     },
   ];
