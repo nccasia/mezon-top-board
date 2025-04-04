@@ -52,6 +52,7 @@ export class AuthService {
 
       const newUser = await this.userRepository.create({
         email: oryInfo.sub,
+        name: oryInfo.sub.split('@')[0],
         role: Role.DEVELOPER,
       });
       const tokens = await this.generateAccessAndRefreshTokens(newUser);
