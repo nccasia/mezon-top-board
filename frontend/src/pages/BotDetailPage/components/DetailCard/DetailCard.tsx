@@ -7,29 +7,10 @@ import { RootState } from '@app/store'
 import { IMezonAppStore } from '@app/store/mezonApp'
 import { IUserStore } from '@app/store/user'
 import { getUrlImage } from '@app/utils/stringHelper'
-import { useEffect, useState } from 'react'
-import { GetPublicProfileResponse, useLazyUserControllerGetPublicProfileQuery } from '@app/services/api/user/user'
 
 function DetailCard() {
   const { mezonAppDetail } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
   const { userInfo } = useSelector<RootState, IUserStore>((s) => s.user)
-  const [creatorInfo, setCreatorInfo] = useState<GetPublicProfileResponse>()
-  const [queryGetPublicProfile, { data: publicUserInfo, isLoading }] = useLazyUserControllerGetPublicProfileQuery()
-
-  const initRequests = async () => {
-    if (mezonAppDetail?.owner?.id) {
-      queryGetPublicProfile({ userId: mezonAppDetail?.owner?.id }).unwrap();
-    }
-  }
-  useEffect(() => {
-    initRequests()
-  }, [mezonAppDetail?.id])
-
-  useEffect(() => {
-    if (publicUserInfo?.data) {
-      setCreatorInfo(publicUserInfo?.data)
-    }
-  }, [publicUserInfo]);
 
   return (
     <div className='shadow-sm rounded-2xl bg-white p-4'>
@@ -70,19 +51,21 @@ function DetailCard() {
             </Tag>
           ))}
         </div>
-      </div> 
+      </div>
       <div className='pb-4'>
         <MtbTypography variant='h3' label={<UserOutlined className='text-xl !text-pink-500' />}>
           Creators
         </MtbTypography>
         <div className={`pt-2`}>
-          <a href={`/profile/${userInfo.id === mezonAppDetail?.owner?.id ? "" : mezonAppDetail?.owner?.id}`}>
+          <a href={`/profile/${userInfo.id === mezonAppDetail?.owner?.id ? '' : mezonAppDetail?.owner?.id}`}>
             <Tag className='!rounded-lg !pr-6 !py-3 !shadow-md !bg-white flex items-center'>
               <div className='flex gap-4 items-center'>
                 <div className='w-[40px] h-[40px] overflow-hidden rounded-xl'>
-                  {isLoading ? <Spin/>
-                    : <img src={creatorInfo?.profileImage ? getUrlImage(creatorInfo?.profileImage) : avatar} alt='' className='w-full h-full object-cover' />
-                  }
+                  <img
+                    src={mezonAppDetail?.owner?.profileImage ? getUrlImage(mezonAppDetail?.owner.profileImage) : avatar}
+                    alt=''
+                    className='w-full h-full object-cover'
+                  />
                 </div>
                 <MtbTypography variant='p' customClassName='!text-dark'>
                   {mezonAppDetail?.owner?.name}

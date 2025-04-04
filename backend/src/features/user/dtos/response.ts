@@ -9,6 +9,9 @@ export class OwnerInMezonAppDetailResponse {
     @Expose()
     @ApiProperty()
     public name: string;
+    @Expose()
+    @ApiProperty()
+    public profileImage: string;
 }
 
 export class SearchUserResponse {
