@@ -102,7 +102,7 @@ function ProfilePage() {
             )}
           </div>
           <div className='grid grid-cols-1 gap-8 min-lg:grid-cols-2 min-xl:grid-cols-3 max-w-full'>
-            {mezonApp?.data?.map((item) => <CompactBotCard key={item.id} data={item}></CompactBotCard>)}
+            {mezonApp?.data?.map((item) => <CompactBotCard key={item.id} data={item} isPublic={Boolean(userId)}></CompactBotCard>)}
           </div>
           {/* TODO: Add pagination */}
           {/* <div className='flex justify-center pt-10'>

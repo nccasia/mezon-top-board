@@ -1,33 +1,37 @@
-import MtbTypography from '@app/mtb-ui/Typography/Typography'
-import { Checkbox, Form, Input, Select, SelectProps, Tag, TagProps } from 'antd'
 import FormField from '@app/components/FormField/FormField'
-import { Controller, useFormContext } from 'react-hook-form'
-import Button from '@app/mtb-ui/Button'
+import RichTextEditor from "@app/components/RichText/RichText"
 import { errorStatus } from '@app/constants/common.constant'
-import TextArea from 'antd/es/input/TextArea'
-import { useEffect, useMemo, useState } from 'react'
+import Button from '@app/mtb-ui/Button'
+import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import {
   CreateMezonAppRequest,
   SocialLinkDto,
-  useMezonAppControllerCreateMezonAppMutation
+  useMezonAppControllerCreateMezonAppMutation,
+  useMezonAppControllerUpdateMezonAppMutation
 } from '@app/services/api/mezonApp/mezonApp'
-import { useSelector } from 'react-redux'
 import { RootState } from '@app/store'
-import { ITagStore } from '@app/store/tag'
 import { ILinkTypeStore } from '@app/store/linkType'
+import { ITagStore } from '@app/store/tag'
 import { IAddBotFormProps, ISocialLinksData } from '@app/types/Botcard.types'
+import { Checkbox, Form, Input, Select, TagProps } from 'antd'
+import TextArea from 'antd/es/input/TextArea'
+import { useEffect, useMemo, useState } from 'react'
+import { Controller, useFormContext } from 'react-hook-form'
+import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import RichTextEditor from "@app/components/RichText/RichText";
-function AddBotForm({ onResetAvatar }: IAddBotFormProps) {
+function AddBotForm({ isEdit }: IAddBotFormProps) {
   const {
     control,
     handleSubmit,
     watch,
     setValue,
-    reset,
     formState: { errors }
   } = useFormContext<CreateMezonAppRequest>()
   const [addBot] = useMezonAppControllerCreateMezonAppMutation()
+  const navigate = useNavigate()
+  const [updateBot] = useMezonAppControllerUpdateMezonAppMutation()
   const { tagList } = useSelector<RootState, ITagStore>((s) => s.tag)
   const { linkTypeList } = useSelector<RootState, ILinkTypeStore>((s) => s.link)
   const selectedSocialLink = watch('socialLinks')
@@ -38,23 +42,35 @@ function AddBotForm({ onResetAvatar }: IAddBotFormProps) {
     setValue('socialLinks', [])
   }, [socialLinksData, setValue])
 
-  const onSubmit = (data: CreateMezonAppRequest) => {
-    const formattedSocialLinks = socialLinksData.map((link) => ({
-      url: link.url,
-      linkTypeId: link.id
-    }))
+  const { botId } = useParams()
 
-    const { socialLinks, ...restData } = data
+  const onSubmit = async (data: CreateMezonAppRequest) => {
+    try {
+      const formattedSocialLinks = socialLinksData.map((link) => ({
+        url: link.url,
+        linkTypeId: link.id
+      }))
 
-    const addBotData = {
-      ...restData,
-      socialLinks: formattedSocialLinks
+      const { socialLinks, ...restData } = data
+
+      const addBotData = {
+        ...restData,
+        socialLinks: formattedSocialLinks
+      }
+      if (!isEdit && !botId) {
+        const response = await addBot({ createMezonAppRequest: addBotData }).unwrap()
+        toast.success('Add new bot success')
+        if (response.id) {
+          navigate(`/${response.id}`)
+        }
+        return
+      }
+      if (!botId) return
+      updateBot({ updateMezonAppRequest: { ...data, id: botId } })
+      toast.success('Edit bot success')
+    } catch (error) {
+      toast.error('Fail')
     }
-
-    addBot({ createMezonAppRequest: addBotData })
-    toast.success('Add new bot success')
-    onResetAvatar()
-    reset()
   }
 
   const options = useMemo(() => {
@@ -163,9 +179,9 @@ function AddBotForm({ onResetAvatar }: IAddBotFormProps) {
             name='description'
             render={({ field }) => (
               <RichTextEditor
-                  value={field.value || ""}
-                  onChange={field.onChange}
-                  customClass="custom-editor"
+                value={field.value || ""}
+                onChange={field.onChange}
+                customClass="custom-editor"
               />
             )}
           />
