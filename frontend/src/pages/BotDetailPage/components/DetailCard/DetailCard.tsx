@@ -1,4 +1,4 @@
-import { InfoCircleOutlined, RiseOutlined, TagOutlined, UserOutlined } from '@ant-design/icons'
+import { QuestionCircleTwoTone, InfoCircleOutlined, RiseOutlined, TagOutlined, UserOutlined } from '@ant-design/icons'
 import { Tag } from 'antd'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import avatar from '@app/assets/images/default-user.webp'
@@ -30,7 +30,7 @@ function DetailCard() {
         </MtbTypography>
         <div>
           {mezonAppDetail?.supportUrl && (
-            <MtbTypography variant='h5' weight='normal' label='❓'>
+            <MtbTypography variant='h5' weight='normal' label={<QuestionCircleTwoTone twoToneColor="#FF0000" />}>
               <a href={mezonAppDetail?.supportUrl} target='_blank' rel='noopener noreferrer' className='!text-black'>
                 <u>{mezonAppDetail.name}'s Support link</u>
               </a>
