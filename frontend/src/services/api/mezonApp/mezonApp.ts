@@ -171,6 +171,7 @@ export type GetMezonAppDetailsResponse = {
   socialLinks: SocialLinkInMezonAppDetailResponse[]
   rateScore: number;
   installLink: string;
+  supportUrl: string;
 }
 export type RequestWithId = {
   id: string
