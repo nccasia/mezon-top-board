@@ -17,81 +17,112 @@ export const routePaths: RoutePath[] = [
     index: true,
     path: '/',
     element: <HomePage />,
-    label: 'Home',
-    isShowMenu: true
+    strLabel: 'Home',
+    isShowMenu: true,
+    requireAuth: false,
   },
   {
+    index: false,
     path: 'callbacks',
     element: <LoginRedirectPage />,
-    isShowMenu: false
+    strLabel: 'Login Redirect',
+    isShowMenu: false,
+    requireAuth: false,
   },
   {
+    index: false,
     path: '/:botId',
     element: <BotDetailPage />,
-    label: '',
-    isShowMenu: false
+    strLabel: '{{botName}}',
+    isShowMenu: false,
+    requireAuth: false,
   },
   {
+    index: false,
     path: '/about',
     element: <AboutPage></AboutPage>,
-    label: 'About',
-    isShowMenu: true
+    strLabel: 'About',
+    isShowMenu: true,
+    requireAuth: false,
   },
   {
+    index: false,
     path: '/profile',
     element: <ProfilePage></ProfilePage>,
-    label: 'My Profile',
+    strLabel: 'My Profile',
     isShowMenu: true,
     requireAuth: true
   },
   {
+    index: false,
     path: '/profile/setting',
     element: <SettingPage></SettingPage>,
-    label: 'Setting page',
-    isShowMenu: false
+    strLabel: 'Personal Settings',
+    isShowMenu: false,
+    requireAuth: true,
   },
   {
+    index: false,
     path: '/profile/:userId',
     element: <ProfilePage></ProfilePage>,
-    label: '',
-    isShowMenu: false
+    strLabel: '{{userName}}',
+    isShowMenu: false,
+    requireAuth: false,
   },
   {
+    index: false,
     path: '/search',
     element: <SearchPage></SearchPage>,
-    label: '',
-    isShowMenu: false
+    strLabel: 'Search',
+    isShowMenu: false,
+    requireAuth: false,
   },
   {
+    index: false,
     path: '/terms',
     element: <TermsPage></TermsPage>,
-    label: 'Terms',
-    isShowMenu: true
+    strLabel: 'Terms',
+    isShowMenu: true,
+    requireAuth: false,
   },
   {
+    index: false,
     path: '/help',
     element: <HelpPage></HelpPage>,
-    label: 'Help',
-    isShowMenu: true
+    strLabel: 'Help',
+    isShowMenu: true,
+    requireAuth: false,
   },
   {
+    index: false,
     path: 'new-bot',
     element: <NewBotPage></NewBotPage>,
-    label: '',
-    isShowMenu: false
+    strLabel: 'New Bot',
+    isShowMenu: false,
+    requireAuth: true,
   },
   {
+    index: false,
     path: '/new-bot/:botId',
     element: <NewBotPage></NewBotPage>,
-    label: '',
-    isShowMenu: false
+    strLabel: '',
+    isShowMenu: false,
+    requireAuth: true,
   },
   {
+    index: false,
     path: 'login',
-    element: <LoginPage />
+    element: <LoginPage />,
+    strLabel: 'Login',
+    isShowMenu: false,
+    requireAuth: false,
   },
   {
+    index: false,
     path: '*',
-    element: <NotFoundPage />
+    element: <NotFoundPage />,
+    strLabel: 'Not Found',
+    isShowMenu: false,
+    requireAuth: false,
   }
 ]
