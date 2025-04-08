@@ -4,7 +4,13 @@ const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
     tagControllerGetTags: build.query<TagControllerGetTagsApiResponse, TagControllerGetTagsApiArg>({
       query: () => ({ url: `/api/tag` })
-    })
+    }),
+    tagControllerCreateTag: build.mutation<
+          TagControllerCreateTagApiResponse,
+          TagControllerCreateTagApiArg
+        >({
+          query: (queryArg) => ({ url: `/api/mezon-app`, method: 'POST', body: queryArg.createTagRequest })
+        })
   }),
   overrideExisting: false
 })
@@ -16,4 +22,6 @@ export type TagResponse = {
   name: string
   slug: string
 }
+export type TagControllerCreateTagApiResponse = unknown
+export type TagControllerCreateTagApiArg = any
 export const { useTagControllerGetTagsQuery, useLazyTagControllerGetTagsQuery } = injectedRtkApi

@@ -1,10 +1,11 @@
 // src/routes/adminRoutePaths.ts
 
-import { AppstoreAddOutlined, HistoryOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons'
-import MezonAppsContainer from '@app/pages/AdminPage/AdminMezonApp/MezonAppsContainer'
-import ReviewHistoryPage from '@app/pages/AdminPage/ReviewHistoryPage/ReviewHistoryPage'
+import { AppstoreAddOutlined, HistoryOutlined, SettingOutlined, TagsOutlined, UserOutlined } from '@ant-design/icons';
+import TagsList from '@app/pages/AdminPage/AdminManageTags/TagsList';
 import UsersList from "@app/pages/AdminPage/AdminManageUsers/UsersList";
-import { RoutePath } from '@app/types/RoutePath.types'
+import MezonAppsContainer from '@app/pages/AdminPage/AdminMezonApp/MezonAppsContainer';
+import ReviewHistoryPage from '@app/pages/AdminPage/ReviewHistoryPage/ReviewHistoryPage';
+import { RoutePath } from '@app/types/RoutePath.types';
 
 export const adminRoutePaths: RoutePath[] = [
   {
@@ -27,6 +28,13 @@ export const adminRoutePaths: RoutePath[] = [
     element: <UsersList/>,
     strLabel: "Users",
     icon: <UserOutlined/>,
+    isShowMenu: true
+  },
+  {
+    path: "/manage/tags",
+    element: <TagsList />,
+    strLabel: "Tags",
+    icon: <TagsOutlined />,
     isShowMenu: true
   },
   {
