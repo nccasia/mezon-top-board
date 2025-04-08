@@ -10,6 +10,7 @@ export interface ISocialLinksData {
   name: string
   url: string
   id: string
+  siteName: string
 }
 
 export interface ICompactBotCardProps {
