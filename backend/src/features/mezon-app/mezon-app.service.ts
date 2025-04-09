@@ -238,6 +238,8 @@ export class MezonAppService {
 
     let tags = app.tags;
     let links = app.socialLinks;
+    console.log("app.socialLinks", app.socialLinks);
+    console.log("req.socialLinks", socialLinks);
     
     if (tagIds) {
       const existingTags = await this.tagRepository
