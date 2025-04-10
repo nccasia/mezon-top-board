@@ -56,8 +56,10 @@ const SearchBar = ({
       ? selectedTagIds.filter((id) => id !== tagId)
       : [...selectedTagIds, tagId]
 
-    setSelectedTagIds(updatedTagIds)
-    handleSearch(updatedTagIds)
+    const filteredTagIds = updatedTagIds.filter(Boolean);
+
+    setSelectedTagIds(filteredTagIds);
+    handleSearch(filteredTagIds);
   }
 
   const totalTags = tagList?.data?.length || 0
