@@ -1,9 +1,22 @@
 import { ApiPropertyOptional, ApiProperty, OmitType, PartialType, IntersectionType } from "@nestjs/swagger";
 
 import { Type } from "class-transformer";
-import { IsArray, IsBoolean, IsOptional, IsString, IsUUID, ValidateNested } from "class-validator";
+import { 
+  IsString, 
+  IsBoolean, 
+  IsOptional, 
+  IsArray, 
+  ValidateNested, 
+  IsUUID,
+  MinLength, 
+  MaxLength, 
+  Matches, 
+  ArrayMinSize 
+} from 'class-validator';
 
 import { PaginationQuery, RequestWithId } from "@domain/common/dtos/request.dto";
+const URI_REGEX = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+(:[0-9]+)?|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/
+
 
 export class SearchMezonAppRequest extends PaginationQuery {
     @ApiPropertyOptional({ description: "Keyword to search mezonApps by name or headline" })
@@ -33,6 +46,8 @@ class SocialLinkDto {
 export class CreateMezonAppRequest {
     @ApiProperty()
     @IsString()
+    @MinLength(3, { message: 'Name must be at least 3 characters' })
+    @MaxLength(50, { message: 'Name must not exceed 50 characters' })
     name: string;
 
     @ApiPropertyOptional()
@@ -42,12 +57,17 @@ export class CreateMezonAppRequest {
 
     @ApiPropertyOptional()
     @IsString()
+    @Matches(URI_REGEX, { 
+      message: 'Invalid URI format' 
+    })
     @IsOptional()
     installLink?: string;
 
     @ApiPropertyOptional()
     @IsString()
     @IsOptional()
+    @MinLength(50, { message: 'Headline must be at least 50 characters' })
+    @MaxLength(510, { message: 'Headline must not exceed 510 characters' })
     headline?: string;
 
     @ApiPropertyOptional()
@@ -58,6 +78,8 @@ export class CreateMezonAppRequest {
     @ApiPropertyOptional()
     @IsString()
     @IsOptional()
+    @MinLength(1, { message: 'Prefix must be at least 1 character' })
+    @MaxLength(10, { message: 'Prefix must not exceed 10 characters' })
     prefix?: string;
 
     @ApiPropertyOptional()
@@ -68,6 +90,9 @@ export class CreateMezonAppRequest {
     @ApiPropertyOptional()
     @IsString()
     @IsOptional()
+    @Matches(URI_REGEX, { 
+      message: 'Invalid URI format' 
+    })
     supportUrl?: string;
 
     @ApiPropertyOptional()
@@ -76,7 +101,9 @@ export class CreateMezonAppRequest {
     remark?: string;
 
     @ApiPropertyOptional()
-    @IsOptional()
+    @IsArray()
+    @ArrayMinSize(1, { message: 'At least one tag is required' })
+    @IsString({ each: true })
     tagIds?: string[];
 
     @ApiPropertyOptional({ type: [SocialLinkDto] })
