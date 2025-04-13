@@ -89,7 +89,7 @@ function ProfilePage() {
       </div>
       <Divider className='bg-gray-100'></Divider>
       <div className='flex justify-between gap-15 max-lg:flex-col max-2xl:flex-col'>
-        <div className='flex-1'>
+        <div className='w-1/3 max-lg:w-full max-2xl:w-full'>
           <CardInfo userInfo={userInfo} isPublic={Boolean(userId)}></CardInfo>
         </div>
         <div className='flex-2'>
