@@ -47,7 +47,7 @@ function Main({ isSearchPage = false }: IMainProps) {
       sortField: 'createdAt',
       sortOrder: 'DESC'
     })
-  }, [page, botPerPage, searchQuery])
+  }, [page, botPerPage])
 
   const options = useMemo(() => {
     return pageOptions.map((value) => {
