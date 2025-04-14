@@ -5,7 +5,6 @@ export const ratingExtraReducers = (builder: ActionReducerMapBuilder<any>) => {
   builder
     .addMatcher(ratingService.endpoints.ratingControllerGetRatingsByApp.matchFulfilled, (state, { payload }) => {
       state.ratings = payload
-      console.log(state.ratings)
     })
     .addMatcher(ratingService.endpoints.ratingControllerGetRatingsByApp.matchRejected, (state, { payload }) => {
       state.ratings = {}
