@@ -69,7 +69,8 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
       updateBot({ updateMezonAppRequest: { ...data, id: botId } })
       toast.success('Edit bot success')
     } catch (error) {
-      toast.error('Fail')
+      if (!isEdit && !botId) toast.error('Add new bot failed')
+      if (isEdit && botId) toast.error('Edit bot failed')
     }
   }
 
