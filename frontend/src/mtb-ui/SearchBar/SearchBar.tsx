@@ -49,6 +49,7 @@ const SearchBar = ({
     }
 
     updateSearchParams(searchText, searchTags)
+    onSearch(searchText, searchTags)
   }
 
   const handleSearchTag = (tagId: string) => {
@@ -67,7 +68,7 @@ const SearchBar = ({
 
   useEffect(() => {
     onSearch(searchText, selectedTagIds)
-  }, [searchText, selectedTagIds])
+  }, [selectedTagIds])
 
   return (
     <>

@@ -57,17 +57,18 @@ function Header() {
           />
         </div> */}
         <ul className='flex flex-col lg:flex-row gap-5 text-sm'>{renderMenu(true)}</ul>
-        <div className='flex flex-col lg:flex-row gap-3 mt-5 lg:mt-0'>
+        <div className='flex flex-col lg:flex-row gap-3 mt-5 lg:mt-0 w-full'>
           {isLogin ? (
             <Dropdown
               menu={{ items: itemsDropdown }}
-              className={`z-2 !text-black text-sm pb-2 lg:pb-0 transition-all duration-300 border-b-3 border-b-transparent`}
+              className={`z-2 !text-black text-sm pb-2 lg:pb-0 transition-all duration-300 border-b-3 border-b-transparent max-w-xs`}
             >
-              <a onClick={(e) => e.preventDefault()}>
-                <Space>
-                  Welcome, {userInfo?.name}
+              <a onClick={(e) => e.preventDefault()} className=''>
+                <div className="flex flex-row items-center gap-2 cursor-pointer">
+                  <span>Welcome, </span>
+                  <span className='break-words max-w-3/4'>{userInfo?.name}</span>
                   <DownOutlined />
-                </Space>
+                </div>
               </a>
             </Dropdown>
           ) : (

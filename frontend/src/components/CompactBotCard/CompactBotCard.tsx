@@ -78,13 +78,13 @@ function CompactBotCard({ data, isPublic = true }: ICompactBotCardProps) {
         {!isPublic && <Dropdown.Button buttonsRender={([leftBtn, rightBtn]) => [null, <span onClick={(e) => e.stopPropagation()} className='!absolute !top-0 !right-0'>{rightBtn}</span>]} trigger={["click"]} menu={menuProps}>
         </Dropdown.Button>}
       </div>
-      <p className='pt-3 pb-3 font-black'>{data?.name || 'Name'}</p>
+      <div className='pt-3 pb-3 font-black truncate'>{data?.name || 'Name'}</div>
       <div className='flex justify-between items-center'>
         <p>
           <StarOutlined /> {data?.rateScore || 0}
         </p>
         <p>
-          <RiseOutlined /> 841,600
+          <RiseOutlined /> 841,999
         </p>
       </div>
     </div>
