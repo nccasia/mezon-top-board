@@ -12,6 +12,7 @@ export interface MtbTypographyProps {
   customClassName?: string
   size?: number
   style?: CSSProperties
+  ellipsis?: boolean
 }
 
 export type AntdTypographyComponent = typeof Typography.Title | typeof Typography.Text

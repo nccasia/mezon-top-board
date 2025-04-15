@@ -1,5 +1,5 @@
-import { App, mezonAppService } from '@app/services/api/mezonApp/mezonApp';
-import { ActionReducerMapBuilder } from '@reduxjs/toolkit';
+import { App, mezonAppService } from "@app/services/api/mezonApp/mezonApp"
+import { ActionReducerMapBuilder } from "@reduxjs/toolkit"
 
 export const mezonAppExtraReducers = (builder: ActionReducerMapBuilder<any>) => {
   builder
@@ -20,27 +20,25 @@ export const mezonAppExtraReducers = (builder: ActionReducerMapBuilder<any>) => 
     })
     .addMatcher(mezonAppService.endpoints.mezonAppControllerDeleteMezonApp.matchFulfilled, (state, action) => {
       const deletedId = action.meta.arg.originalArgs.requestWithId.id;
-      state.mezonApp.data = state.mezonApp.data.filter((app: App) => app.id !== deletedId);
-      state.mezonAppOfUser.data = state.mezonAppOfUser.data.filter((app: App) => app.id !== deletedId)
+      if (state.mezonAppOfAdmin.data)
+        state.mezonAppOfAdmin.data = state.mezonAppOfAdmin.data.filter((app: App) => app.id !== deletedId);
+      else if (state.mezonAppOfUser.data)
+        state.mezonAppOfUser.data = state.mezonAppOfUser.data.filter((app: App) => app.id !== deletedId)
     })
     .addMatcher(mezonAppService.endpoints.mezonAppControllerCreateMezonApp.matchFulfilled, (state, { payload }) => {
       if (state.mezonApp?.data) {
-        state.mezonApp.data.unshift(payload); 
+        state.mezonApp.data.unshift(payload);
       }
     })
-    .addMatcher(
-      mezonAppService.endpoints.mezonAppControllerUpdateMezonApp.matchFulfilled,
-      (state, { payload }) => {
-        const index = state.mezonApp.data.findIndex((app: App) => app.id === payload.id);
-        
-        if (index !== -1) {
-          // Update the app while preserving the existing array reference
-          state.mezonApp.data[index] = {
-            ...state.mezonApp.data[index], // Keep existing fields if not updated
-            ...payload // Overwrite with updated fields
-          };
+    .addMatcher(mezonAppService.endpoints.mezonAppControllerUpdateMezonApp.matchFulfilled, (state, { payload }) => {
+      // get the app you want to update
+      const index = state.mezonAppOfAdmin.data.findIndex((app: App) => app.id === payload.id);
+
+      if (index !== -1) {
+        state.mezonAppOfAdmin.data[index] = {
+          ...state.mezonAppOfAdmin.data[index], // Keep existing fields if not updated
+          ...payload // Overwrite with updated fields
         }
       }
-    );
-    
+    })
 }
