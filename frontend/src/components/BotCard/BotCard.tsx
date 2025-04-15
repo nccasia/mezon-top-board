@@ -30,7 +30,7 @@ function BotCard({ readonly = false, data }: IBotCardProps) {
   return (
     <div
       className='shadow-md pb-8 pt-8 px-8 border border-gray-300 relative rounded-xl cursor-pointer'
-      onClick={() => navigate(`/${data?.id}`)}
+      onClick={() => navigate(`/bot/${data?.id}`)}
     >
       <div className='flex flex-col md:flex-row items-start gap-6 w-full'>
         <div className='w-24 md:w-36 flex-shrink-0'>
