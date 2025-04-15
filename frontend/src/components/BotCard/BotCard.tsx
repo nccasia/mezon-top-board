@@ -23,9 +23,8 @@ function BotCard({ readonly = false, data }: IBotCardProps) {
 
   const imgUrl = data?.featuredImage ? getUrlImage(data.featuredImage) : avatarBotDefault
   // Share to social media
-  const shareUrl = 'https://www.google.com/'
+  const shareUrl = 'https://top.nccsoft.vn'
   const title = data?.name || 'Check out this app!'
-  const description = data?.description || 'Discover this amazing application.'
 
   return (
     <div
@@ -60,7 +59,7 @@ function BotCard({ readonly = false, data }: IBotCardProps) {
           Invite
         </Button>
         <Popover
-          content={<ShareButton text={`${title} - ${description}`} url={shareUrl} />}
+          content={<ShareButton text={`Check out ${title} Mezon Bot on top.nccsoft.vn, the #1 Mezon Bot and Mezon App List!`} url={`${shareUrl}/${data?.id}`} />}
           trigger='click'
           placement='bottomRight'
           arrow={false}
