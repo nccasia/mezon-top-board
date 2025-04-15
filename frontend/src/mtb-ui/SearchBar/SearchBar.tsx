@@ -59,16 +59,14 @@ const SearchBar = ({
 
     const filteredTagIds = updatedTagIds.filter(Boolean);
 
-    setSelectedTagIds(filteredTagIds);
+    setSelectedTagIds(filteredTagIds);    
+    onSearch(searchText, filteredTagIds)
     handleSearch(filteredTagIds);
   }
 
   const totalTags = tagList?.data?.length || 0
   const hiddenTagsCount = totalTags - MAX_VISIBLE_TAGS
 
-  useEffect(() => {
-    onSearch(searchText, selectedTagIds)
-  }, [selectedTagIds])
 
   return (
     <>
