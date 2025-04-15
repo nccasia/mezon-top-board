@@ -11,6 +11,7 @@ import {
 import { RootState } from '@app/store'
 import { ILinkTypeStore } from '@app/store/linkType'
 import { ITagStore } from '@app/store/tag'
+import { ApiError } from '@app/types/API.types'
 import { IAddBotFormProps, ISocialLinksData } from '@app/types/Botcard.types'
 import { Checkbox, Form, Input, Select, TagProps } from 'antd'
 import TextArea from 'antd/es/input/TextArea'
@@ -61,11 +62,12 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
       if (!botId) return
       updateBot({ updateMezonAppRequest: { ...data, id: botId } })
       toast.success('Edit bot success')
-    } catch (error) {
+    } catch (error: unknown) {
+      const err = error as ApiError
       const message =
-        error?.data?.message && Array.isArray(error.data.message)
-          ? error.data.message.join(', ')
-          : error?.data?.message || error?.message || 'Something went wrong'
+        err?.data?.message && Array.isArray(err.data.message)
+          ? err.data.message.join(', ')
+          : err?.data?.message || 'Something went wrong'
       toast.error(message)
     }
   }
