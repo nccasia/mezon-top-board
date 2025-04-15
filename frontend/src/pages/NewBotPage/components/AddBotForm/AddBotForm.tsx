@@ -15,11 +15,10 @@ import { ITagStore } from '@app/store/tag'
 import { IAddBotFormProps, ISocialLinksData } from '@app/types/Botcard.types'
 import { Checkbox, Form, Input, Select, TagProps } from 'antd'
 import TextArea from 'antd/es/input/TextArea'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Controller, useFormContext } from 'react-hook-form'
 import { useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 function AddBotForm({ isEdit }: IAddBotFormProps) {
   const {
@@ -36,7 +35,7 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
   const { linkTypeList } = useSelector<RootState, ILinkTypeStore>((s) => s.link)
   const selectedSocialLink = watch('socialLinks')
   const [socialLinksData, setSocialLinksData] = useState<ISocialLinksData[]>([])
-  const socialLinkUrl = useRef<string>('')
+  const [socialLinkUrl, setSocialLinkUrl] = useState<string>('')
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   useEffect(() => {
@@ -81,7 +80,7 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
     }))
   }, [tagList])
 
-  
+
 
   const tagRender = (props: TagProps & { label?: string }) => {
     const { label, closable, onClose } = props
@@ -108,8 +107,8 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
   }, [linkTypeList])
 
   const addNewLink = () => {
-    // if not selectedSocialLink then return
-    if (selectedSocialLink?.length === 0) return
+    // if (not selectedSocialLink or not socialLinkUrl) then return
+    if (selectedSocialLink?.length === 0 || !socialLinkUrl) return
     // get selected link's id
     const selectedSocialLinkValue = Array.isArray(selectedSocialLink) ? selectedSocialLink[0] : selectedSocialLink
     // get selectedLink in optionsLink
@@ -120,12 +119,13 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
     const defaultSocialLink = {
       icon: selectedLink?.icon || '',
       name: selectedLink?.label || '',
-      url: `${socialLinkUrl.current}`,
+      url: `${socialLinkUrl}`,
       id: selectedLink?.value || '',
       siteName: selectedLink?.siteName || ''
     }
-// add new links to the links list
+    // add new links to the links list
     setSocialLinksData([...socialLinksData, defaultSocialLink])
+    setSocialLinkUrl('')
   }
 
   const removeLink = (id: string) => {
@@ -133,7 +133,7 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
   }
 
   const handleSocialLinkUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    socialLinkUrl.current = e.target.value
+    setSocialLinkUrl(e.target.value)
   }
 
   const editSocialLink = (e: React.ChangeEvent<HTMLInputElement>, id: string) => {
@@ -152,7 +152,7 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
   const handleSelectLink = (value: SocialLinkDto[]) => {
     console.log(`Link ${value}`)
   }
-  
+
   return (
     <div className='shadow-md p-8 rounded-md bg-white'>
       <Form layout='vertical' onFinish={handleSubmit(onSubmit)}>
@@ -331,7 +331,7 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
               />
             </div>
             <div className='flex-1'>
-              <Input prefix={`https://${linkTypeList.find(item => item.id === selectedSocialLink)?.name.toLocaleLowerCase() || ''}.com/`} onChange={handleSocialLinkUrlChange}/>
+              <Input value={socialLinkUrl} prefix={selectedSocialLink?.length && `https://${linkTypeList.find(item => item.id === selectedSocialLink)?.name.toLocaleLowerCase() || ''}.com/`} onChange={handleSocialLinkUrlChange} disabled={!selectedSocialLink?.length} />
             </div>
             <div className='flex justify-end'>
               <Button onClick={addNewLink} customClassName='!w-[70px]'>

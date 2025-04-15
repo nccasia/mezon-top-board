@@ -13,7 +13,7 @@ function DetailCard() {
   const { userInfo } = useSelector<RootState, IUserStore>((s) => s.user)
 
   return (
-    <div className='shadow-sm rounded-2xl bg-white p-4'>
+    <div className='shadow-sm rounded-2xl bg-white p-4 '>
       <div className='pb-4'>
         <MtbTypography label={<InfoCircleOutlined className='text-xl !text-pink-500' />} variant='h3'>
           Details
@@ -65,16 +65,16 @@ function DetailCard() {
         </MtbTypography>
         <div className={`pt-2`}>
           <a href={`/profile/${userInfo.id === mezonAppDetail?.owner?.id ? '' : mezonAppDetail?.owner?.id}`}>
-            <Tag className='!rounded-lg !pr-6 !py-3 !shadow-md !bg-white flex items-center'>
+            <Tag className='!rounded-lg !pr-6 !py-3 !shadow-md !bg-white flex items-center w-full'>
               <div className='flex gap-4 items-center'>
-                <div className='w-[40px] h-[40px] overflow-hidden rounded-xl'>
+                <div className='w-[40px] h-[40px] overflow-hidden rounded-xl flex-shrink-0'>
                   <img
                     src={mezonAppDetail?.owner?.profileImage ? getUrlImage(mezonAppDetail?.owner.profileImage) : avatar}
                     alt=''
                     className='w-full h-full object-cover'
                   />
                 </div>
-                <MtbTypography variant='p' customClassName='!text-dark'>
+                <MtbTypography variant='p' customClassName='!text-dark truncate' ellipsis={true}>
                   {mezonAppDetail?.owner?.name}
                 </MtbTypography>
               </div>

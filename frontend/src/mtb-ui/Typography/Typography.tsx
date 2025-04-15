@@ -12,7 +12,8 @@ function MtbTypography({
   position = 'left',
   customClassName = '',
   size,
-  style = {}
+  style = {},
+  ellipsis = false
 }: MtbTypographyProps) {
   const levelMap: Record<TypographyVariant, { Component: AntdTypographyComponent; className: string }> = {
     [TypographyVariant.H1]: { Component: Typography.Title, className: 'text-3xl' },
@@ -64,6 +65,7 @@ function MtbTypography({
           .filter(Boolean)
           .join(' ')}
         style={TypographyStyle}
+        ellipsis={ellipsis}
       >
         {label && position === 'left' && <span className='mr-2 align-middle'>{label}</span>}
         {children}
