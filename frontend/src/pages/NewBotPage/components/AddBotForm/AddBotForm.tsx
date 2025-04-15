@@ -1,6 +1,6 @@
 import FormField from '@app/components/FormField/FormField'
 import RichTextEditor from "@app/components/RichText/RichText"
-import { errorStatus, NO_TRAILING_DOT_OR_SLASH, NO_WHITESPACE_REGEX, SAFE_URL_PATH_REGEX } from '@app/constants/common.constant'
+import { errorStatus, NO_TRAILING_DOT, NO_WHITESPACE_REGEX, SAFE_URL_PATH_REGEX } from '@app/constants/common.constant'
 import Button from '@app/mtb-ui/Button'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import {
@@ -104,7 +104,7 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
     const trimmedUrl = socialLinkUrl.trim()
     if (!selectedSocialLink || !trimmedUrl ||
       !NO_WHITESPACE_REGEX.test(trimmedUrl) ||
-      !NO_TRAILING_DOT_OR_SLASH.test(trimmedUrl) ||
+      !NO_TRAILING_DOT.test(trimmedUrl) ||
       !SAFE_URL_PATH_REGEX.test(trimmedUrl)) return
     // get selectedLink in optionsLink
     const selectedLink = optionsLink?.find((item) => item.value === selectedSocialLink)
