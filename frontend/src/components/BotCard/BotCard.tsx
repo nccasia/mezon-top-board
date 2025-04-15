@@ -8,7 +8,9 @@ import { IBotCardProps } from '@app/types/Botcard.types'
 import { randomColor } from '@app/utils/mezonApp'
 import { getUrlImage, uuidToNumber } from '@app/utils/stringHelper'
 import { Popover, Tag } from 'antd'
+import { Popover, Tag } from 'antd'
 import { useNavigate } from 'react-router-dom'
+import ShareButton from './components/ShareButton'
 import ShareButton from './components/ShareButton'
 
 function BotCard({ readonly = false, data }: IBotCardProps) {
@@ -31,26 +33,48 @@ function BotCard({ readonly = false, data }: IBotCardProps) {
       className='shadow-md pb-8 pt-8 px-8 border border-gray-300 relative rounded-xl cursor-pointer'
       onClick={() => navigate(`/${data?.id}`)}
     >
-      <div className='flex flex-col md:flex-row items-start gap-6'>
+      <div className='flex flex-col md:flex-row items-start gap-6 w-full'>
         <div className='w-24 md:w-36 flex-shrink-0'>
           <img src={imgUrl} alt='Bot' className='w-full h-auto object-cover' />
         </div>
 
-        <div className='flex-1'>
-          <div className='flex flex-col gap-3'>
-            <MtbTypography variant='h4'>{data?.name}</MtbTypography>
-            <div className='flex gap-1'>
-              {data?.status !== AppStatus.PUBLISHED && <Tag color='red'>UNPUBLISHED</Tag>}
-              <MtbRate readonly={readonly} value={data?.rateScore}></MtbRate>
+        <div className='flex flex-1 flex-col gap-3 overflow-hidden min-w-0'>
+            <div className='truncate-title '>
+              <style>
+                {`
+                  .truncate-title .ant-typography {
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    display: -webkit-box;
+                    -webkit-box-orient: vertical;
+                    -webkit-line-clamp: 1;
+                  }
+                `}
+              </style>
+              <MtbTypography variant='h4' customClassName='max-w-6/7' >{data?.name}</MtbTypography>
             </div>
-            <div className='flex gap-2'>
-              {data?.tags?.map((tag) => (
-                <Tag key={tag?.id} color={randomColor('normal', uuidToNumber(tag?.id))}>
-                  {tag?.name}
-                </Tag>
-              ))}
-            </div>
-            <p className='text-gray-700'>{data?.headline}</p>
+          <div className='flex gap-1'>
+            {data?.status !== AppStatus.PUBLISHED && <Tag color='red'>UNPUBLISHED</Tag>}
+            <MtbRate readonly={readonly} value={data?.rateScore}></MtbRate>
+          </div>
+          <div className='flex gap-2'>
+            {data?.tags?.map((tag) => (
+              <Tag key={tag?.id} color={randomColor('normal', uuidToNumber(tag?.id))}>
+                {tag?.name}
+              </Tag>
+            ))}
+          </div>
+          <div
+            className='text-gray-700 break-words max-w-full'
+            style={{
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              display: '-webkit-box',
+              WebkitBoxOrient: 'vertical',
+              WebkitLineClamp: 3
+            }}
+          >
+            {data?.headline}
           </div>
         </div>
       </div>

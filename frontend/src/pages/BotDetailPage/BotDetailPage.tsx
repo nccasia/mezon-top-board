@@ -141,7 +141,7 @@ function BotDetailPage() {
             </div>
           </div>
         </div>
-        <div className='flex-1'>
+        <div className='flex-1 max-w-1/4'>
           <DetailCard></DetailCard>
         </div>
       </div>
