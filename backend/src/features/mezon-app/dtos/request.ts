@@ -107,12 +107,12 @@ export class CreateMezonAppRequest {
   @IsString()
   @IsOptional()
   remark?: string;
-
+ 
   @ApiPropertyOptional()
   @IsArray()
   @ArrayMinSize(1, { message: "At least one tag is required" })
   @IsString({ each: true })
-  tagIds?: string[];
+  tagIds: string[];
 
   @ApiPropertyOptional({ type: [SocialLinkDto] })
   @IsArray()

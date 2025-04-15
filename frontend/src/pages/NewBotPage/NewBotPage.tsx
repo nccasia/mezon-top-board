@@ -40,7 +40,7 @@ function NewBotPage() {
       isAutoPublished: false,
       socialLinks: []
     },
-    resolver: yupResolver(ADD_BOT_SCHEMA)
+    resolver: yupResolver(ADD_BOT_SCHEMA), 
   })
   
   const { setValue, reset } = methods
