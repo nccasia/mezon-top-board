@@ -1,11 +1,10 @@
 import FormField from '@app/components/FormField/FormField'
 import RichTextEditor from "@app/components/RichText/RichText"
-import { errorStatus } from '@app/constants/common.constant'
+import { errorStatus, NO_TRAILING_DOT_OR_SLASH, NO_WHITESPACE_REGEX, SAFE_URL_PATH_REGEX } from '@app/constants/common.constant'
 import Button from '@app/mtb-ui/Button'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import {
   CreateMezonAppRequest,
-  SocialLinkDto,
   useMezonAppControllerCreateMezonAppMutation,
   useMezonAppControllerUpdateMezonAppMutation
 } from '@app/services/api/mezonApp/mezonApp'
@@ -15,7 +14,7 @@ import { ITagStore } from '@app/store/tag'
 import { IAddBotFormProps, ISocialLinksData } from '@app/types/Botcard.types'
 import { Checkbox, Form, Input, Select, TagProps } from 'antd'
 import TextArea from 'antd/es/input/TextArea'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Controller, useFormContext } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -24,8 +23,6 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
   const {
     control,
     handleSubmit,
-    watch,
-    setValue,
     formState: { errors }
   } = useFormContext<CreateMezonAppRequest>()
   const [addBot] = useMezonAppControllerCreateMezonAppMutation()
@@ -33,14 +30,10 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
   const [updateBot] = useMezonAppControllerUpdateMezonAppMutation()
   const { tagList } = useSelector<RootState, ITagStore>((s) => s.tag)
   const { linkTypeList } = useSelector<RootState, ILinkTypeStore>((s) => s.link)
-  const selectedSocialLink = watch('socialLinks')
+  const [selectedSocialLink, setSelectedSocialLink] = useState<string>('') // holds selected link type id
   const [socialLinksData, setSocialLinksData] = useState<ISocialLinksData[]>([])
   const [socialLinkUrl, setSocialLinkUrl] = useState<string>('')
   const [dropdownOpen, setDropdownOpen] = useState(false);
-
-  useEffect(() => {
-    setValue('socialLinks', [])
-  }, [socialLinksData, setValue])
 
   const { botId } = useParams()
 
@@ -51,7 +44,7 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
         linkTypeId: link.id
       }))
 
-      const { socialLinks, ...restData } = data
+      const { ...restData } = data
 
       const addBotData = {
         ...restData,
@@ -107,25 +100,28 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
   }, [linkTypeList])
 
   const addNewLink = () => {
-    // if (not selectedSocialLink or not socialLinkUrl) then return
-    if (selectedSocialLink?.length === 0 || !socialLinkUrl) return
-    // get selected link's id
-    const selectedSocialLinkValue = Array.isArray(selectedSocialLink) ? selectedSocialLink[0] : selectedSocialLink
+    // if (not selectedSocialLink or socialLinkUrl not valid) then return
+    const trimmedUrl = socialLinkUrl.trim()
+    if (!selectedSocialLink || !trimmedUrl ||
+      !NO_WHITESPACE_REGEX.test(trimmedUrl) ||
+      !NO_TRAILING_DOT_OR_SLASH.test(trimmedUrl) ||
+      !SAFE_URL_PATH_REGEX.test(trimmedUrl)) return
     // get selectedLink in optionsLink
-    const selectedLink = optionsLink?.find((item) => item.value === selectedSocialLinkValue)
+    const selectedLink = optionsLink?.find((item) => item.value === selectedSocialLink)
     // if selectedLink in socialLinksData then return
     if (socialLinksData.some((link) => link.name === selectedLink?.label)) return
 
     const defaultSocialLink = {
       icon: selectedLink?.icon || '',
       name: selectedLink?.label || '',
-      url: `${socialLinkUrl}`,
+      url: `${trimmedUrl}`,
       id: selectedLink?.value || '',
       siteName: selectedLink?.siteName || ''
     }
     // add new links to the links list
     setSocialLinksData([...socialLinksData, defaultSocialLink])
     setSocialLinkUrl('')
+    setSelectedSocialLink('')
   }
 
   const removeLink = (id: string) => {
@@ -149,7 +145,7 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
     console.log(`selected ${value}`)
   }
 
-  const handleSelectLink = (value: SocialLinkDto[]) => {
+  const handleSelectLink = (value: string) => {
     console.log(`Link ${value}`)
   }
 
@@ -312,26 +308,19 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
         <FormField label='Social Links' description='Link your social channels'>
           <div className='flex items-center gap-4 w-full'>
             <div className='flex-1'>
-              <Controller
-                control={control}
-                name='socialLinks'
-                render={({ field }) => (
-                  <Select
-                    {...field}
-                    options={optionsLink}
-                    placeholder='Link Types'
-                    className='w-full'
-                    value={field.value}
-                    onChange={(value) => {
-                      field.onChange(value)
-                      handleSelectLink(value)
-                    }}
-                  />
-                )}
+              <Select
+                options={optionsLink}
+                placeholder='Link Types'
+                className='w-full'
+                value={selectedSocialLink}
+                onChange={(value) => {
+                  setSelectedSocialLink(value)
+                  handleSelectLink(value)
+                }}
               />
             </div>
             <div className='flex-1'>
-              <Input value={socialLinkUrl} prefix={selectedSocialLink?.length && `https://${linkTypeList.find(item => item.id === selectedSocialLink)?.name.toLocaleLowerCase() || ''}.com/`} onChange={handleSocialLinkUrlChange} disabled={!selectedSocialLink?.length} />
+              <Input value={socialLinkUrl} prefix={selectedSocialLink ? `https://${linkTypeList.find(item => item.id === selectedSocialLink)?.name.toLocaleLowerCase() || ''}.com/` : ''} onChange={handleSocialLinkUrlChange} disabled={!selectedSocialLink} />
             </div>
             <div className='flex justify-end'>
               <Button onClick={addNewLink} customClassName='!w-[70px]'>
