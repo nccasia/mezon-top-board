@@ -8,9 +8,7 @@ import { IBotCardProps } from '@app/types/Botcard.types'
 import { randomColor } from '@app/utils/mezonApp'
 import { getUrlImage, uuidToNumber } from '@app/utils/stringHelper'
 import { Popover, Tag } from 'antd'
-import { Popover, Tag } from 'antd'
 import { useNavigate } from 'react-router-dom'
-import ShareButton from './components/ShareButton'
 import ShareButton from './components/ShareButton'
 
 function BotCard({ readonly = false, data }: IBotCardProps) {
