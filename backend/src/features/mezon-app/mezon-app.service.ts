@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
+import * as sanitizeHtml from "sanitize-html";
 
 import { Brackets, EntityManager, In, Not } from "typeorm";
 
@@ -235,7 +236,7 @@ export class MezonAppService {
       throw new BadRequestException(ErrorMessages.NOT_FOUND_MSG);
     }
 
-    const { tagIds, socialLinks, ...updateData } = req;
+    const { tagIds, socialLinks, description, ...updateData } = req;
 
     let tags = app.tags;
     let links = app.socialLinks;
@@ -286,9 +287,14 @@ export class MezonAppService {
       );
     }
 
-    this.appRepository
-      .getRepository()
-      .merge(app, { ...updateData, socialLinks: links });
+    const cleanedDescription = sanitizeHtml(description);
+
+    this.appRepository.getRepository().merge(app, {
+      ...updateData,
+      description: cleanedDescription,
+      socialLinks: links,
+    });
+    
     app.tags = tags;
     return this.appRepository.getRepository().save(app);
   }
