@@ -11,6 +11,3 @@ export const ratings = [
 export const REQUIRED_ERROR_FIELD = () => `This field is required`
 export const errorStatus = (field: FieldError | undefined) => (field?.message ? 'error' : '')
 export const URL_REGEX = /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/
-export const NO_WHITESPACE_REGEX = /^\S+$/ // No whitespace
-export const NO_TRAILING_DOT = /[^.]$/ // Doesn't end in '.'
-export const SAFE_URL_PATH_REGEX = /^[\w\-._~:/?#[\]@!$&'()*+,;=%]+$/ // Prevents weird symbols

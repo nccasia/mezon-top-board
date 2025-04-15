@@ -1,6 +1,6 @@
 import FormField from '@app/components/FormField/FormField'
 import RichTextEditor from "@app/components/RichText/RichText"
-import { errorStatus, NO_TRAILING_DOT, NO_WHITESPACE_REGEX, SAFE_URL_PATH_REGEX } from '@app/constants/common.constant'
+import { errorStatus } from '@app/constants/common.constant'
 import Button from '@app/mtb-ui/Button'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import {
@@ -62,7 +62,11 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
       updateBot({ updateMezonAppRequest: { ...data, id: botId } })
       toast.success('Edit bot success')
     } catch (error) {
-      toast.error('Fail')
+      const message =
+        error?.data?.message && Array.isArray(error.data.message)
+          ? error.data.message.join(', ')
+          : error?.data?.message || error?.message || 'Something went wrong'
+      toast.error(message)
     }
   }
 
@@ -102,10 +106,7 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
   const addNewLink = () => {
     // if (not selectedSocialLink or socialLinkUrl not valid) then return
     const trimmedUrl = socialLinkUrl.trim()
-    if (!selectedSocialLink || !trimmedUrl ||
-      !NO_WHITESPACE_REGEX.test(trimmedUrl) ||
-      !NO_TRAILING_DOT.test(trimmedUrl) ||
-      !SAFE_URL_PATH_REGEX.test(trimmedUrl)) return
+    if (!selectedSocialLink || !trimmedUrl) return
     // get selectedLink in optionsLink
     const selectedLink = optionsLink?.find((item) => item.value === selectedSocialLink)
     // if selectedLink in socialLinksData then return
