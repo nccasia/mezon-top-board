@@ -323,6 +323,7 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
               />
             </div>
             <div className='flex-1'>
+              {/* TODO: remove hardcode prefix */}
               <Input value={socialLinkUrl} prefix={selectedSocialLink ? `https://${linkTypeList.find(item => item.id === selectedSocialLink)?.name.toLocaleLowerCase() || ''}.com/` : ''} onChange={handleSocialLinkUrlChange} disabled={!selectedSocialLink} />
             </div>
             <div className='flex justify-end'>
