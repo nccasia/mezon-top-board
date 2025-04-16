@@ -150,8 +150,11 @@ export class MezonAppService {
     }
 
     return paginate<App, SearchMezonAppResponse>(
-      () => whereCondition.skip((query.pageNumber - 1) * query.pageSize)
-      .take(query.pageSize).getManyAndCount(),
+      () =>
+        whereCondition
+          .skip((query.pageNumber - 1) * query.pageSize)
+          .take(query.pageSize)
+          .getManyAndCount(),
       query.pageSize,
       query.pageNumber,
       (entity) => {
@@ -241,7 +244,7 @@ export class MezonAppService {
     let links = app.socialLinks;
     console.log("app.socialLinks", app.socialLinks);
     console.log("req.socialLinks", socialLinks);
-    
+
     if (tagIds) {
       const existingTags = await this.tagRepository
         .getRepository()
@@ -288,10 +291,9 @@ export class MezonAppService {
       );
     }
 
-    this.appRepository
-      .getRepository()
-      .merge(app, { ...updateData, socialLinks: links });
+    this.appRepository.getRepository().merge(app, { ...updateData });
     app.tags = tags;
+    app.socialLinks = links;
     return this.appRepository.getRepository().save(app);
   }
 

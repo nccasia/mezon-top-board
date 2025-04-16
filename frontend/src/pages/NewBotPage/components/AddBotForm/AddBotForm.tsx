@@ -40,8 +40,6 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
 
   const onSubmit = async (data: CreateMezonAppRequest) => {
     try {
-      const { socialLinks, ...restData } = data
-
       const formattedSocialLinks = socialLinksData.map((link) => ({
         url: `${link.siteName}${link.url}`,
         linkTypeId: link.id
