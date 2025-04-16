@@ -1,6 +1,6 @@
 import { ApiPropertyOptional, OmitType } from "@nestjs/swagger";
 
-import { IsOptional, IsUUID } from "class-validator";
+import { IsOptional, IsUUID, MaxLength, MinLength } from "class-validator";
 
 import { PaginationQuery, RequestWithId } from "@domain/common/dtos/request.dto";
 import { Role } from "@domain/common/enum/role";
@@ -22,6 +22,8 @@ export class GetPublicProfileInfoRequest {
 export class UpdateUserRequest extends RequestWithId {
   @ApiPropertyOptional()
   @IsOptional()
+  @MinLength(1, { message: 'Name must be at least 1 character' })
+  @MaxLength(50, { message: 'Name must not exceed 50 characters' })
   name: string;
   @ApiPropertyOptional()
   @IsOptional()

@@ -16,7 +16,7 @@ import { CardInfo } from './components'
 function SettingPage() {
   const { userInfo } = useAppSelector<RootState, IUserStore>((s) => s.user)
   const [selfUpdate, { isLoading: isUpdating }] = useUserControllerSelfUpdateUserMutation()
-  const { control, handleSubmit, reset } = useForm({
+  const { control, handleSubmit, reset, formState: { errors }  } = useForm({
     defaultValues: {
       name: '',
       bio: ''
@@ -49,20 +49,41 @@ function SettingPage() {
       </div>
       <Divider className='bg-gray-100'></Divider>
       <div className='flex justify-between gap-15 max-lg:flex-col max-2xl:flex-col'>
-        <div className='flex-1'>
+        <div className='w-1/3 max-lg:w-full max-2xl:w-full'>
           <CardInfo userInfo={userInfo}></CardInfo>
         </div>
-        <div className='flex-2'>
+        <div className='flex-1'>
           <div className='flex justify-between items-center pb-10'>
             <MtbTypography variant='h2'>Profile's setting page</MtbTypography>
           </div>
           <div>
             <Form onFinish={handleSubmit(onSubmit)}>
               <FormField label='Name' description='Your name'>
-                <Controller
+              <Controller
                   control={control}
                   name='name'
-                  render={({ field }) => <Input {...field} placeholder='Your name' />}
+                  rules={{
+                    required: 'Name must be at least 1 character',
+                    minLength: {
+                      value: 1,
+                      message: 'Name must be at least 1 character'
+                    },
+                    maxLength: {
+                      value: 50,
+                      message: 'Name must not exceed 50 characters'
+                    }
+                  }}
+                  render={({ field }) => (
+                    <Form.Item
+                      validateStatus={errors.name ? 'error' : ''}
+                      help={errors.name ? errors.name.message : ''}
+                    >
+                      <Input 
+                        {...field} 
+                        placeholder='Your name' 
+                      />
+                    </Form.Item>
+                  )}
                 />
               </FormField>
               <FormField label='Bio' description='Your bio'>
