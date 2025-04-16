@@ -82,6 +82,7 @@ export class MezonAppService {
       id: link.id,
       url: link.url,
       icon: link.type.icon ?? "",
+      linkTypeId: link.linkTypeId,
     }));
 
     return new Result({
@@ -289,11 +290,13 @@ export class MezonAppService {
           return existingLink;
         }),
       );
+      app.socialLinks = links;
+    } else if (socialLinks?.length === 0) {
+      app.socialLinks = [];
     }
 
     this.appRepository.getRepository().merge(app, { ...updateData });
     app.tags = tags;
-    app.socialLinks = links;
     return this.appRepository.getRepository().save(app);
   }
 

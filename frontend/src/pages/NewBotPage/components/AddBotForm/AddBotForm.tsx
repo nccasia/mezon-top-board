@@ -15,7 +15,7 @@ import { ApiError } from '@app/types/API.types'
 import { IAddBotFormProps, ISocialLinksData } from '@app/types/Botcard.types'
 import { Checkbox, Form, Input, Select, TagProps } from 'antd'
 import TextArea from 'antd/es/input/TextArea'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Controller, useFormContext } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -24,6 +24,7 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
   const {
     control,
     handleSubmit,
+    watch,
     formState: { errors }
   } = useFormContext<CreateMezonAppRequest>()
   const [addBot] = useMezonAppControllerCreateMezonAppMutation()
@@ -31,12 +32,28 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
   const [updateBot] = useMezonAppControllerUpdateMezonAppMutation()
   const { tagList } = useSelector<RootState, ITagStore>((s) => s.tag)
   const { linkTypeList } = useSelector<RootState, ILinkTypeStore>((s) => s.link)
+  const socialLinksInMezonAppDetails = watch('socialLinks')
   const [selectedSocialLink, setSelectedSocialLink] = useState<string>('') // holds selected link type id
   const [socialLinksData, setSocialLinksData] = useState<ISocialLinksData[]>([])
   const [socialLinkUrl, setSocialLinkUrl] = useState<string>('')
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const { botId } = useParams()
+
+  useEffect(() => {
+    if (!socialLinksInMezonAppDetails?.length) return
+    const formattedLinksData = socialLinksInMezonAppDetails.map(link => {
+      const urlObj = new URL(link.url);
+      return {
+        icon: link?.icon,
+        name: `${urlObj.host}`.toUpperCase(),
+        url: `${urlObj.pathname.slice(1)}`,
+        id: link?.linkTypeId,
+        siteName: `${urlObj.protocol}//${urlObj.host}/`
+      }
+    })
+    setSocialLinksData(formattedLinksData)
+  }, [socialLinksInMezonAppDetails])
 
   const onSubmit = async (data: CreateMezonAppRequest) => {
     try {
