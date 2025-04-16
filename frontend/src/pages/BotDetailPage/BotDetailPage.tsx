@@ -45,11 +45,15 @@ function BotDetailPage() {
   const searchQuery = searchParams.get('q') || ''
   useEffect(() => {
     if (botId) {
-      getMezonAppDetail({ id: botId })
       getrelatedMezonApp({ id: botId })
       getRatingsByApp({ appId: botId })
     }
   }, [botId])
+  useEffect(() => {
+    if (botId) {
+      getMezonAppDetail({ id: botId })
+    }
+  }, [botId, ratings?.data?.length ])
 
   useEffect(() => {
     if (!tagList?.data?.length) {
@@ -102,7 +106,7 @@ function BotDetailPage() {
                   <p className='text-6xl'>{mezonAppDetail.rateScore}</p>
                   <div>
                     <MtbRate readonly={true} value={mezonAppDetail.rateScore}></MtbRate>
-                    <p className='pt-2'>9,160 reviews</p>
+                    <p className='pt-2'>{ratings?.data?.length} reviews</p>
                   </div>
                 </div>
                 <p className='pt-5 max-lg:pt-7 max-2xl:pt-7'>
