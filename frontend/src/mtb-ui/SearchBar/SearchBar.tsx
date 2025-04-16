@@ -53,7 +53,6 @@ const SearchBar = ({
     }
 
     updateSearchParams(searchText, searchTags)
-    console.log('searchTags', searchTags)
     onSearch(searchText, searchTags)
   }
 
