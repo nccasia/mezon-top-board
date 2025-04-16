@@ -120,10 +120,10 @@ export class MezonAppService {
   }
 
   async searchMezonApp(query: SearchMezonAppRequest) {
-    let whereCondition = this.appRepository
+    const whereCondition = this.appRepository
       .getRepository()
       .createQueryBuilder("app")
-      .leftJoinAndSelect("app.tags", "tag")
+      .leftJoinAndSelect("app.tags", "filterTag")
       .leftJoinAndSelect("app.ratings", "rating")
       .where("app.status = :status", { status: AppStatus.PUBLISHED });
 
@@ -140,7 +140,7 @@ export class MezonAppService {
       );
 
     if (query.tags?.length) {
-      whereCondition.andWhere("tag.id IN (:...tagIds)", { tagIds: query.tags });
+      whereCondition.andWhere("filterTag.id IN (:...tagIds)", { tagIds: query.tags }).leftJoinAndSelect("app.tags", "tag");
     }
 
     if (query?.ownerId) {
