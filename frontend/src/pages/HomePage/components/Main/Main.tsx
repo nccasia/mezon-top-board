@@ -10,13 +10,14 @@ import { RootState } from '@app/store'
 import { useLazyMezonAppControllerSearchMezonAppQuery } from '@app/services/api/mezonApp/mezonApp'
 import { IMezonAppStore } from '@app/store/mezonApp'
 import { useMezonAppSearch } from '@app/hook/useSearch'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { ApiError } from '@app/types/API.types'
 import { IMainProps } from '@app/types/Main.type'
 
 const pageOptions = [5, 10, 15]
 function Main({ isSearchPage = false }: IMainProps) {
+  const navigate = useNavigate()
   const [botPerPage, setBotPerPage] = useState<number>(pageOptions[0])
   const [page, setPage] = useState<number>(1)
   const [isOpen, setIsOpen] = useState<boolean>(false)
@@ -35,7 +36,11 @@ function Main({ isSearchPage = false }: IMainProps) {
   useEffect(() => {
     if (isError && error) {
       const apiError = error as ApiError
-      toast.error(apiError?.data?.message[0])
+      if (apiError?.status === 404 || apiError?.data?.statusCode === 404) {
+        navigate('/*');
+      } else {
+        toast.error(apiError?.data?.message);
+      }
     }
   }, [isError, error])
 
@@ -90,7 +95,7 @@ function Main({ isSearchPage = false }: IMainProps) {
           <div>
             <MtbTypography variant='h3'>Mezon Bots</MtbTypography>
             <MtbTypography variant='h5' weight='normal'>
-              Showing 1 of {mezonApp.totalPages} page
+              Showing 1 of {mezonApp.totalPages ?? 0 } page
             </MtbTypography>
           </div>
           <SingleSelect
