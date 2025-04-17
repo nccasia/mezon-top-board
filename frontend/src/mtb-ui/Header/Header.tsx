@@ -28,6 +28,7 @@ function Header() {
     removeAccessTokens()
     postLogout()
     navigate('/')
+    window.scrollTo(0, 0)
   }
 
   const itemsDropdown: MenuProps['items'] = [

@@ -10,6 +10,5 @@ export const ADD_BOT_SCHEMA = yup.object({
   featuredImage: yup.string().optional(),
   supportUrl: yup.string().transform(value => value === '' ? undefined : value).url('Invalid URL').optional().nullable(),  
   remark: yup.string().optional(),
-  tagIds: yup.array().of(yup.string().required()).min(1, 'At least one tag is required'),
-  socialLinks: yup.array().optional(),
+  tagIds: yup.array().of(yup.string().required()).min(1, "At least one tag is required"),
 })
