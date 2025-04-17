@@ -27,6 +27,10 @@ const SearchBar = ({
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>(defaultTags)
   const [searchText, setSearchText] = useState<string>(searchParams.get('q') || '')
 
+  useEffect(() => {
+    setSelectedTagIds(selectedTagIds.filter(Boolean));
+  }, [])
+
   const handleClear = () => {
     setSearchText('')
     setSelectedTagIds([])
@@ -49,7 +53,7 @@ const SearchBar = ({
     }
 
     updateSearchParams(searchText, searchTags)
-    onSearch(searchText, searchTags)
+    onSearch(searchText.trim(), searchTags)
   }
 
   const handleSearchTag = (tagId: string) => {
@@ -66,7 +70,6 @@ const SearchBar = ({
 
   const totalTags = tagList?.data?.length || 0
   const hiddenTagsCount = totalTags - MAX_VISIBLE_TAGS
-
 
   return (
     <>

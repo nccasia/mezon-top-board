@@ -38,7 +38,6 @@ function NewBotPage() {
       supportUrl: '',
       remark: '',
       isAutoPublished: false,
-      socialLinks: []
     },
     resolver: yupResolver(ADD_BOT_SCHEMA)
   })
