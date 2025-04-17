@@ -301,7 +301,6 @@ export class MezonAppService {
     this.appRepository.getRepository().merge(app, {
       ...updateData,
       description: cleanedDescription,
-      socialLinks: links,
     });
     
     app.tags = tags;
