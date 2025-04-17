@@ -257,9 +257,9 @@ export type CreateMezonAppRequest = {
   description?: string
   prefix?: string
   featuredImage?: string
-  supportUrl?: string
+  supportUrl: string
   remark?: string
-  tagIds?: string[]
+  tagIds: string[]
   socialLinks?: SocialLinkDto[]
 }
 export type UpdateMezonAppRequest = {
@@ -273,7 +273,7 @@ export type UpdateMezonAppRequest = {
   featuredImage?: string
   supportUrl?: string
   remark?: string
-  tagIds?: string[]
+  tagIds: string[]
   socialLinks?: SocialLinkDto[]
 }
 export type GetRelatedMezonAppResponse = {
