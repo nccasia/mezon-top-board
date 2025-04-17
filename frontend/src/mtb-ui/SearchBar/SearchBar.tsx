@@ -62,7 +62,6 @@ const SearchBar = ({
       : [...selectedTagIds, tagId]
 
     setSelectedTagIds(updatedTagIds);    
-    onSearch(searchText.trim(), updatedTagIds)
     handleSearch(updatedTagIds);
   }
 
