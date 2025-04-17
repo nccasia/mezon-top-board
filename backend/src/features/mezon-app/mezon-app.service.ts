@@ -83,6 +83,7 @@ export class MezonAppService {
       id: link.id,
       url: link.url,
       icon: link.type.icon ?? "",
+      linkTypeId: link.linkTypeId,
     }));
 
     return new Result({
@@ -151,8 +152,11 @@ export class MezonAppService {
     }
 
     return paginate<App, SearchMezonAppResponse>(
-      () => whereCondition.skip((query.pageNumber - 1) * query.pageSize)
-      .take(query.pageSize).getManyAndCount(),
+      () =>
+        whereCondition
+          .skip((query.pageNumber - 1) * query.pageSize)
+          .take(query.pageSize)
+          .getManyAndCount(),
       query.pageSize,
       query.pageNumber,
       (entity) => {
@@ -240,7 +244,7 @@ export class MezonAppService {
 
     let tags = app.tags;
     let links = app.socialLinks;
-    
+
     if (tagIds) {
       const existingTags = await this.tagRepository
         .getRepository()
@@ -256,7 +260,7 @@ export class MezonAppService {
       tags = existingTags;
     }
 
-    if (socialLinks && socialLinks.length > 0) {
+    if (socialLinks) {
       links = await Promise.all(
         socialLinks.map(async (socialLink) => {
           // Check if linkType exist.
@@ -285,6 +289,7 @@ export class MezonAppService {
           return existingLink;
         }),
       );
+      app.socialLinks = links;
     }
 
     const cleanedDescription = sanitizeHtml(description);
@@ -292,7 +297,6 @@ export class MezonAppService {
     this.appRepository.getRepository().merge(app, {
       ...updateData,
       description: cleanedDescription,
-      socialLinks: links,
     });
     
     app.tags = tags;

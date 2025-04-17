@@ -12,6 +12,9 @@ export class SocialLinkInMezonAppDetailResponse {
   @Expose()
   @ApiProperty()
   public icon: string;
+  @Expose()
+  @ApiProperty()
+  public linkTypeId: string;
 }
 
 export class SocialLinkWithNameResponse extends SocialLinkInMezonAppDetailResponse {

@@ -246,6 +246,7 @@ export type App = {
 export type SocialLinkDto = {
   url?: string
   linkTypeId?: string
+  icon?: string
 }
 export type CreateMezonAppRequest = {
   name: string
