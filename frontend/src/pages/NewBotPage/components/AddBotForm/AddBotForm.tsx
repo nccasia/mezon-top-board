@@ -44,12 +44,12 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
   useEffect(() => {
     if (!socialLinksInMezonAppDetails?.length) return
     const formattedLinksData = socialLinksInMezonAppDetails.map(link => {
-      const urlObj = new URL(link.url);
+      const urlObj = new URL(link.url || '');
       return {
-        icon: link?.icon,
+        icon: link?.icon || '',
         name: `${urlObj.host}`.toUpperCase(),
         url: `${urlObj.pathname.slice(1)}`,
-        id: link?.linkTypeId,
+        id: link?.linkTypeId || '',
         siteName: `${urlObj.protocol}//${urlObj.host}/`
       }
     })

@@ -246,12 +246,14 @@ export type App = {
 export type SocialLinkDto = {
   url?: string
   linkTypeId?: string
+  icon?: string
 }
 export type CreateMezonAppRequest = {
   name: string
   isAutoPublished?: boolean
   installLink?: string
   headline?: string
+  status: number
   description?: string
   prefix?: string
   featuredImage?: string

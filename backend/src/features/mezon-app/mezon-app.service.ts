@@ -260,7 +260,7 @@ export class MezonAppService {
       tags = existingTags;
     }
 
-    if (socialLinks && socialLinks.length > 0) {
+    if (socialLinks) {
       links = await Promise.all(
         socialLinks.map(async (socialLink) => {
           // Check if linkType exist.
@@ -290,8 +290,6 @@ export class MezonAppService {
         }),
       );
       app.socialLinks = links;
-    } else if (socialLinks?.length === 0) {
-      app.socialLinks = [];
     }
 
     const cleanedDescription = sanitizeHtml(description);
