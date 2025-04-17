@@ -253,7 +253,6 @@ export type CreateMezonAppRequest = {
   isAutoPublished?: boolean
   installLink?: string
   headline?: string
-  status: number
   description?: string
   prefix?: string
   featuredImage?: string

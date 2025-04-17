@@ -56,7 +56,7 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
     setSocialLinksData(formattedLinksData)
   }, [socialLinksInMezonAppDetails])
 
-  const onSubmit = async (data: CreateMezonAppRequest | GetMezonAppDetailsResponse) => {
+  const onSubmit = async (data: CreateMezonAppRequest) => {
     try {
       const formattedSocialLinks = socialLinksData.map((link) => ({
         url: `${link.siteName}${link.url}`,
@@ -78,7 +78,7 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
       }
       if (!botId) return
       // Remove 'status' field before updating
-      const { status: _omit, ...restData } = data;
+      const { ...restData } = data;
       updateBot({ updateMezonAppRequest: { ...restData, id: botId, socialLinks: formattedSocialLinks } })
       toast.success('Edit bot success')
     } catch (error: unknown) {
