@@ -62,7 +62,9 @@ function ProfilePage() {
     getData()
   }
 
-  useAuthRedirect()
+  if (!userId) {
+    useAuthRedirect()
+  }
 
   useEffect(() => {
     initRequests()
