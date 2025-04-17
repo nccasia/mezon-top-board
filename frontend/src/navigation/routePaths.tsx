@@ -31,7 +31,7 @@ export const routePaths: RoutePath[] = [
   },
   {
     index: false,
-    path: '/:botId',
+    path: '/bot/:botId',
     element: <BotDetailPage />,
     strLabel: '{{botName}}',
     isShowMenu: false,
