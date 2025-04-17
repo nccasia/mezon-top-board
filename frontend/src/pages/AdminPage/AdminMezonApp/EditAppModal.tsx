@@ -1,3 +1,4 @@
+import RichTextEditor from '@app/components/RichText/RichText'
 import { GetMezonAppDetailsResponse, useMezonAppControllerUpdateMezonAppMutation } from '@app/services/api/mezonApp/mezonApp'
 import { Button, Form, Input, Modal } from 'antd'
 import { useEffect } from 'react'
@@ -56,7 +57,7 @@ const EditModal = ({
             <Input />
           </Form.Item>
           <Form.Item name="description" label="Description">
-            <Input.TextArea rows={3} />
+              <RichTextEditor customClass="custom-editor" />
           </Form.Item>
         </Form>
       </div>
