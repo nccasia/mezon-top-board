@@ -50,7 +50,6 @@ function BotDetailPage() {
   useEffect(() => {
     if (botId && botId !== 'undefined' && botId.trim() !== '') {
       getMezonAppDetail({ id: botId })
-        .unwrap()
         .catch(err => {
           console.error("Cannot get MezonAppDetail :", err);
           navigate('/*');
