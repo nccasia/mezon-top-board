@@ -23,5 +23,4 @@ export const ADD_BOT_SCHEMA = yup.object({
     .test('url-length', 'URL is too long', (val) => val.length <= 2082),
   remark: yup.string().optional(),
   tagIds: yup.array().of(yup.string().required()).min(1, 'At least one tag is required').strict().defined(),
-  socialLinks: yup.array().optional()
 })

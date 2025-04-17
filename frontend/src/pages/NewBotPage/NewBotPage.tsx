@@ -21,7 +21,9 @@ import MTBAvatar from '@app/mtb-ui/Avatar/MTBAvatar'
 import useQueryParam from '@app/hook/useQueryParam'
 import { IMezonAppStore } from '@app/store/mezonApp'
 import { useParams } from 'react-router-dom'
+import useAuthRedirect from '@app/hook/useAuthRedirect'
 function NewBotPage() {
+  const { userId } = useParams()
   const { mezonAppDetail } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
   const { tagList } = useSelector<RootState, ITagStore>((s) => s.tag)
   const { botId } = useParams()
@@ -38,7 +40,6 @@ function NewBotPage() {
       supportUrl: '',
       remark: '',
       isAutoPublished: false,
-      socialLinks: []
     },
     resolver: yupResolver(ADD_BOT_SCHEMA), 
   })
@@ -51,6 +52,8 @@ function NewBotPage() {
   const [getSocialLink] = useLazyLinkTypeControllerGetAllLinksQuery()
   const [uploadImage, { isLoading: isUpdatingAvatar }] = useMediaControllerCreateMediaMutation()
   const [getMezonAppDetails] = useLazyMezonAppControllerGetMezonAppDetailQuery()
+
+  useAuthRedirect()
 
   useEffect(() => {
     if (isEmpty(tagList.data)) getTagList()

@@ -125,6 +125,9 @@ const MezonApps = ({ onEdit }: { onEdit: (app: GetMezonAppDetailsResponse) => vo
       dataIndex: "description",
       key: "description",
       ellipsis: true, // Truncate long text
+      render: (description: string) => (
+        <div dangerouslySetInnerHTML={{ __html: description }}></div>
+      )
     },
     {
       title: "Actions",

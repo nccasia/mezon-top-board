@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
+import * as sanitizeHtml from "sanitize-html";
 
 import { Brackets, EntityManager, In, Not } from "typeorm";
 
@@ -123,7 +124,7 @@ export class MezonAppService {
     const whereCondition = this.appRepository
       .getRepository()
       .createQueryBuilder("app")
-      .leftJoinAndSelect("app.tags", "tag")
+      .leftJoinAndSelect("app.tags", "filterTag")
       .leftJoinAndSelect("app.ratings", "rating")
       .where("app.status = :status", { status: AppStatus.PUBLISHED });
 
@@ -140,7 +141,7 @@ export class MezonAppService {
       );
 
     if (query.tags?.length) {
-      whereCondition.andWhere("tag.id IN (:...tagIds)", { tagIds: query.tags });
+      whereCondition.andWhere("filterTag.id IN (:...tagIds)", { tagIds: query.tags }).leftJoinAndSelect("app.tags", "tag");
     }
 
     if (query?.ownerId) {
@@ -235,7 +236,7 @@ export class MezonAppService {
       throw new BadRequestException(ErrorMessages.NOT_FOUND_MSG);
     }
 
-    const { tagIds, socialLinks, ...updateData } = req;
+    const { tagIds, socialLinks, description, ...updateData } = req;
 
     let tags = app.tags;
     let links = app.socialLinks;
@@ -286,9 +287,14 @@ export class MezonAppService {
       );
     }
 
-    this.appRepository
-      .getRepository()
-      .merge(app, { ...updateData, socialLinks: links });
+    const cleanedDescription = sanitizeHtml(description);
+
+    this.appRepository.getRepository().merge(app, {
+      ...updateData,
+      description: cleanedDescription,
+      socialLinks: links,
+    });
+    
     app.tags = tags;
     return this.appRepository.getRepository().save(app);
   }

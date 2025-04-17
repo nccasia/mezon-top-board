@@ -11,7 +11,7 @@ function CompactBotCard({ data, isPublic = true }: ICompactBotCardProps) {
   const navigate = useNavigate()
   const handleNavigateDetail = () => {
     if (data?.id) {
-      navigate(`/${data?.id}`)
+      navigate(`/bot/${data?.id}`)
     }
   }
   const imgUrl = data?.featuredImage ? getUrlImage(data.featuredImage) : avatarBotDefault
