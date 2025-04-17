@@ -91,6 +91,9 @@ function Header() {
         <div className='h-[50px]'>
           <img src={logo} alt='' style={{ height: '100%', objectFit: 'contain' }} />
         </div>
+        <MtbTypography variant='h5' customClassName='!mb-0'>
+          Mezon Top Board
+        </MtbTypography>
       </div>
       <div className='flex items-center justify-between gap-12.5 max-lg:hidden max-2xl:hidden'>
         {renderHeaderItems()}

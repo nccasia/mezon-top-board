@@ -23,7 +23,7 @@ function BotCard({ readonly = false, data }: IBotCardProps) {
 
   const imgUrl = data?.featuredImage ? getUrlImage(data.featuredImage) : avatarBotDefault
   // Share to social media
-  const shareUrl = process.env.REACT_SHARE_URL
+  const shareUrl = process.env.REACT_APP_SHARE_URL
   const title = data?.name || 'Check out this app!'
 
   return (
@@ -37,9 +37,9 @@ function BotCard({ readonly = false, data }: IBotCardProps) {
         </div>
 
         <div className='flex flex-1 flex-col gap-3 overflow-hidden min-w-0'>
-            <div className='truncate-title '>
-              <style>
-                {`
+          <div className='truncate-title '>
+            <style>
+              {`
                   .truncate-title .ant-typography {
                     overflow: hidden;
                     text-overflow: ellipsis;
@@ -48,9 +48,9 @@ function BotCard({ readonly = false, data }: IBotCardProps) {
                     -webkit-line-clamp: 1;
                   }
                 `}
-              </style>
-              <MtbTypography variant='h4' customClassName='max-w-6/7' >{data?.name}</MtbTypography>
-            </div>
+            </style>
+            <MtbTypography variant='h4' customClassName='max-w-6/7' >{data?.name}</MtbTypography>
+          </div>
           <div className='flex gap-1'>
             {data?.status !== AppStatus.PUBLISHED && <Tag color='red'>UNPUBLISHED</Tag>}
             <MtbRate readonly={readonly} value={data?.rateScore}></MtbRate>
