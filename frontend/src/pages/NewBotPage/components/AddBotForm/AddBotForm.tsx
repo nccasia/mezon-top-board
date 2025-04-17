@@ -77,7 +77,6 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
         return
       }
       if (!botId) return
-      console.log('formattedSocialLinks', formattedSocialLinks)
       updateBot({ updateMezonAppRequest: { ...data, id: botId, socialLinks: formattedSocialLinks } })
       toast.success('Edit bot success')
     } catch (error: unknown) {
