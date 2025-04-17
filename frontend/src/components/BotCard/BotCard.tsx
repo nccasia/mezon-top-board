@@ -33,7 +33,7 @@ function BotCard({ readonly = false, data }: IBotCardProps) {
     >
       <div className='flex flex-col md:flex-row items-start gap-6 w-full'>
         <div className='w-24 md:w-36 flex-shrink-0'>
-          <img src={imgUrl} alt='Bot' className='w-full h-auto object-cover' />
+          <img src={imgUrl} alt='Bot' className='w-full h-auto object-cover aspect-square' />
         </div>
 
         <div className='flex flex-1 flex-col gap-3 overflow-hidden min-w-0'>
