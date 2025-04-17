@@ -23,7 +23,7 @@ function BotCard({ readonly = false, data }: IBotCardProps) {
 
   const imgUrl = data?.featuredImage ? getUrlImage(data.featuredImage) : avatarBotDefault
   // Share to social media
-  const shareUrl = 'https://top.nccsoft.vn'
+  const shareUrl = process.env.REACT_SHARE_URL
   const title = data?.name || 'Check out this app!'
 
   return (
