@@ -12,6 +12,7 @@ import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import { CardInfo } from './components'
+import useAuthRedirect from '@app/hook/useAuthRedirect'
 
 function SettingPage() {
   const { userInfo } = useAppSelector<RootState, IUserStore>((s) => s.user)
@@ -22,6 +23,8 @@ function SettingPage() {
       bio: ''
     }
   })
+
+  useAuthRedirect()
 
   useEffect(() => {
     reset({

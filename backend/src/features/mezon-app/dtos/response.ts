@@ -38,6 +38,10 @@ export class GetMezonAppDetailsResponse {
 
   @Expose()
   @ApiProperty()
+  public status: string;
+
+  @Expose()
+  @ApiProperty()
   public featuredImage: string;
 
   @Expose()
