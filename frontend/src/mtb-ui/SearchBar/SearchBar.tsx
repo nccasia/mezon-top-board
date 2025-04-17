@@ -60,16 +60,13 @@ const SearchBar = ({
     const updatedTagIds = selectedTagIds.includes(tagId)
       ? selectedTagIds.filter((id) => id !== tagId)
       : [...selectedTagIds, tagId]
-    setSelectedTagIds(updatedTagIds);
+
+    setSelectedTagIds(updatedTagIds);    
     handleSearch(updatedTagIds);
   }
 
   const totalTags = tagList?.data?.length || 0
   const hiddenTagsCount = totalTags - MAX_VISIBLE_TAGS
-
-  useEffect(() => {
-    onSearch(searchText.trim(), selectedTagIds)
-  }, [selectedTagIds])
 
   return (
     <>
