@@ -6,7 +6,7 @@ import MtbRate from '@app/mtb-ui/Rate/Rate'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import { IBotCardProps } from '@app/types/Botcard.types'
 import { randomColor } from '@app/utils/mezonApp'
-import { getUrlImage, uuidToNumber } from '@app/utils/stringHelper'
+import { getUrlImage, safeConcatUrl, uuidToNumber } from '@app/utils/stringHelper'
 import { Popover, Tag } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import ShareButton from './components/ShareButton'
@@ -23,9 +23,8 @@ function BotCard({ readonly = false, data }: IBotCardProps) {
 
   const imgUrl = data?.featuredImage ? getUrlImage(data.featuredImage) : avatarBotDefault
   // Share to social media
-  const shareUrl = 'https://www.google.com/'
+  const shareUrl = process.env.REACT_SHARE_URL
   const title = data?.name || 'Check out this app!'
-  const description = data?.description || 'Discover this amazing application.'
 
   return (
     <div
@@ -82,7 +81,7 @@ function BotCard({ readonly = false, data }: IBotCardProps) {
           Invite
         </Button>
         <Popover
-          content={<ShareButton text={`${title} - ${description}`} url={shareUrl} />}
+          content={<ShareButton text={`Check out ${title} Mezon Bot on top.nccsoft.vn, the #1 Mezon Bot and Mezon App List!`} url={safeConcatUrl(shareUrl, data?.id)} />}
           trigger='click'
           placement='bottomRight'
           arrow={false}
