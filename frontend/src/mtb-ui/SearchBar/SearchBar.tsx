@@ -53,7 +53,7 @@ const SearchBar = ({
     }
 
     updateSearchParams(searchText, searchTags)
-    onSearch(searchText, searchTags)
+    onSearch(searchText.trim(), searchTags)
   }
 
   const handleSearchTag = (tagId: string) => {
@@ -68,7 +68,7 @@ const SearchBar = ({
   const hiddenTagsCount = totalTags - MAX_VISIBLE_TAGS
 
   useEffect(() => {
-    onSearch(searchText, selectedTagIds)
+    onSearch(searchText.trim(), selectedTagIds)
   }, [selectedTagIds])
 
   return (
