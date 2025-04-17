@@ -5,7 +5,6 @@ import Button from '@app/mtb-ui/Button'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import {
   CreateMezonAppRequest,
-  GetMezonAppDetailsResponse,
   useMezonAppControllerCreateMezonAppMutation,
   useMezonAppControllerUpdateMezonAppMutation
 } from '@app/services/api/mezonApp/mezonApp'
@@ -63,9 +62,10 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
         linkTypeId: link.id
       }))
 
+      const { ...restData } = data
 
       const addBotData = {
-        ...data,
+        ...restData,
         socialLinks: formattedSocialLinks
       }
       if (!isEdit && !botId) {
@@ -77,9 +77,7 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
         return
       }
       if (!botId) return
-      // Remove 'status' field before updating
-      const { ...restData } = data;
-      updateBot({ updateMezonAppRequest: { ...restData, id: botId, socialLinks: formattedSocialLinks } })
+      updateBot({ updateMezonAppRequest: { ...data, id: botId, socialLinks: formattedSocialLinks } })
       toast.success('Edit bot success')
     } catch (error: unknown) {
       const err = error as ApiError
