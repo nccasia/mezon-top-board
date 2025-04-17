@@ -41,7 +41,7 @@ function NewBotPage() {
       remark: '',
       isAutoPublished: false,
     },
-    resolver: yupResolver(ADD_BOT_SCHEMA)
+    resolver: yupResolver(ADD_BOT_SCHEMA), 
   })
   
   const { setValue, reset } = methods
