@@ -15,7 +15,7 @@ export const safeConcatUrl = (baseUrl: string, path: string, params?: { [key: st
     return url.toString()
   } catch (error) {
     console.error('Invalid URL:', error)
-    return null
+    return baseUrl
   }
 }
 

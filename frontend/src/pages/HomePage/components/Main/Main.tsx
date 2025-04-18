@@ -64,7 +64,7 @@ function Main({ isSearchPage = false }: IMainProps) {
   const searchMezonAppList = (searchQuery?: string, tagIds?: string[]) => {
     getMezonApp({
       search: isSearchPage ? searchQuery : undefined,
-      tags: tagIds,
+      tags: (tagIds && tagIds.length) ? tagIds : undefined,
       pageNumber: page,
       pageSize: botPerPage,
       sortField: 'createdAt',
@@ -97,7 +97,11 @@ function Main({ isSearchPage = false }: IMainProps) {
   const onPressSearch = (text: string, tagIds?: string[]) => {
     setSearchQuery(text)
     setTagIds(tagIds ?? [])
-    setPage(1)
+    if (page !== 1) {
+      setPage(1)
+      return;
+    }
+    searchMezonAppList(text, tagIds)
   }
 
   return (
