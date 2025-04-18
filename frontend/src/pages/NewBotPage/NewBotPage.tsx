@@ -72,7 +72,7 @@ function NewBotPage() {
     if (!checkOwnership(mezonAppDetail?.owner?.id)) {
       return;
     }
-    const { owner, tags, rateScore, featuredImage, ...rest } = mezonAppDetail
+    const { owner, tags, rateScore, featuredImage, status, ...rest } = mezonAppDetail
     if (mezonAppDetail && botId) reset({ ...rest, tagIds: tags?.map(tag => tag.id) })
     setAvatar(imgUrl)
   }, [mezonAppDetail])
