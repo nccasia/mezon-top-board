@@ -1,15 +1,24 @@
-import { EditOutlined } from '@ant-design/icons'
 import {
+  DeleteOutlined,
+  EditOutlined,
+  UnlockOutlined,
+} from '@ant-design/icons'
+import {
+  GetUserDetailsResponse,
   UpdateUserRequest,
   UserControllerSearchUserApiArg,
+  useUserControllerActivateUserMutation,
+  useUserControllerDeactivateUserMutation,
   useUserControllerSearchUserQuery
 } from '@app/services/api/user/user'
-import { useAppSelector } from '@app/store/hook'
+import { mapDataSourceTable } from '@app/utils/table'
 import { Alert, Breakpoint, Button, Form, Input, InputRef, Select, Spin, Table, Tag } from 'antd'
 import { useMemo, useRef, useState } from 'react'
 import { userRoleColors } from './components/UserTableColumns'
 import EditUserForm from './EditUserForm'
-import { mapDataSourceTable } from '@app/utils/table'
+import { toast } from 'react-toastify'
+import { useSelector } from 'react-redux'
+import { RootState } from '@app/store'
 
 const { Option } = Select
 
@@ -25,7 +34,9 @@ function UsersList() {
   })
 
   const { data, error, isLoading } = useUserControllerSearchUserQuery(queryArgs)
-  const users = useAppSelector((state: any) => state.user.pages?.[queryArgs.pageNumber] || []) // Get users from Redux
+  const [deactivateUser] = useUserControllerDeactivateUserMutation()
+  const [activateUser] = useUserControllerActivateUserMutation()
+  const users = useSelector((state: RootState) => state.user.adminUserList);
   const [selectedUser, setSelectedUser] = useState<UpdateUserRequest | null>(null)
 
   const handlePageChange = (page: number, pageSize: number) => {
@@ -57,6 +68,25 @@ function UsersList() {
       pageNumber: 1
     }))
   }
+
+  const handleDeactivate = async (userId: string) => {
+    try {
+      await deactivateUser({ requestWithId: { id: userId } }).unwrap()
+      toast.success('User deactivated successfully')
+    } catch (error) {
+      toast.error('Failed to deactivate user')
+    }
+  }
+
+  const handleActivate = async (userId: string) => {
+    try {
+      await activateUser({ requestWithId: { id: userId } }).unwrap()
+      toast.success('User activated successfully')
+    } catch (error) {
+      toast.error('Failed to activate user')
+    }
+  }
+
   const userTableColumns = [
     {
       title: 'Name',
@@ -93,8 +123,17 @@ function UsersList() {
       key: 'actions',
       width: 100,
       fixed: 'right' as const, // Keeps actions fixed when scrolling
-      render: (_: any, record: UpdateUserRequest) => (
-        <Button type='primary' icon={<EditOutlined />} onClick={() => setSelectedUser(record)}></Button>
+      render: (_: any, record: GetUserDetailsResponse) => (
+        <div className='flex gap-2'>
+          <Button type='primary' icon={<EditOutlined />} onClick={() => setSelectedUser(record)}></Button>
+          {
+            !record.deletedAt ? (
+              <Button type='primary' danger icon={<DeleteOutlined />} onClick={() => handleDeactivate(record.id)}></Button >
+            ) : (
+              <Button color='green' variant="solid" icon={<UnlockOutlined />} onClick={() => handleActivate(record.id)}></Button >
+            )
+          }
+        </div>
       )
     }
   ]
@@ -146,7 +185,7 @@ function UsersList() {
       {!isLoading && !error && (
         <Table
           columns={userTableColumns}
-          dataSource={mapDataSourceTable(users as UpdateUserRequest[])}
+          dataSource={mapDataSourceTable(users as GetUserDetailsResponse[])}
           pagination={{
             current: data?.pageNumber || 1, //  Controlled by API
             pageSize: data?.pageSize || 5, //  Controlled by API

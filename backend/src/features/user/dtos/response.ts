@@ -33,6 +33,9 @@ export class SearchUserResponse {
     @Expose()
     @ApiProperty()
     public profileImage: string;
+    @Expose()
+    @ApiProperty()
+    public deletedAt: Date | null;
 }
 
 export class ReviewerResponse {
