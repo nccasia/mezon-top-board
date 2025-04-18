@@ -1,8 +1,8 @@
-import { linkTypeService, SocialLinkInMezonAppDetailResponse } from '@app/services/api/linkType/linkType'
+import { linkTypeService, LinkTypeResponse } from '@app/services/api/linkType/linkType'
 import { createSlice } from '@reduxjs/toolkit'
 
 export interface ILinkTypeStore {
-  linkTypeList: SocialLinkInMezonAppDetailResponse[]
+  linkTypeList: LinkTypeResponse[]
 }
 
 const initialState: ILinkTypeStore = {
@@ -21,4 +21,4 @@ const linkTypeSlice = createSlice({
 })
 
 export const linkTypeReducer = linkTypeSlice.reducer
-export const {} = linkTypeSlice.actions
+export const { } = linkTypeSlice.actions

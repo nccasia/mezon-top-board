@@ -8,7 +8,7 @@ import { LinkType } from "@domain/entities";
 import { GenericRepository } from "@libs/repository/genericRepository";
 import { Mapper } from "@libs/utils/mapper";
 
-import { SocialLinkWithNameResponse } from "./dtos/response";
+import { LinkTypeResponse } from "./dtos/response";
 
 @Injectable()
 export class LinkTypeService {
@@ -22,7 +22,7 @@ export class LinkTypeService {
     const socialLinks = await this.linkTypeRepository.getRepository().find();
 
     return new Result({
-      data: Mapper(SocialLinkWithNameResponse, socialLinks),
+      data: Mapper(LinkTypeResponse, socialLinks),
     });
   }
 }

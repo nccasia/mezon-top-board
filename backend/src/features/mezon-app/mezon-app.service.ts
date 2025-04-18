@@ -83,8 +83,13 @@ export class MezonAppService {
     detail.socialLinks = mezonApp.socialLinks.map((link) => ({
       id: link.id,
       url: link.url,
-      icon: link.type.icon ?? "",
-      linkTypeId: link.linkTypeId,
+      linkTypeId: link.type.id,
+      type: {
+        id: link.type.id,
+        name: link.type.name,
+        icon: link.type.icon,
+        prefixUrl: link.type.prefixUrl,
+      },
     }));
 
     return new Result({

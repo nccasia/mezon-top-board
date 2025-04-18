@@ -44,13 +44,11 @@ export class SearchMezonAppRequest extends PaginationQuery {
 }
 
 class SocialLinkDto {
-  @ApiPropertyOptional()
+  @ApiProperty()
   @IsString()
-  @ValidateIf(o => o.url !== '' && o.url !== null)
-  @IsUrl(undefined, { message: "SocialLink Invalid URL format" })
   url: string;
 
-  @ApiPropertyOptional()
+  @ApiProperty()
   @IsUUID()
   linkTypeId: string;
 }
