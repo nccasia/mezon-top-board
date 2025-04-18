@@ -7,6 +7,7 @@ import { RootState } from '@app/store'
 import { IMezonAppStore } from '@app/store/mezonApp'
 import { IUserStore } from '@app/store/user'
 import { getUrlImage } from '@app/utils/stringHelper'
+import { ImgIcon } from '@app/mtb-ui/ImgIcon/ImgIcon'
 
 function DetailCard() {
   const { mezonAppDetail } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
@@ -39,9 +40,9 @@ function DetailCard() {
             </MtbTypography>
           )}
           {mezonAppDetail?.socialLinks?.map((link) => (
-            <MtbTypography key={link.id} variant='h5' weight='normal' label={link.type.icon}>
-              <a href={link.url} target='_blank' rel='noopener noreferrer' className='!text-black'>
-                {link.url}
+            <MtbTypography key={link.id} variant='h5' weight='normal' label={<ImgIcon src={link.type.icon} width={17} />}>
+              <a href={`${link.type.prefixUrl}${link.url}`} target='_blank' rel='noopener noreferrer' className='!text-black'>
+                {link.type.prefixUrl}{link.url}
               </a>
             </MtbTypography>
           ))}
@@ -82,7 +83,7 @@ function DetailCard() {
           </a>
         </div>
       </div>
-    </div>
+    </div >
   )
 }
 
