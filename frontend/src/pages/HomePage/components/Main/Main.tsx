@@ -27,7 +27,7 @@ function Main({ isSearchPage = false }: IMainProps) {
   const totals = useMemo(() => mezonApp.totalCount || 0, [mezonApp])
   const { handleSearch } = useMezonAppSearch(page, botPerPage)
   const [searchParams] = useSearchParams()
-  const searchQuery = searchParams.get('q') || ''
+  const searchQuery = searchParams.get('q')?.trim() || ''
 
   useEffect(() => {
     getTagList()
