@@ -9,7 +9,6 @@ import { useSelector } from 'react-redux'
 import { RootState } from '@app/store'
 import { useLazyMezonAppControllerSearchMezonAppQuery } from '@app/services/api/mezonApp/mezonApp'
 import { IMezonAppStore } from '@app/store/mezonApp'
-import { useMezonAppSearch } from '@app/hook/useSearch'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { ApiError } from '@app/types/API.types'
@@ -18,19 +17,33 @@ import { IMainProps } from '@app/types/Main.type'
 const pageOptions = [5, 10, 15]
 function Main({ isSearchPage = false }: IMainProps) {
   const navigate = useNavigate()
-  const [botPerPage, setBotPerPage] = useState<number>(pageOptions[0])
-  const [page, setPage] = useState<number>(1)
-  const [isOpen, setIsOpen] = useState<boolean>(false)
+
+  const [searchParams] = useSearchParams()
+  const defaultSearchQuery = useMemo(() => searchParams.get('q')?.trim() || '', [searchParams.get('q')?.trim()])
+  const defaultTagIds = useMemo(() => searchParams.get('tags')?.split(',').filter(Boolean) || [], [searchParams.get('tags')])
+
+  const { mezonApp } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
+
   const [getTagList] = useLazyTagControllerGetTagsQuery()
   const [getMezonApp, { isError, error }] = useLazyMezonAppControllerSearchMezonAppQuery()
-  const { mezonApp } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
+
+  const [botPerPage, setBotPerPage] = useState<number>(pageOptions[0])
+  const [isInitialized, setIsInitialized] = useState<boolean>(false)
+  const [page, setPage] = useState<number>(1)
+  const [isOpen, setIsOpen] = useState<boolean>(false)
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [tagIds, setTagIds] = useState<string[]>([]);
+
   const totals = useMemo(() => mezonApp.totalCount || 0, [mezonApp])
-  const { handleSearch } = useMezonAppSearch(page, botPerPage)
-  const [searchParams] = useSearchParams()
-  const searchQuery = searchParams.get('q')?.trim() || ''
 
   useEffect(() => {
     getTagList()
+    if (!isInitialized && isSearchPage) {
+      setSearchQuery(defaultSearchQuery)
+      setTagIds(defaultTagIds)
+      searchMezonAppList(defaultSearchQuery, defaultTagIds);
+      setIsInitialized(true)
+    }
   }, [])
 
   useEffect(() => {
@@ -45,7 +58,14 @@ function Main({ isSearchPage = false }: IMainProps) {
   }, [isError, error])
 
   useEffect(() => {
-    const tagIds = searchParams.get('tags')?.split(',').filter(Boolean) || [];
+    searchMezonAppList(searchQuery, tagIds);
+  }, [page, botPerPage, isSearchPage])
+
+  const searchMezonAppList = (searchQuery?: string, tagIds?: string[]) => {
+    if (isSearchPage) {
+      setSearchQuery(searchQuery ?? '')
+      setTagIds(tagIds ?? [])
+    }
 
     getMezonApp({
       search: isSearchPage ? searchQuery : undefined,
@@ -55,7 +75,7 @@ function Main({ isSearchPage = false }: IMainProps) {
       sortField: 'createdAt',
       sortOrder: 'DESC'
     })
-  }, [page, botPerPage, isSearchPage])
+  }
 
   const options = useMemo(() => {
     return pageOptions.map((value) => {
@@ -80,11 +100,9 @@ function Main({ isSearchPage = false }: IMainProps) {
   }
 
   const onPressSearch = (text: string, tagIds?: string[]) => {
+    setSearchQuery(text)
+    setTagIds(tagIds ?? [])
     setPage(1)
-    handleSearch(text, tagIds)
-    navigate({
-      search: `?q=${text}${tagIds?.length ? `&tags=${tagIds.join(',')}` : ''}`
-    })
   }
 
   return (
