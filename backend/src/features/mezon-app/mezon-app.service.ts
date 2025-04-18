@@ -24,6 +24,7 @@ import {
   GetRelatedMezonAppResponse,
   SearchMezonAppResponse,
 } from "./dtos/response";
+import { Role } from "@domain/common/enum/role";
 
 @Injectable()
 export class MezonAppService {
@@ -171,7 +172,17 @@ export class MezonAppService {
     );
   }
 
-  async deleteMezonApp(req: RequestWithId) {
+  async deleteMezonApp(userDeleting: User, req: RequestWithId) {
+    const app = await this.appRepository.findById(req.id, ["tags", "socialLinks"]);
+    if (!app) {
+      throw new BadRequestException(ErrorMessages.NOT_FOUND_MSG);
+    }
+
+    if (app.ownerId !== userDeleting.id && userDeleting.role !== Role.ADMIN) {
+      throw new BadRequestException(ErrorMessages.PERMISSION_DENIED);
+    }
+
+    // Soft delete the app
     await this.appRepository.softDelete(req.id);
     return new Result({});
   }
@@ -230,7 +241,7 @@ export class MezonAppService {
     });
   }
 
-  async updateMezonApp(req: UpdateMezonAppRequest) {
+  async updateMezonApp(userUpdating: User, req: UpdateMezonAppRequest) {
     const app = await this.appRepository.findById(req.id, [
       "tags",
       "socialLinks",
@@ -238,6 +249,10 @@ export class MezonAppService {
 
     if (!app) {
       throw new BadRequestException(ErrorMessages.NOT_FOUND_MSG);
+    }
+
+    if (app.ownerId !== userUpdating.id && userUpdating.role !== Role.ADMIN) {
+      throw new BadRequestException(ErrorMessages.PERMISSION_DENIED);
     }
 
     const { tagIds, socialLinks, description, ...updateData } = req;
@@ -298,7 +313,7 @@ export class MezonAppService {
       ...updateData,
       description: cleanedDescription,
     });
-    
+
     app.tags = tags;
     return this.appRepository.getRepository().save(app);
   }
@@ -365,8 +380,6 @@ export class MezonAppService {
     if (query.tags?.length) {
       whereCondition.andWhere("tag.id IN (:...tagIds)", { tagIds: query.tags });
     }
-
-    console.log("whereCondition", whereCondition.getQueryAndParameters());
 
     return paginate<App, SearchMezonAppResponse>(
       () => whereCondition.getManyAndCount(),
