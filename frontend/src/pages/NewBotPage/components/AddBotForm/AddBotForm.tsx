@@ -47,9 +47,8 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
       const formattedSocialLinks = socialLinksData.map((link) => {
         const selectedLink = optionsLink?.find((item) => item.value === link.linkTypeId)
         if (!selectedLink) return link
-        const siteName = selectedLink.siteName
         return {
-          url: `${siteName}${link.url}`,
+          url: link.url,
           linkTypeId: selectedLink.value,
         }
       })
@@ -110,7 +109,7 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
       label: `${item.icon} ${item.name}`,
       value: item.id,
       icon: item.icon,
-      siteName: `https://${item.name.toLowerCase()}.com/`,
+      siteName: item.prefixUrl,
     }))
   }, [linkTypeList])
 
@@ -135,14 +134,6 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
 
   const handleSocialLinkUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSocialLinkUrl(e.target.value)
-  }
-
-  const handleSelectTag = (value: string[]) => {
-    console.log(`selected ${value}`)
-  }
-
-  const handleSelectLink = (value: string) => {
-    console.log(`Link ${value}`)
   }
 
   return (
@@ -244,7 +235,6 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
                   onDropdownVisibleChange={(visible) => setDropdownOpen(visible)}
                   onChange={(value) => {
                     field.onChange(value)
-                    handleSelectTag(value)
                     setDropdownOpen(false); // Close the dropdown after selection
 
                   }}
@@ -260,7 +250,6 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
                         onClose: () => {
                           const updatedTags = (field.value ?? []).filter((t) => t !== tag)
                           field.onChange(updatedTags)
-                          handleSelectTag(updatedTags)
                         }
                       })
                     })}
@@ -311,13 +300,11 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
                 value={selectedSocialLink}
                 onChange={(value) => {
                   setSelectedSocialLink(value)
-                  handleSelectLink(value)
                 }}
               />
             </div>
             <div className='flex-1'>
-              {/* TODO: remove hardcode prefix */}
-              <Input value={socialLinkUrl} prefix={selectedSocialLink ? `https://${linkTypeList.find(item => item.id === selectedSocialLink)?.name.toLocaleLowerCase() || ''}.com/` : ''} onChange={handleSocialLinkUrlChange} disabled={!selectedSocialLink} />
+              <Input value={socialLinkUrl} prefix={selectedSocialLink ? (linkTypeList.find(item => item.id === selectedSocialLink)?.prefixUrl || '') : ''} onChange={handleSocialLinkUrlChange} disabled={!selectedSocialLink} />
             </div>
             <div className='flex justify-end'>
               <Button onClick={addNewLink} customClassName='!w-[70px]'>
@@ -327,23 +314,25 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
           </div>
           {!!socialLinksData.length &&
             socialLinksData.map((link, index) => {
-              const selectedLink = optionsLink?.find((item) => item.value === link.linkTypeId)
-              const siteName = selectedLink?.siteName || '';
               return (
-                <div key={index} className='mt-4 flex gap-4'>
-                  <Input
-                    onChange={(e) => {
-                      setValue(`socialLinks.${index}.url`, e.target.value)
-                    }}
-                    className='flex-1 border p-2 rounded'
-                    value={link.url}
-                    placeholder='Enter link'
-                    prefix={`${link?.icon} ${siteName}`}
-                  />
-                  <Button onClick={() => remove(index)} customClassName='!w-[70px]'>
-                    Delete
-                  </Button>
-                </div>
+                <Controller
+                  key={index}
+                  name={`socialLinks.${index}.url`}
+                  control={control}
+                  render={({ field }) => (
+                    <div className='mt-4 flex gap-4'>
+                      <Input
+                        {...field}
+                        className='flex-1 border p-2 rounded'
+                        placeholder='Enter link'
+                        prefix={`${link?.type?.icon} ${link?.type?.prefixUrl}`}
+                      />
+                      <Button onClick={() => remove(index)} customClassName='!w-[70px]'>
+                        Delete
+                      </Button>
+                    </div>
+                  )}
+                />
               )
             })}
         </FormField>

@@ -5,11 +5,13 @@ import { manageUsersExtraReducers } from './extraReducer'
 export interface IUserStore {
   userInfo: GetUserDetailsResponse,
   publicProfile: GetPublicProfileResponse,
+  adminUserList?: GetUserDetailsResponse[],
 }
 
 const initialState: IUserStore = {
   userInfo: {} as GetUserDetailsResponse,
   publicProfile: {} as GetPublicProfileResponse,
+  adminUserList: [],
 }
 
 const userSlice = createSlice({

@@ -21,6 +21,12 @@ const injectedRtkApi = api.injectEndpoints({
     userControllerDeleteUser: build.mutation<UserControllerDeleteUserApiResponse, UserControllerDeleteUserApiArg>({
       query: (queryArg) => ({ url: `/api/user`, method: 'DELETE', body: queryArg.requestWithId })
     }),
+    userControllerDeactivateUser: build.mutation<UserControllerDeactivateUserApiResponse, UserControllerDeactivateUserApiArg>({
+      query: (queryArg) => ({ url: `/api/user/deactivate`, method: 'DELETE', body: queryArg.requestWithId })
+    }),
+    userControllerActivateUser: build.mutation<UserControllerActivateUserApiResponse, UserControllerActivateUserApiArg>({
+      query: (queryArg) => ({ url: `/api/user/activate`, method: 'POST', body: queryArg.requestWithId })
+    }),
     userControllerGetUserDetails: build.query<
       UserControllerGetUserDetailsApiResponse,
       UserControllerGetUserDetailsApiArg
@@ -60,6 +66,14 @@ export type UserControllerDeleteUserApiResponse = unknown
 export type UserControllerDeleteUserApiArg = {
   requestWithId: RequestWithId
 }
+export type UserControllerDeactivateUserApiResponse = unknown
+export type UserControllerDeactivateUserApiArg = {
+  requestWithId: RequestWithId
+}
+export type UserControllerActivateUserApiResponse = unknown
+export type UserControllerActivateUserApiArg = {
+  requestWithId: RequestWithId
+}
 export type UserControllerGetUserDetailsApiResponse = HttpResponse<GetUserDetailsResponse>
 export type UserControllerGetUserDetailsApiArg = void
 export type UserControllerGetPublicProfileApiResponse = HttpResponse<GetPublicProfileResponse>
@@ -92,6 +106,7 @@ export type GetUserDetailsResponse = {
   email: string
   bio: string
   profileImage: string
+  deletedAt: Date | null
 }
 export type GetPublicProfileResponse = {
   id: string
@@ -109,6 +124,8 @@ export const {
   useLazyUserControllerSearchUserQuery,
   useUserControllerUpdateUserMutation,
   useUserControllerDeleteUserMutation,
+  useUserControllerDeactivateUserMutation,
+  useUserControllerActivateUserMutation,
   useUserControllerGetUserDetailsQuery,
   useLazyUserControllerGetUserDetailsQuery,
   useUserControllerGetPublicProfileQuery,

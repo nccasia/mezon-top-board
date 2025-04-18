@@ -1,6 +1,7 @@
 import { HttpResponse } from '@app/types/API.types'
 import { api } from '../../apiInstance'
 import { Rating } from '../rating/rating'
+import { LinkTypeResponse } from '../linkType/linkType'
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
     mezonAppControllerListAdminMezonApp: build.query<
@@ -157,7 +158,8 @@ export type TagInMezonAppDetailResponse = {
 export type SocialLinkInMezonAppDetailResponse = {
   id: string
   url: string
-  icon: string
+  linkTypeId: string
+  type: LinkTypeResponse;
 }
 export type GetMezonAppDetailsResponse = {
   id: string
@@ -246,7 +248,7 @@ export type App = {
 export type SocialLinkDto = {
   url?: string
   linkTypeId: string
-  icon?: string
+  type?: LinkTypeResponse // For render only
 }
 export type CreateMezonAppRequest = {
   name: string
