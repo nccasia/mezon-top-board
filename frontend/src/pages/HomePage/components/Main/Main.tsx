@@ -62,11 +62,6 @@ function Main({ isSearchPage = false }: IMainProps) {
   }, [page, botPerPage, isSearchPage])
 
   const searchMezonAppList = (searchQuery?: string, tagIds?: string[]) => {
-    if (isSearchPage) {
-      setSearchQuery(searchQuery ?? '')
-      setTagIds(tagIds ?? [])
-    }
-
     getMezonApp({
       search: isSearchPage ? searchQuery : undefined,
       tags: tagIds,
