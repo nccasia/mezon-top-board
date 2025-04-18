@@ -315,6 +315,11 @@ export class MezonAppService {
     });
 
     app.tags = tags;
+
+    if (app.status === AppStatus.REJECTED) {
+      app.status = AppStatus.PENDING;
+    }
+
     return this.appRepository.getRepository().save(app);
   }
 
