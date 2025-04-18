@@ -10,14 +10,14 @@ const useOwnershipCheck = () => {
     const { isLogin } = useAuth()
     const { userInfo } = useSelector<RootState, IUserStore>((s) => s.user)
 
-    const checkOwnership = (ownerId: string) => {
+    const checkOwnership = (ownerId?: string) => {
         if (!isLogin) {
             toast.error("You need to login to access this page.")
             navigate("/login")
             return false
         }
 
-        if (ownerId !== userInfo.id) {
+        if (ownerId && ownerId !== userInfo.id) {
             toast.error("You do not have permission to access this page.")
             navigate("/")
             return false

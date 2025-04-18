@@ -46,7 +46,7 @@ function Main({ isSearchPage = false }: IMainProps) {
 
   useEffect(() => {
     const tagIds = searchParams.get('tags')?.split(',').filter(Boolean) || [];
-    
+
     getMezonApp({
       search: isSearchPage ? searchQuery : undefined,
       tags: tagIds,
@@ -79,6 +79,14 @@ function Main({ isSearchPage = false }: IMainProps) {
     }
   }
 
+  const onPressSearch = (text: string, tagIds?: string[]) => {
+    setPage(1)
+    handleSearch(text, tagIds)
+    navigate({
+      search: `?q=${text}${tagIds?.length ? `&tags=${tagIds.join(',')}` : ''}`
+    })
+  }
+
   return (
     <div className={`flex flex-col justify-center pt-8 pb-12 w-[75%] m-auto `}>
       <Divider variant='solid' style={{ borderColor: 'gray' }}>
@@ -88,7 +96,7 @@ function Main({ isSearchPage = false }: IMainProps) {
       </Divider>
       <div className='pt-3'>
         <SearchBar
-          onSearch={(val, tagIds) => handleSearch(val ?? '', tagIds)}
+          onSearch={(val, tagIds) => onPressSearch(val ?? '', tagIds)}
           defaultValue={searchQuery}
           isResultPage={isSearchPage}
         ></SearchBar>
@@ -98,7 +106,7 @@ function Main({ isSearchPage = false }: IMainProps) {
           <div>
             <MtbTypography variant='h3'>Mezon Bots</MtbTypography>
             <MtbTypography variant='h5' weight='normal'>
-              Showing 1 of {mezonApp.totalPages ?? 0 } page
+              Showing 1 of {mezonApp.totalPages ?? 0} page
             </MtbTypography>
           </div>
           <SingleSelect
