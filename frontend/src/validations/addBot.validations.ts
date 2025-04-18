@@ -25,8 +25,8 @@ export const ADD_BOT_SCHEMA = yup.object({
   tagIds: yup.array().of(yup.string().required()).min(1, 'At least one tag is required').strict().defined(),
   socialLinks: yup.array().of(
     yup.object().shape({
-      url: yup.string().url('Invalid URL').test('url-length', 'URL is too long', (val) => val.length <= 2082),
+      url: yup.string().test('url-length', 'URL is too long', (val) => (val || "").length <= 2082),
       linkTypeId: yup.string().required('Link Type is required')
     })
-  ).min(1, 'At least one social link is required')
+  )
 })
