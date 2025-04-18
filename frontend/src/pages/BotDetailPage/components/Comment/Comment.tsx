@@ -9,7 +9,7 @@ function Comment({ rating }: { rating: Rating }) {
     <>
       <div className='flex gap-10 p-4 shadow-sm rounded-2xl'>
         <div className='w-15'>
-          <img src={getUrlImage(rating.user?.profileImage) || avatar} alt='' className='rounded-full w-full aspect-square' />
+          <img src={rating.user?.profileImage ? getUrlImage(rating.user?.profileImage) : avatar} alt='' className='rounded-full w-full aspect-square' />
         </div>
         <div className='flex flex-col gap-5'>
           <div>
