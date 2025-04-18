@@ -121,7 +121,7 @@ function BotDetailPage() {
                   </div>
                 </div>
                 <p className='pt-5 max-lg:pt-7 max-2xl:pt-7'>
-                  Reviews can be left only by registered users. All reviews are moderated by top.mezon.ai moderators. Please
+                  Reviews can be left only by registered users. All reviews are moderated by our moderators. Please
                   make sure to check our guidelines before posting.
                 </p>
               </div>
