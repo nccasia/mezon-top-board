@@ -44,13 +44,11 @@ export class SearchMezonAppRequest extends PaginationQuery {
 }
 
 class SocialLinkDto {
-  @ApiPropertyOptional()
+  @ApiProperty()
   @IsString()
-  @ValidateIf(o => o.url !== '' && o.url !== null)
-  @IsUrl(undefined, { message: "SocialLink Invalid URL format" })
   url: string;
 
-  @ApiPropertyOptional()
+  @ApiProperty()
   @IsUUID()
   linkTypeId: string;
 }
@@ -107,12 +105,12 @@ export class CreateMezonAppRequest {
   @IsString()
   @IsOptional()
   remark?: string;
-
+ 
   @ApiPropertyOptional()
   @IsArray()
   @ArrayMinSize(1, { message: "At least one tag is required" })
   @IsString({ each: true })
-  tagIds?: string[];
+  tagIds: string[];
 
   @ApiPropertyOptional({ type: [SocialLinkDto] })
   @IsArray()

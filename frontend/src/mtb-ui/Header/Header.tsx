@@ -27,6 +27,8 @@ function Header() {
   const handleLogout = () => {
     removeAccessTokens()
     postLogout()
+    navigate('/')
+    window.scrollTo(0, 0)
   }
 
   const itemsDropdown: MenuProps['items'] = [
@@ -56,7 +58,7 @@ function Header() {
             className='!align-middle'
           />
         </div> */}
-        <ul className='flex flex-col lg:flex-row gap-5 text-sm'>{renderMenu(true)}</ul>
+        <ul className='flex flex-col lg:flex-row gap-5 flex-none text-sm'>{renderMenu(true)}</ul>
         <div className='flex flex-col lg:flex-row gap-3 mt-5 lg:mt-0 w-full'>
           {isLogin ? (
             <Dropdown
@@ -83,12 +85,15 @@ function Header() {
 
   return (
     <div
-      className={`flex bg-white z-1 items-center justify-between py-4 px-5 lg:px-20 border-t-1 border-b-1 border-gray-200 cursor-pointer sticky top-0`}
+      className={`flex bg-white z-2 items-center justify-between py-4 px-5 lg:px-20 border-t-1 border-b-1 border-gray-200 cursor-pointer sticky top-0`}
     >
       <div className='flex items-center gap-3' onClick={() => navigate('/')}>
         <div className='h-[50px]'>
           <img src={logo} alt='' style={{ height: '100%', objectFit: 'contain' }} />
         </div>
+        <MtbTypography variant='h5' customClassName='!mb-0'>
+          Mezon Top Board
+        </MtbTypography>
       </div>
       <div className='flex items-center justify-between gap-12.5 max-lg:hidden max-2xl:hidden'>
         {renderHeaderItems()}

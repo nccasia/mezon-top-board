@@ -71,8 +71,8 @@ export class AuthService {
       const user = await this.userRepository.findOne({
         where: {
           email: email,
-          deletedAt: null,
         },
+        withDeleted: false,
       });
       return user;
     } catch {
@@ -164,8 +164,8 @@ export class AuthService {
     const user = await this.userRepository.findOne({
       where: {
         email,
-        deletedAt: null,
       },
+      withDeleted: false,
     });
 
     if (!user) {

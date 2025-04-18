@@ -39,7 +39,7 @@ function DetailCard() {
             </MtbTypography>
           )}
           {mezonAppDetail?.socialLinks?.map((link) => (
-            <MtbTypography key={link.id} variant='h5' weight='normal' label={link.icon}>
+            <MtbTypography key={link.id} variant='h5' weight='normal' label={link.type.icon}>
               <a href={link.url} target='_blank' rel='noopener noreferrer' className='!text-black'>
                 {link.url}
               </a>

@@ -5,14 +5,6 @@ export interface IBotCardProps {
   data?: GetMezonAppDetailsResponse
 }
 
-export interface ISocialLinksData {
-  icon: string
-  name: string
-  url: string
-  id: string
-  siteName: string
-}
-
 export interface ICompactBotCardProps {
   data?: GetRelatedMezonAppResponse
   isPublic?: boolean

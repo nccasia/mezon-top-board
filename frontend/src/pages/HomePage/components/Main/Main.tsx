@@ -10,13 +10,14 @@ import { RootState } from '@app/store'
 import { useLazyMezonAppControllerSearchMezonAppQuery } from '@app/services/api/mezonApp/mezonApp'
 import { IMezonAppStore } from '@app/store/mezonApp'
 import { useMezonAppSearch } from '@app/hook/useSearch'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { ApiError } from '@app/types/API.types'
 import { IMainProps } from '@app/types/Main.type'
 
 const pageOptions = [5, 10, 15]
 function Main({ isSearchPage = false }: IMainProps) {
+  const navigate = useNavigate()
   const [botPerPage, setBotPerPage] = useState<number>(pageOptions[0])
   const [page, setPage] = useState<number>(1)
   const [isOpen, setIsOpen] = useState<boolean>(false)
@@ -26,7 +27,7 @@ function Main({ isSearchPage = false }: IMainProps) {
   const totals = useMemo(() => mezonApp.totalCount || 0, [mezonApp])
   const { handleSearch } = useMezonAppSearch(page, botPerPage)
   const [searchParams] = useSearchParams()
-  const searchQuery = searchParams.get('q') || ''
+  const searchQuery = searchParams.get('q')?.trim() || ''
 
   useEffect(() => {
     getTagList()
@@ -35,19 +36,26 @@ function Main({ isSearchPage = false }: IMainProps) {
   useEffect(() => {
     if (isError && error) {
       const apiError = error as ApiError
-      toast.error(apiError?.data?.message[0])
+      if (apiError?.status === 404 || apiError?.data?.statusCode === 404) {
+        navigate('/*');
+      } else {
+        toast.error(apiError?.data?.message);
+      }
     }
   }, [isError, error])
 
   useEffect(() => {
+    const tagIds = searchParams.get('tags')?.split(',').filter(Boolean) || [];
+
     getMezonApp({
       search: isSearchPage ? searchQuery : undefined,
+      tags: tagIds,
       pageNumber: page,
       pageSize: botPerPage,
       sortField: 'createdAt',
       sortOrder: 'DESC'
     })
-  }, [page, botPerPage])
+  }, [page, botPerPage, isSearchPage])
 
   const options = useMemo(() => {
     return pageOptions.map((value) => {
@@ -71,6 +79,14 @@ function Main({ isSearchPage = false }: IMainProps) {
     }
   }
 
+  const onPressSearch = (text: string, tagIds?: string[]) => {
+    setPage(1)
+    handleSearch(text, tagIds)
+    navigate({
+      search: `?q=${text}${tagIds?.length ? `&tags=${tagIds.join(',')}` : ''}`
+    })
+  }
+
   return (
     <div className={`flex flex-col justify-center pt-8 pb-12 w-[75%] m-auto `}>
       <Divider variant='solid' style={{ borderColor: 'gray' }}>
@@ -80,7 +96,7 @@ function Main({ isSearchPage = false }: IMainProps) {
       </Divider>
       <div className='pt-3'>
         <SearchBar
-          onSearch={(val, tagIds) => handleSearch(val ?? '', tagIds)}
+          onSearch={(val, tagIds) => onPressSearch(val ?? '', tagIds)}
           defaultValue={searchQuery}
           isResultPage={isSearchPage}
         ></SearchBar>
@@ -90,7 +106,7 @@ function Main({ isSearchPage = false }: IMainProps) {
           <div>
             <MtbTypography variant='h3'>Mezon Bots</MtbTypography>
             <MtbTypography variant='h5' weight='normal'>
-              Showing 1 of {mezonApp.totalPages} page
+              Showing 1 of {mezonApp.totalPages ?? 0} page
             </MtbTypography>
           </div>
           <SingleSelect
