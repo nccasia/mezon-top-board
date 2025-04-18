@@ -40,14 +40,17 @@ function Main({ isSearchPage = false }: IMainProps) {
   }, [isError, error])
 
   useEffect(() => {
+    const tagIds = searchParams.get('tags')?.split(',').filter(Boolean) || [];
+    
     getMezonApp({
       search: isSearchPage ? searchQuery : undefined,
+      tags: tagIds,
       pageNumber: page,
       pageSize: botPerPage,
       sortField: 'createdAt',
       sortOrder: 'DESC'
     })
-  }, [page, botPerPage, searchQuery])
+  }, [page, botPerPage, isSearchPage])
 
   const options = useMemo(() => {
     return pageOptions.map((value) => {

@@ -10,12 +10,14 @@ export interface ISocialLinksData {
   name: string
   url: string
   id: string
+  siteName: string
 }
 
 export interface ICompactBotCardProps {
   data?: GetRelatedMezonAppResponse
+  isPublic?: boolean
 }
 
 export interface IAddBotFormProps {
-  onResetAvatar : () => void
+  isEdit: boolean
 }

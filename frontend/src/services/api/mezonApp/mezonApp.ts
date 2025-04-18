@@ -148,6 +148,7 @@ export type MezonAppControllerSearchMezonAppApiArg = {
 export type OwnerInMezonAppDetailResponse = {
   id: string
   name: string
+  profileImage: string
 }
 export type TagInMezonAppDetailResponse = {
   id: string
@@ -171,6 +172,7 @@ export type GetMezonAppDetailsResponse = {
   socialLinks: SocialLinkInMezonAppDetailResponse[]
   rateScore: number;
   installLink: string;
+  supportUrl: string;
 }
 export type RequestWithId = {
   id: string
@@ -244,18 +246,19 @@ export type App = {
 export type SocialLinkDto = {
   url?: string
   linkTypeId?: string
+  icon?: string
 }
 export type CreateMezonAppRequest = {
   name: string
   isAutoPublished?: boolean
-  installLink?: string
-  headline?: string
-  description?: string
-  prefix?: string
+  installLink: string
+  headline: string
+  description: string
+  prefix: string
   featuredImage?: string
-  supportUrl?: string
+  supportUrl: string
   remark?: string
-  tagIds?: string[]
+  tagIds: string[]
   socialLinks?: SocialLinkDto[]
 }
 export type UpdateMezonAppRequest = {
@@ -269,7 +272,7 @@ export type UpdateMezonAppRequest = {
   featuredImage?: string
   supportUrl?: string
   remark?: string
-  tagIds?: string[]
+  tagIds: string[]
   socialLinks?: SocialLinkDto[]
 }
 export type GetRelatedMezonAppResponse = {

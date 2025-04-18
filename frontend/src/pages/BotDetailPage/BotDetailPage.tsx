@@ -20,13 +20,14 @@ import { ApiError } from '@app/types/API.types'
 import { Divider, Spin } from 'antd'
 import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import { useParams, useSearchParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import Comment from './components/Comment/Comment'
 import DetailCard from './components/DetailCard/DetailCard'
 import RatingForm from './components/RatingForm/RatingForm'
 function BotDetailPage() {
-  const [getMezonAppDetail, { isError, error }] = useLazyMezonAppControllerGetMezonAppDetailQuery()
+  const navigate = useNavigate()
+  const [getMezonAppDetail, { isError, error, isSuccess }] = useLazyMezonAppControllerGetMezonAppDetailQuery()
   const [getrelatedMezonApp] = useLazyMezonAppControllerGetRelatedMezonAppQuery()
   const [getTagList] = useLazyTagControllerGetTagsQuery()
   const [getRatingsByApp, { isLoading: isLoadingReview }] = useLazyRatingControllerGetRatingsByAppQuery()
@@ -34,22 +35,40 @@ function BotDetailPage() {
   const { botId } = useParams()
   const { mezonAppDetail, relatedMezonApp } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
   const { ratings } = useSelector<RootState, IRatingStore>((s) => s.rating)
-  const ratingCounts = ratings?.data?.reduce((acc, rating) => {
-    acc[rating.score] = (acc[rating.score] || 0) + 1
-    return acc
-  }, { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 } as Record<number, number>) || { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+  const ratingCounts = ratings?.data?.reduce(
+    (acc, rating) => {
+      acc[rating.score] = (acc[rating.score] || 0) + 1
+      return acc
+    },
+    { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 } as Record<number, number>
+  ) || { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 }
 
   const { tagList } = useSelector<RootState, ITagStore>((s) => s.tag)
   const { handleSearch } = useMezonAppSearch(1, 5)
   const [searchParams] = useSearchParams()
   const searchQuery = searchParams.get('q') || ''
   useEffect(() => {
-    if (botId) {
+    if (botId && botId !== 'undefined' && botId.trim() !== '') {
       getMezonAppDetail({ id: botId })
-      getrelatedMezonApp({ id: botId })
-      getRatingsByApp({ appId: botId })
+        .catch(err => {
+          console.error("Cannot get MezonAppDetail :", err);
+          navigate('/*');
+        });
+        
+      getrelatedMezonApp({ id: botId });
+      getRatingsByApp({ appId: botId });
+    } else {
+      navigate('/*');
     }
-  }, [botId])
+  }, [botId]);
+  
+  useEffect(() => {
+    console.log('botId', botId, 'mezonAppDetail', mezonAppDetail.id)
+    if (mezonAppDetail.id !== botId && mezonAppDetail.id === undefined && isSuccess) {
+      navigate('/*')
+      return
+    }
+  }, [botId, mezonAppDetail])
 
   useEffect(() => {
     if (!tagList?.data?.length) {
@@ -58,16 +77,25 @@ function BotDetailPage() {
   }, [])
 
   useEffect(() => {
-    if (isError && error) {
+    if (isError && error && isSuccess) {
       const apiError = error as ApiError
-      toast.error(apiError?.data?.message[0])
+      if (apiError?.status === 404 || apiError?.data?.statusCode === 404) {
+        navigate('/*');
+      } else {
+        toast.error(apiError?.data?.message);
+      }
     }
-  }, [isError, error])
+  }, [isError, error]);
+
   return (
     <div className='m-auto pt-10 pb-10 w-[75%]'>
       <MtbTypography>Explore milions of mezon bots</MtbTypography>
       <div className='pt-5'>
-        <SearchBar onSearch={(val) => handleSearch(val ?? '')} defaultValue={searchQuery} isResultPage={false}></SearchBar>
+        <SearchBar
+          onSearch={(val) => handleSearch(val ?? '')}
+          defaultValue={searchQuery}
+          isResultPage={false}
+        ></SearchBar>
       </div>
       <div className='pt-5 pb-5'>
         <BotCard readonly={true} data={mezonAppDetail}></BotCard>
@@ -102,7 +130,7 @@ function BotDetailPage() {
                   <p className='text-6xl'>{mezonAppDetail.rateScore}</p>
                   <div>
                     <MtbRate readonly={true} value={mezonAppDetail.rateScore}></MtbRate>
-                    <p className='pt-2'>9,160 reviews</p>
+                    <p className='pt-2'>{ratings?.data?.length} reviews</p>
                   </div>
                 </div>
                 <p className='pt-5 max-lg:pt-7 max-2xl:pt-7'>
@@ -111,8 +139,9 @@ function BotDetailPage() {
                 </p>
               </div>
               <div className='flex-1 flex flex-col gap-1'>
-                {
-                  Object.keys(ratingCounts).reverse().map((key) => {
+                {Object.keys(ratingCounts)
+                  .reverse()
+                  .map((key) => {
                     const ratingValue = Number(key)
                     const ratingCount = ratingCounts[ratingValue] || 0
                     const totalRatings = Object.values(ratingCounts).reduce((acc, count) => acc + count, 0)
@@ -125,23 +154,26 @@ function BotDetailPage() {
                         <p className='align-middle'>{ratingCount}</p>
                       </div>
                     )
-                  })
-                }
+                  })}
               </div>
             </div>
             <Divider className='bg-gray-200'></Divider>
-            <RatingForm onSubmitted={() => {
-              getRatingsByApp({ appId: botId || '' })
-            }} />
+            <RatingForm
+              onSubmitted={() => {
+                getRatingsByApp({ appId: botId || '' })
+              }}
+            />
             <Divider className='bg-gray-200'></Divider>
             <div className='flex flex-col gap-5'>
-              {(isLoadingReview && Object.keys(ratings).length == 0) ? (<Spin size='large' />) : (ratings?.data?.map(rating => (
-                <Comment rating={rating}></Comment>
-              )) || null)}
+              {isLoadingReview && Object.keys(ratings).length == 0 ? (
+                <Spin size='large' />
+              ) : (
+                ratings?.data?.map((rating) => <Comment rating={rating}></Comment>) || null
+              )}
             </div>
           </div>
         </div>
-        <div className='flex-1'>
+        <div className='flex-1 max-w-1/4'>
           <DetailCard></DetailCard>
         </div>
       </div>

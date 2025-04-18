@@ -15,42 +15,42 @@ import { getUrlImage } from '@app/utils/stringHelper'
 import { Spin, Upload } from 'antd'
 import { toast } from 'react-toastify'
 import { CardInfoProps } from './CardInfo.types'
+import MTBAvatar from '@app/mtb-ui/Avatar/MTBAvatar'
 
 function CardInfo({ isPublic, userInfo }: CardInfoProps) {
   const imgUrl = userInfo?.profileImage ? getUrlImage(userInfo.profileImage) : avatar
-  const [selfUpdate, { isLoading: isUpdating }] = useUserControllerSelfUpdateUserMutation()
-  const [uploadImage] = useMediaControllerCreateMediaMutation()
+  const [selfUpdate] = useUserControllerSelfUpdateUserMutation()
+  const [uploadImage, { isLoading: isUpdatingAvatar }] = useMediaControllerCreateMediaMutation()
 
   const cardInfoLink = [
     {
       icon: <InfoCircleOutlined />,
       name: 'Overview',
       path: isPublic ? `/profile/${userInfo?.id}` : `/profile`,
-      isPublic: true,
+      isPublic: true
     },
     {
       icon: <UserAddOutlined />,
       name: 'Invitations',
       path: '/profile',
-      isPublic: false,
+      isPublic: false
     },
     {
       icon: <CreditCardOutlined />,
       name: 'Subscriptions',
       path: '/profile',
-      isPublic: false,
+      isPublic: false
     },
     {
       icon: <SettingOutlined />,
       name: 'Settings',
       path: '/profile/setting',
-      isPublic: false,
+      isPublic: false
     }
   ]
 
   const handleUpload = async (options: any) => {
-    if (isPublic)
-      return;
+    if (isPublic) return
 
     const { file, onSuccess, onError } = options
 
@@ -71,41 +71,16 @@ function CardInfo({ isPublic, userInfo }: CardInfoProps) {
     }
   }
 
-  const renderAvatar = (imgUrl: string, isAllowUpdate = false) => {
-    const renderOverlay = () => {
-      if (!isAllowUpdate) return null;
-
-      return isUpdating ? (
-        <div className='absolute inset-0 flex items-center justify-center bg-opacity-40 rounded-full'>
-          <Spin indicator={<LoadingOutlined className='text-white text-2xl' />} />
-        </div>
-      ) : (
-        <div className='absolute inset-0 bg-opacity-40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity'>
-          <EditOutlined className='text-white text-lg' />
-        </div>
-      );
-    };
-
-    return (
-      <div className={`relative w-full group ${isAllowUpdate ? 'cursor-pointer' : 'cursor-default'}`}>
-        <img
-          src={imgUrl}
-          alt='avatar'
-          className={`rounded-full w- full aspect-square object-cover ${isUpdating ? 'opacity-50' : ''}`}
-        />
-        {renderOverlay()}
-      </div>
-    );
-  };
-
   return (
     <div className='flex flex-col gap-7 p-4 shadow-sm rounded-2xl'>
-      <div className='flex items-center gap-4 max-lg:flex-col max-2xl:flex-col'>
-        <Upload disabled={isPublic} listType='picture-circle' customRequest={handleUpload} showUploadList={false}>
-          {renderAvatar(imgUrl, !isPublic)}
-        </Upload>
-        <div className='text-lg font-semibold'>{userInfo?.name}</div>
-      </div >
+      <div className='flex items-center gap-4 w-full max-lg:flex-col max-2xl:flex-col'>
+        <div className='flex-shrink-0'>
+          <Upload disabled={isPublic} listType='picture-circle' customRequest={handleUpload} showUploadList={false}>
+            <MTBAvatar imgUrl={imgUrl} isAllowUpdate={!isPublic} isUpdatingAvatar={isUpdatingAvatar} />
+          </Upload>
+        </div>
+        <div className='text-lg font-semibold break-words max-w-full flex-1 min-w-0'>{userInfo?.name}</div>
+      </div>
       <div>
         <MtbTypography variant='p' customClassName='!pl-0' weight='bold' textStyle={[TypographyStyle.UPPERCASE]}>
           Generals
@@ -116,24 +91,18 @@ function CardInfo({ isPublic, userInfo }: CardInfoProps) {
         <p className='font-'></p>
         <ul className='pt-2'>
           {cardInfoLink
-            .filter(item => item.isPublic || !isPublic)
-            .map(
-              (item, index) => (
-                <li
-                  key={index}
-                  className='p-2 cursor-pointer align-middle hover:bg-red-400 transition-all'
-                >
-                  <a href={item.path} className='w-full inline-block'>
-                    <span className='mr-4'>{item.icon}</span>
-                    {item.name}
-                  </a>
-                </li>
-              )
-            )
-          }
+            .filter((item) => item.isPublic || !isPublic)
+            .map((item, index) => (
+              <li key={index} className='p-2 cursor-pointer align-middle hover:bg-red-400 transition-all'>
+                <a href={item.path} className='w-full inline-block'>
+                  <span className='mr-4'>{item.icon}</span>
+                  {item.name}
+                </a>
+              </li>
+            ))}
         </ul>
       </div>
-    </div >
+    </div>
   )
 }
 

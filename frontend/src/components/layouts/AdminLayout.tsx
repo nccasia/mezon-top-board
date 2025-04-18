@@ -5,10 +5,12 @@ import { adminRoutePaths } from '@app/navigation/adminRoutePaths'
 import { Breadcrumb, Image, Layout, Menu } from 'antd'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import styles from './AdminLayout.module.scss'; // Import the styles
+import MtbTypography from '@app/mtb-ui/Typography/Typography'
 
 const { Header, Footer, Sider, Content } = Layout
 
 function AdminLayout() {
+  document.title = 'Management - Mezon Top Board'
   const location = useLocation()
   const pathSnippets = location.pathname.split('/').filter((i) => i)
   const { isLogin } = useAuth()
@@ -18,20 +20,19 @@ function AdminLayout() {
   return (
     <Layout className={styles['admin-layout']}>
       <Sider width={250} className={styles.sider}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <Image
-            width={50}
-            height={50}
-            src={logo}
-            alt='Top Logo'
-            fallback='https://via.placeholder.com/50' // Default image if the source fails
-          />
-          <h1>Mezon Top Board</h1>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', margin: '0px' }}>
+          <div className='h-[30px]'>
+            <img src={logo} alt='' style={{ height: '100%', objectFit: 'contain' }} />
+          </div>
+          <MtbTypography variant='p' style={{ color: '#fff' }} weight='bold'>
+            MTB Management
+          </MtbTypography>
         </div>
+        <div className={styles['sider-divider']} />
         <Menu theme='dark' mode='vertical' defaultSelectedKeys={['/admin']} selectedKeys={[location.pathname]}>
-          {adminRoutePaths.map((route) => (
+          {adminRoutePaths.filter((route) => route.isShowMenu).map((route) => (
             <Menu.Item key={route.path} icon={route.icon}>
-              <NavLink to={route.path}>{route.label}</NavLink>
+              <NavLink to={route.path}>{route.label || route.strLabel}</NavLink>
             </Menu.Item>
           ))}
         </Menu>
@@ -56,7 +57,7 @@ function AdminLayout() {
         </Content>
         <Footer className={styles.footer}>Footer</Footer>
       </Layout>
-    </Layout>
+    </Layout >
   )
 }
 

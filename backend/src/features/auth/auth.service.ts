@@ -52,6 +52,7 @@ export class AuthService {
 
       const newUser = await this.userRepository.create({
         email: oryInfo.sub,
+        name: oryInfo.sub.split('@')[0],
         role: Role.DEVELOPER,
       });
       const tokens = await this.generateAccessAndRefreshTokens(newUser);
@@ -70,8 +71,8 @@ export class AuthService {
       const user = await this.userRepository.findOne({
         where: {
           email: email,
-          deletedAt: null,
         },
+        withDeleted: false,
       });
       return user;
     } catch {
@@ -163,8 +164,8 @@ export class AuthService {
     const user = await this.userRepository.findOne({
       where: {
         email,
-        deletedAt: null,
       },
+      withDeleted: false,
     });
 
     if (!user) {

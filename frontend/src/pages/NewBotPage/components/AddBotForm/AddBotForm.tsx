@@ -1,60 +1,92 @@
-import MtbTypography from '@app/mtb-ui/Typography/Typography'
-import { Checkbox, Form, Input, Select, SelectProps, Tag, TagProps } from 'antd'
 import FormField from '@app/components/FormField/FormField'
-import { Controller, useFormContext } from 'react-hook-form'
-import Button from '@app/mtb-ui/Button'
+import RichTextEditor from "@app/components/RichText/RichText"
 import { errorStatus } from '@app/constants/common.constant'
-import TextArea from 'antd/es/input/TextArea'
-import { useEffect, useMemo, useState } from 'react'
+import Button from '@app/mtb-ui/Button'
+import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import {
   CreateMezonAppRequest,
-  SocialLinkDto,
-  useMezonAppControllerCreateMezonAppMutation
+  useMezonAppControllerCreateMezonAppMutation,
+  useMezonAppControllerUpdateMezonAppMutation
 } from '@app/services/api/mezonApp/mezonApp'
-import { useSelector } from 'react-redux'
 import { RootState } from '@app/store'
-import { ITagStore } from '@app/store/tag'
 import { ILinkTypeStore } from '@app/store/linkType'
+import { ITagStore } from '@app/store/tag'
+import { ApiError } from '@app/types/API.types'
 import { IAddBotFormProps, ISocialLinksData } from '@app/types/Botcard.types'
+import { Checkbox, Form, Input, Select, TagProps } from 'antd'
+import TextArea from 'antd/es/input/TextArea'
+import { useEffect, useMemo, useState } from 'react'
+import { Controller, useFormContext } from 'react-hook-form'
+import { useSelector } from 'react-redux'
+import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import RichTextEditor from "@app/components/RichText/RichText";
-function AddBotForm({ onResetAvatar }: IAddBotFormProps) {
+function AddBotForm({ isEdit }: IAddBotFormProps) {
   const {
     control,
     handleSubmit,
     watch,
-    setValue,
-    reset,
     formState: { errors }
   } = useFormContext<CreateMezonAppRequest>()
   const [addBot] = useMezonAppControllerCreateMezonAppMutation()
+  const navigate = useNavigate()
+  const [updateBot] = useMezonAppControllerUpdateMezonAppMutation()
   const { tagList } = useSelector<RootState, ITagStore>((s) => s.tag)
   const { linkTypeList } = useSelector<RootState, ILinkTypeStore>((s) => s.link)
-  const selectedSocialLink = watch('socialLinks')
-  const [socialLinksData, setSocialLinks] = useState<ISocialLinksData[]>([])
+  const socialLinksInMezonAppDetails = watch('socialLinks')
+  const [selectedSocialLink, setSelectedSocialLink] = useState<string>('') // holds selected link type id
+  const [socialLinksData, setSocialLinksData] = useState<ISocialLinksData[]>([])
+  const [socialLinkUrl, setSocialLinkUrl] = useState<string>('')
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
+  const { botId } = useParams()
+
   useEffect(() => {
-    setValue('socialLinks', [])
-  }, [socialLinksData, setValue])
+    if (!socialLinksInMezonAppDetails?.length) return
+    const formattedLinksData = socialLinksInMezonAppDetails.map(link => {
+      const urlObj = new URL(link.url || '');
+      return {
+        icon: link?.icon || '',
+        name: `${urlObj.host}`.toUpperCase(),
+        url: `${urlObj.pathname.slice(1)}`,
+        id: link?.linkTypeId || '',
+        siteName: `${urlObj.protocol}//${urlObj.host}/`
+      }
+    })
+    setSocialLinksData(formattedLinksData)
+  }, [socialLinksInMezonAppDetails])
 
-  const onSubmit = (data: CreateMezonAppRequest) => {
-    const formattedSocialLinks = socialLinksData.map((link) => ({
-      url: link.url,
-      linkTypeId: link.id
-    }))
+  const onSubmit = async (data: CreateMezonAppRequest) => {
+    try {
+      const formattedSocialLinks = socialLinksData.map((link) => ({
+        url: `${link.siteName}${link.url}`,
+        linkTypeId: link.id
+      }))
 
-    const { socialLinks, ...restData } = data
+      const { ...restData } = data
 
-    const addBotData = {
-      ...restData,
-      socialLinks: formattedSocialLinks
+      const addBotData = {
+        ...restData,
+        socialLinks: formattedSocialLinks
+      }
+      if (!isEdit && !botId) {
+        const response = await addBot({ createMezonAppRequest: addBotData }).unwrap()
+        toast.success('Add new bot success')
+        if (response.id) {
+          navigate(`/${response.id}`)
+        }
+        return
+      }
+      if (!botId) return
+      updateBot({ updateMezonAppRequest: { ...data, id: botId, socialLinks: formattedSocialLinks } })
+      toast.success('Edit bot success')
+    } catch (error: unknown) {
+      const err = error as ApiError
+      const message =
+        err?.data?.message && Array.isArray(err.data.message)
+          ? err.data.message.join(', ')
+          : err?.data?.message || 'Something went wrong'
+      toast.error(message)
     }
-
-    addBot({ createMezonAppRequest: addBotData })
-    toast.success('Add new bot success')
-    onResetAvatar()
-    reset()
   }
 
   const options = useMemo(() => {
@@ -64,34 +96,7 @@ function AddBotForm({ onResetAvatar }: IAddBotFormProps) {
     }))
   }, [tagList])
 
-  const optionsLink = useMemo(() => {
-    return linkTypeList?.map((item) => ({
-      label: `${item.icon} ${item.name}`,
-      value: item.id,
-      icon: item.icon
-    }))
-  }, [linkTypeList])
 
-  const addNewLink = () => {
-    if (selectedSocialLink?.length === 0) return
-    const selectedSocialLinkValue = Array.isArray(selectedSocialLink) ? selectedSocialLink[0] : selectedSocialLink
-    const selectedLink = optionsLink?.find((item) => item.value === selectedSocialLinkValue)
-
-    if (socialLinksData.some((link) => link.name === selectedLink?.label)) return
-
-    const defaultSocialLink = {
-      icon: selectedLink?.icon || '',
-      name: selectedLink?.label || '',
-      url: '',
-      id: selectedLink?.value || ''
-    }
-
-    setSocialLinks([...socialLinksData, defaultSocialLink])
-  }
-
-  const removeLink = (id: string) => {
-    setSocialLinks(socialLinksData.filter((link) => link.id !== id))
-  }
 
   const tagRender = (props: TagProps & { label?: string }) => {
     const { label, closable, onClose } = props
@@ -108,20 +113,59 @@ function AddBotForm({ onResetAvatar }: IAddBotFormProps) {
     )
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>, id: string) => {
+  const optionsLink = useMemo(() => {
+    return linkTypeList?.map((item) => ({
+      label: `${item.icon} ${item.name}`,
+      value: item.id,
+      icon: item.icon,
+      siteName: `https://${item.name.toLowerCase()}.com/`
+    }))
+  }, [linkTypeList])
+
+  const addNewLink = () => {
+    // if (not selectedSocialLink or socialLinkUrl not valid) then return
+    const trimmedUrl = socialLinkUrl.trim()
+    if (!selectedSocialLink || !trimmedUrl) return
+    // get selectedLink in optionsLink
+    const selectedLink = optionsLink?.find((item) => item.value === selectedSocialLink)
+    // if selectedLink in socialLinksData then return
+    if (socialLinksData.some((link) => link.name === selectedLink?.label)) return
+
+    const defaultSocialLink = {
+      icon: selectedLink?.icon || '',
+      name: selectedLink?.label || '',
+      url: `${trimmedUrl}`,
+      id: selectedLink?.value || '',
+      siteName: selectedLink?.siteName || ''
+    }
+    // add new links to the links list
+    setSocialLinksData([...socialLinksData, defaultSocialLink])
+    setSocialLinkUrl('')
+    setSelectedSocialLink('')
+  }
+
+  const removeLink = (id: string) => {
+    setSocialLinksData(socialLinksData.filter((link) => link.id !== id))
+  }
+
+  const handleSocialLinkUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSocialLinkUrl(e.target.value)
+  }
+
+  const editSocialLink = (e: React.ChangeEvent<HTMLInputElement>, id: string) => {
     const index = socialLinksData.findIndex((link) => link.id === id)
     if (index === -1) return
 
     const newLinks = [...socialLinksData]
     newLinks[index].url = e.target.value
-    setSocialLinks(newLinks)
+    setSocialLinksData(newLinks)
   }
 
   const handleSelectTag = (value: string[]) => {
     console.log(`selected ${value}`)
   }
 
-  const handleSelectLink = (value: SocialLinkDto[]) => {
+  const handleSelectLink = (value: string) => {
     console.log(`Link ${value}`)
   }
 
@@ -163,9 +207,9 @@ function AddBotForm({ onResetAvatar }: IAddBotFormProps) {
             name='description'
             render={({ field }) => (
               <RichTextEditor
-                  value={field.value || ""}
-                  onChange={field.onChange}
-                  customClass="custom-editor"
+                value={field.value || ""}
+                onChange={field.onChange}
+                customClass="custom-editor"
               />
             )}
           />
@@ -175,7 +219,7 @@ function AddBotForm({ onResetAvatar }: IAddBotFormProps) {
         </FormField>
         <FormField
           label='Install Link'
-          description='A place where users can install your bot on their Discord server.'
+          description='A place where users can install your bot on their Mezon server.'
           errorText={errors.installLink?.message}
         >
           <Controller
@@ -246,7 +290,6 @@ function AddBotForm({ onResetAvatar }: IAddBotFormProps) {
                     })}
                   </div>
                 )}
-                {console.log('field', field)}
               </>
             )}
           />
@@ -285,23 +328,20 @@ function AddBotForm({ onResetAvatar }: IAddBotFormProps) {
         <FormField label='Social Links' description='Link your social channels'>
           <div className='flex items-center gap-4 w-full'>
             <div className='flex-1'>
-              <Controller
-                control={control}
-                name='socialLinks'
-                render={({ field }) => (
-                  <Select
-                    {...field}
-                    options={optionsLink}
-                    placeholder='Link Types'
-                    className='w-full'
-                    value={field.value}
-                    onChange={(value) => {
-                      field.onChange(value)
-                      handleSelectLink(value)
-                    }}
-                  />
-                )}
+              <Select
+                options={optionsLink}
+                placeholder='Link Types'
+                className='w-full'
+                value={selectedSocialLink}
+                onChange={(value) => {
+                  setSelectedSocialLink(value)
+                  handleSelectLink(value)
+                }}
               />
+            </div>
+            <div className='flex-1'>
+              {/* TODO: remove hardcode prefix */}
+              <Input value={socialLinkUrl} prefix={selectedSocialLink ? `https://${linkTypeList.find(item => item.id === selectedSocialLink)?.name.toLocaleLowerCase() || ''}.com/` : ''} onChange={handleSocialLinkUrlChange} disabled={!selectedSocialLink} />
             </div>
             <div className='flex justify-end'>
               <Button onClick={addNewLink} customClassName='!w-[70px]'>
@@ -316,8 +356,8 @@ function AddBotForm({ onResetAvatar }: IAddBotFormProps) {
                   className='flex-1 border p-2 rounded'
                   value={link.url}
                   placeholder='Enter link'
-                  prefix={link?.icon}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(e, link?.id)}
+                  prefix={`${link?.icon} ${link.siteName}`}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => editSocialLink(e, link?.id)}
                 />
                 <Button onClick={() => removeLink(link?.id)} customClassName='!w-[70px]'>
                   Delete

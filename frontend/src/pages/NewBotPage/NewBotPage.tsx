@@ -1,12 +1,12 @@
 import Button from '@app/mtb-ui/Button'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
-import { Upload } from 'antd'
+import { Spin, Upload } from 'antd'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import AddBotForm from './components/AddBotForm/AddBotForm'
 import { useLazyTagControllerGetTagsQuery } from '@app/services/api/tag/tag'
 import { FormProvider, useForm } from 'react-hook-form'
-import { CreateMezonAppRequest } from '@app/services/api/mezonApp/mezonApp'
+import { CreateMezonAppRequest, useLazyMezonAppControllerGetMezonAppDetailQuery } from '@app/services/api/mezonApp/mezonApp'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { ADD_BOT_SCHEMA } from '@app/validations/addBot.validations'
 import { useSelector } from 'react-redux'
@@ -17,9 +17,18 @@ import { useLazyLinkTypeControllerGetAllLinksQuery } from '@app/services/api/lin
 import { useMediaControllerCreateMediaMutation } from '@app/services/api/media/media'
 import { getUrlImage } from '@app/utils/stringHelper'
 import { avatarBotDefault } from '@app/assets'
+import MTBAvatar from '@app/mtb-ui/Avatar/MTBAvatar'
+import useQueryParam from '@app/hook/useQueryParam'
+import { IMezonAppStore } from '@app/store/mezonApp'
+import { useParams } from 'react-router-dom'
+import useAuthRedirect from '@app/hook/useAuthRedirect'
 function NewBotPage() {
-  const [avatar, setAvatar] = useState<string>(avatarBotDefault)
+  const { userId } = useParams()
+  const { mezonAppDetail } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
   const { tagList } = useSelector<RootState, ITagStore>((s) => s.tag)
+  const { botId } = useParams()
+  const imgUrl = botId && mezonAppDetail.featuredImage ? getUrlImage(mezonAppDetail.featuredImage) : avatarBotDefault
+  const [avatar, setAvatar] = useState<string>(imgUrl)
   const methods = useForm<CreateMezonAppRequest>({
     defaultValues: {
       name: '',
@@ -33,21 +42,38 @@ function NewBotPage() {
       isAutoPublished: false,
       socialLinks: []
     },
-    resolver: yupResolver(ADD_BOT_SCHEMA)
+    resolver: yupResolver(ADD_BOT_SCHEMA), 
   })
-
-  const { setValue } = methods
+  
+  const { setValue, reset } = methods
   const nameValue = methods.watch("name");
   const headlineValue = methods.watch("headline");
 
   const [getTagList] = useLazyTagControllerGetTagsQuery()
   const [getSocialLink] = useLazyLinkTypeControllerGetAllLinksQuery()
-  const [uploadImage] = useMediaControllerCreateMediaMutation()
+  const [uploadImage, { isLoading: isUpdatingAvatar }] = useMediaControllerCreateMediaMutation()
+  const [getMezonAppDetails] = useLazyMezonAppControllerGetMezonAppDetailQuery()
+
+  useAuthRedirect()
 
   useEffect(() => {
     if (isEmpty(tagList.data)) getTagList()
     getSocialLink()
   }, [])
+
+  useEffect(() => {
+    if (!botId) {
+      reset()
+      return
+    }
+    getMezonAppDetails({ id: botId })
+  }, [botId])
+
+  useEffect(() => {
+    const { owner, tags, rateScore, featuredImage, ...rest } = mezonAppDetail
+    if (mezonAppDetail && botId) reset({ ...rest, tagIds: tags?.map(tag => tag.id) })
+    setAvatar(imgUrl)
+  }, [mezonAppDetail])
 
   const resetAvatar = () => {
     setAvatar(avatarBotDefault)
@@ -78,25 +104,20 @@ function NewBotPage() {
     <div className='pt-8 pb-12 w-[75%] m-auto'>
       <div className='flex items-center justify-between'>
         <div className='flex gap-6'>
-          <div className='w-[80px] object-cover'>
-            <img src={avatar} alt='Avatar' className='w-20 h-20 rounded-full' />
+          <div className='w-[80px] object-cover flex-shrink-0'>
+            <Upload customRequest={handleUpload} showUploadList={false}>
+              <MTBAvatar imgUrl={avatar} isAllowUpdate={true} isUpdatingAvatar={isUpdatingAvatar} />
+            </Upload>
           </div>
           <div>
             <MtbTypography variant='h4'>{nameValue || "Name"}</MtbTypography>
-            <MtbTypography variant='p'>{headlineValue ||'Headline (Short description)'}</MtbTypography>
+            <MtbTypography variant='p'>{headlineValue || 'Headline (Short description)'}</MtbTypography>
           </div>
-        </div>
-        <div>
-          <Upload customRequest={handleUpload} showUploadList={false}>
-            <Button color='primary' size='large'>
-              Change image
-            </Button>
-          </Upload>
         </div>
       </div>
       <div className='pt-8'>
         <FormProvider {...methods}>
-          <AddBotForm onResetAvatar={resetAvatar}></AddBotForm>
+          <AddBotForm isEdit={Boolean(botId)}></AddBotForm>
         </FormProvider>
       </div>
     </div>

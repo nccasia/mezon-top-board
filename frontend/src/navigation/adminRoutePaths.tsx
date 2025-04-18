@@ -11,28 +11,28 @@ export const adminRoutePaths: RoutePath[] = [
     index: true,
     path: '/manage/apps',
     element: <MezonAppsContainer />, // Default page when accessing /admin
-    label: 'Apps',
+    strLabel: 'Apps',
     icon: <AppstoreAddOutlined />,
     isShowMenu: true
   },
   {
     path: '/manage/review-history',
     element: <ReviewHistoryPage />,
-    label: 'Review History',
+    strLabel: 'Review History',
     icon: <HistoryOutlined />,
     isShowMenu: true
   },
   {
     path: "/manage/users",
     element: <UsersList/>,
-    label: "Users",
+    strLabel: "Users",
     icon: <UserOutlined/>,
     isShowMenu: true
   },
   {
     path: '/manage/settings',
     element: <h1>Settings</h1>,
-    label: 'Settings',
+    strLabel: 'Settings',
     icon: <SettingOutlined />,
     isShowMenu: true
   }
