@@ -2,6 +2,7 @@ import FormField from '@app/components/FormField/FormField'
 import RichTextEditor from "@app/components/RichText/RichText"
 import { errorStatus } from '@app/constants/common.constant'
 import Button from '@app/mtb-ui/Button'
+import { ImgIcon } from '@app/mtb-ui/ImgIcon/ImgIcon'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import {
   CreateMezonAppRequest,
@@ -20,6 +21,13 @@ import { Controller, useFieldArray, useFormContext } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
+
+const SocialLinkIcon = ({ src, prefixUrl }: { src?: string, prefixUrl?: string }) => {
+  return <div className='flex items-center gap-2'>
+    <ImgIcon src={src || ''} width={17} /> {prefixUrl}
+  </div>
+}
+
 function AddBotForm({ isEdit }: IAddBotFormProps) {
   const {
     control,
@@ -106,9 +114,10 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
 
   const optionsLink = useMemo(() => {
     return linkTypeList?.map((item) => ({
-      label: `${item.icon} ${item.name}`,
-      value: item.id,
       icon: item.icon,
+      label: <SocialLinkIcon src={item?.icon} prefixUrl={item?.name} />,
+      name: item.name,
+      value: item.id,
       siteName: item.prefixUrl,
     }))
   }, [linkTypeList])
@@ -125,6 +134,12 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
       icon: selectedLink.icon,
       url: `${trimmedUrl}`,
       linkTypeId: selectedLink?.value,
+      type: {
+        id: selectedLink?.value,
+        name: selectedLink?.name,
+        prefixUrl: selectedLink?.siteName,
+        icon: selectedLink?.icon
+      }
     }
     // add new links to the links list
     append(defaultSocialLink)
@@ -325,7 +340,7 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
                         {...field}
                         className='flex-1 border p-2 rounded'
                         placeholder='Enter link'
-                        prefix={`${link?.type?.icon} ${link?.type?.prefixUrl}`}
+                        prefix={<SocialLinkIcon src={link?.type?.icon} prefixUrl={link?.type?.prefixUrl} />}
                       />
                       <Button onClick={() => remove(index)} customClassName='!w-[70px]'>
                         Delete
