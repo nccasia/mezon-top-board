@@ -12,11 +12,11 @@ import { RootState } from '@app/store'
 import { ILinkTypeStore } from '@app/store/linkType'
 import { ITagStore } from '@app/store/tag'
 import { ApiError } from '@app/types/API.types'
-import { IAddBotFormProps, ISocialLinksData } from '@app/types/Botcard.types'
+import { IAddBotFormProps } from '@app/types/Botcard.types'
 import { Checkbox, Form, Input, Select, TagProps } from 'antd'
 import TextArea from 'antd/es/input/TextArea'
-import { useEffect, useMemo, useState } from 'react'
-import { Controller, useFormContext } from 'react-hook-form'
+import { useMemo, useState } from 'react'
+import { Controller, useFieldArray, useFormContext } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -24,7 +24,7 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
   const {
     control,
     handleSubmit,
-    watch,
+    setValue,
     formState: { errors }
   } = useFormContext<CreateMezonAppRequest>()
   const [addBot] = useMezonAppControllerCreateMezonAppMutation()
@@ -32,35 +32,27 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
   const [updateBot] = useMezonAppControllerUpdateMezonAppMutation()
   const { tagList } = useSelector<RootState, ITagStore>((s) => s.tag)
   const { linkTypeList } = useSelector<RootState, ILinkTypeStore>((s) => s.link)
-  const socialLinksInMezonAppDetails = watch('socialLinks')
   const [selectedSocialLink, setSelectedSocialLink] = useState<string>('') // holds selected link type id
-  const [socialLinksData, setSocialLinksData] = useState<ISocialLinksData[]>([])
+  const { fields: socialLinksData, append, remove } = useFieldArray({
+    control,
+    name: 'socialLinks'
+  });
   const [socialLinkUrl, setSocialLinkUrl] = useState<string>('')
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const { botId } = useParams()
 
-  useEffect(() => {
-    if (!socialLinksInMezonAppDetails?.length) return
-    const formattedLinksData = socialLinksInMezonAppDetails.map(link => {
-      const urlObj = new URL(link.url || '');
-      return {
-        icon: link?.icon || '',
-        name: `${urlObj.host}`.toUpperCase(),
-        url: `${urlObj.pathname.slice(1)}`,
-        id: link?.linkTypeId || '',
-        siteName: `${urlObj.protocol}//${urlObj.host}/`
-      }
-    })
-    setSocialLinksData(formattedLinksData)
-  }, [socialLinksInMezonAppDetails])
-
   const onSubmit = async (data: CreateMezonAppRequest) => {
     try {
-      const formattedSocialLinks = socialLinksData.map((link) => ({
-        url: `${link.siteName}${link.url}`,
-        linkTypeId: link.id
-      }))
+      const formattedSocialLinks = socialLinksData.map((link) => {
+        const selectedLink = optionsLink?.find((item) => item.value === link.linkTypeId)
+        if (!selectedLink) return link
+        const siteName = selectedLink.siteName
+        return {
+          url: `${siteName}${link.url}`,
+          linkTypeId: selectedLink.value,
+        }
+      })
 
       const { ...restData } = data
 
@@ -72,7 +64,7 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
         const response = await addBot({ createMezonAppRequest: addBotData }).unwrap()
         toast.success('Add new bot success')
         if (response.id) {
-          navigate(`/${response.id}`)
+          navigate(`/bot/${response.id}`)
         }
         return
       }
@@ -118,7 +110,7 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
       label: `${item.icon} ${item.name}`,
       value: item.id,
       icon: item.icon,
-      siteName: `https://${item.name.toLowerCase()}.com/`
+      siteName: `https://${item.name.toLowerCase()}.com/`,
     }))
   }, [linkTypeList])
 
@@ -128,37 +120,21 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
     if (!selectedSocialLink || !trimmedUrl) return
     // get selectedLink in optionsLink
     const selectedLink = optionsLink?.find((item) => item.value === selectedSocialLink)
-    // if selectedLink in socialLinksData then return
-    if (socialLinksData.some((link) => link.name === selectedLink?.label)) return
+    if (!selectedLink) return
 
     const defaultSocialLink = {
-      icon: selectedLink?.icon || '',
-      name: selectedLink?.label || '',
+      icon: selectedLink.icon,
       url: `${trimmedUrl}`,
-      id: selectedLink?.value || '',
-      siteName: selectedLink?.siteName || ''
+      linkTypeId: selectedLink?.value,
     }
     // add new links to the links list
-    setSocialLinksData([...socialLinksData, defaultSocialLink])
+    append(defaultSocialLink)
     setSocialLinkUrl('')
     setSelectedSocialLink('')
   }
 
-  const removeLink = (id: string) => {
-    setSocialLinksData(socialLinksData.filter((link) => link.id !== id))
-  }
-
   const handleSocialLinkUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSocialLinkUrl(e.target.value)
-  }
-
-  const editSocialLink = (e: React.ChangeEvent<HTMLInputElement>, id: string) => {
-    const index = socialLinksData.findIndex((link) => link.id === id)
-    if (index === -1) return
-
-    const newLinks = [...socialLinksData]
-    newLinks[index].url = e.target.value
-    setSocialLinksData(newLinks)
   }
 
   const handleSelectTag = (value: string[]) => {
@@ -350,20 +326,26 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
             </div>
           </div>
           {!!socialLinksData.length &&
-            socialLinksData.map((link, index) => (
-              <div key={index} className='mt-4 flex gap-4'>
-                <Input
-                  className='flex-1 border p-2 rounded'
-                  value={link.url}
-                  placeholder='Enter link'
-                  prefix={`${link?.icon} ${link.siteName}`}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => editSocialLink(e, link?.id)}
-                />
-                <Button onClick={() => removeLink(link?.id)} customClassName='!w-[70px]'>
-                  Delete
-                </Button>
-              </div>
-            ))}
+            socialLinksData.map((link, index) => {
+              const selectedLink = optionsLink?.find((item) => item.value === link.linkTypeId)
+              const siteName = selectedLink?.siteName || '';
+              return (
+                <div key={index} className='mt-4 flex gap-4'>
+                  <Input
+                    onChange={(e) => {
+                      setValue(`socialLinks.${index}.url`, e.target.value)
+                    }}
+                    className='flex-1 border p-2 rounded'
+                    value={link.url}
+                    placeholder='Enter link'
+                    prefix={`${link?.icon} ${siteName}`}
+                  />
+                  <Button onClick={() => remove(index)} customClassName='!w-[70px]'>
+                    Delete
+                  </Button>
+                </div>
+              )
+            })}
         </FormField>
         <div className='flex !justify-end pt-8 gap-4 items-center'>
           <Button color='default' customClassName='w-[200px] !text-blue-500'>
