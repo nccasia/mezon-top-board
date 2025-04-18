@@ -1,4 +1,4 @@
-import { DeleteOutlined, EditOutlined, LockOutlined } from "@ant-design/icons";
+import { CiOutlined, DeleteOutlined, EditOutlined, LockOutlined } from "@ant-design/icons";
 import sampleBotImg from "@app/assets/images/avatar-bot-default.png";
 import { AppStatus } from "@app/enums/AppStatus.enum";
 import { GetMezonAppDetailsResponse, useLazyMezonAppControllerListAdminMezonAppQuery, useMezonAppControllerDeleteMezonAppMutation } from "@app/services/api/mezonApp/mezonApp";
@@ -108,6 +108,25 @@ const MezonApps = ({ onEdit }: { onEdit: (app: GetMezonAppDetailsResponse) => vo
       title: "Name",
       dataIndex: "name",
       key: "name",
+    },
+    {
+      title: "Owner",
+      dataIndex: "owner",
+      key: "owner",
+      render: (owner: { name: string }) => owner.name,
+    },
+    {
+      title: "Try",
+      dataIndex: "installLink",
+      key: "installLink",
+      render: (installLink: string) => (
+        <Tooltip title="Try Install">
+          <Button type="primary" color="cyan" variant="outlined" href={installLink} target="_blank" rel="noopener noreferrer">
+            <CiOutlined />
+          </Button>
+        </Tooltip>
+      )
+
     },
     {
       title: "Status",

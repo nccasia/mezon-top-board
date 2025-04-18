@@ -70,7 +70,8 @@ export class SearchMezonAppResponse extends PickType(GetMezonAppDetailsResponse,
   "status",
   "featuredImage",
   "tags",
-  "rateScore"
+  "rateScore",
+  "owner"
 ]) { }
 
 export class GetRelatedMezonAppResponse extends OmitType(SearchMezonAppResponse, ["description", "tags", "headline"]) {

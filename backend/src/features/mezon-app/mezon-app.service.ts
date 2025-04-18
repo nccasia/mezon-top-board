@@ -333,7 +333,8 @@ export class MezonAppService {
       .getRepository()
       .createQueryBuilder("app")
       .leftJoinAndSelect("app.tags", "tag")
-      .leftJoinAndSelect("app.ratings", "rating");
+      .leftJoinAndSelect("app.ratings", "rating")
+      .leftJoinAndSelect("app.owner", "owner");
 
     // Priorize to search by keyword if field and search exist at the same time.
     if (query.search)
@@ -362,6 +363,7 @@ export class MezonAppService {
           id: tag.id,
           name: tag.name,
         }));
+        mappedMezonApp.owner = entity.owner;
         return mappedMezonApp;
       },
     );
