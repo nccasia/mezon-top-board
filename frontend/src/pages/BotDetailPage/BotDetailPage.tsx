@@ -49,26 +49,13 @@ function BotDetailPage() {
   const searchQuery = searchParams.get('q') || ''
   useEffect(() => {
     if (botId && botId !== 'undefined' && botId.trim() !== '') {
-      getMezonAppDetail({ id: botId })
-        .catch(err => {
-          console.error("Cannot get MezonAppDetail :", err);
-          navigate('/*');
-        });
-        
+      getMezonAppDetail({ id: botId });
       getrelatedMezonApp({ id: botId });
       getRatingsByApp({ appId: botId });
     } else {
       navigate('/*');
     }
   }, [botId]);
-  
-  useEffect(() => {
-    console.log('botId', botId, 'mezonAppDetail', mezonAppDetail.id)
-    if (mezonAppDetail.id !== botId && mezonAppDetail.id === undefined && isSuccess) {
-      navigate('/*')
-      return
-    }
-  }, [botId, mezonAppDetail])
 
   useEffect(() => {
     if (!tagList?.data?.length) {
@@ -79,7 +66,7 @@ function BotDetailPage() {
   useEffect(() => {
     if (isError && error && isSuccess) {
       const apiError = error as ApiError
-      if (apiError?.status === 404 || apiError?.data?.statusCode === 404) {
+      if (mezonAppDetail.id === undefined && apiError?.status === 500) {
         navigate('/*');
       } else {
         toast.error(apiError?.data?.message);
