@@ -39,7 +39,7 @@ const RatingForm = ({ onSubmitted }: RatingFormProps) => {
 
   return (
     <div className='flex items-start gap-8 p-4 rounded-lg'>
-      <img src={getUrlImage(userInfo?.profileImage) || avatar} alt={userInfo.name} className='w-15 h-15 rounded-full object-cover mt-1' />
+      <img src={userInfo?.profileImage ? getUrlImage(userInfo?.profileImage) : avatar} alt={userInfo.name} className='w-15 h-15 rounded-full object-cover mt-1' />
       <div className='flex-1 flex flex-col gap-2'>
         <MtbTypography variant='h4'>{userInfo.name}</MtbTypography>
         <Form onFinish={handleSubmit(onSubmit)}>
