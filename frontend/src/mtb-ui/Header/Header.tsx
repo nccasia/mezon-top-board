@@ -85,7 +85,7 @@ function Header() {
 
   return (
     <div
-      className={`flex bg-white z-1 items-center justify-between py-4 px-5 lg:px-20 border-t-1 border-b-1 border-gray-200 cursor-pointer sticky top-0`}
+      className={`flex bg-white z-2 items-center justify-between py-4 px-5 lg:px-20 border-t-1 border-b-1 border-gray-200 cursor-pointer sticky top-0`}
     >
       <div className='flex items-center gap-3' onClick={() => navigate('/')}>
         <div className='h-[50px]'>
