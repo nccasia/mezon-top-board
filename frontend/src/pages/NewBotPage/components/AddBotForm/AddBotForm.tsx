@@ -153,7 +153,7 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
 
   return (
     <div className='shadow-md p-8 rounded-md bg-white'>
-      <Form layout='vertical' onFinish={handleSubmit(onSubmit)}>
+      <Form layout='vertical' onFinish={handleSubmit(onSubmit)} className='overflow-hidden'>
         <MtbTypography variant='h4'>Your Bot Detail</MtbTypography>
         <FormField label='Name' description='Name your bot' errorText={errors.name?.message}>
           <Controller
