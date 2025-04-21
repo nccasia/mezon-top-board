@@ -99,7 +99,9 @@ function BotDetailPage() {
             {relatedMezonApp?.length > 0 ? (
               <div className='flex gap-10 items-center max-lg:text-center max-2xl:text-center max-lg:flex-wrap max-2xl:flex-wrap max-lg:justify-center max-2xl:justify-center'>
                 {relatedMezonApp.map((bot) => (
-                  <CompactBotCard key={bot.id} data={bot} />
+                  <div className="w-45 flex-shrink-0" key={bot.id}>
+                    <CompactBotCard data={bot} />
+                  </div>
                 ))}
               </div>
             ) : (
