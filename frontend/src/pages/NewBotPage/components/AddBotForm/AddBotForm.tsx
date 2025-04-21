@@ -331,7 +331,7 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
             socialLinksData.map((link, index) => {
               return (
                 <Controller
-                  key={index}
+                  key={link.id}
                   name={`socialLinks.${index}.url`}
                   control={control}
                   render={({ field }) => (
