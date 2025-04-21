@@ -105,6 +105,7 @@ export type GetUserDetailsResponse = {
   name: string
   email: string
   bio: string
+  role: Role
   profileImage: string
   deletedAt: Date | null
 }
