@@ -36,7 +36,7 @@ function BotCard({ readonly = false, data }: IBotCardProps) {
           <img src={imgUrl} alt='Bot' className='w-full h-auto object-cover aspect-square' />
         </div>
 
-        <div className='flex flex-1 flex-col gap-3 overflow-hidden min-w-0'>
+        <div className='flex flex-1 flex-col gap-3 overflow-hidden min-w-0 w-full'>
           <div className='truncate-title '>
             <style>
               {`
@@ -49,7 +49,7 @@ function BotCard({ readonly = false, data }: IBotCardProps) {
                   }
                 `}
             </style>
-            <MtbTypography variant='h4' customClassName='max-w-6/7' >{data?.name}</MtbTypography>
+            <MtbTypography variant='h4' customClassName='md:max-w-[calc(100%-100px)] max-w-full' >{data?.name}</MtbTypography>
           </div>
           <div className='flex gap-1'>
             {data?.status !== AppStatus.PUBLISHED && <Tag color='red'>UNPUBLISHED</Tag>}
@@ -63,7 +63,7 @@ function BotCard({ readonly = false, data }: IBotCardProps) {
             ))}
           </div>
           <div
-            className='text-gray-700 break-words max-w-full'
+            className='text-gray-700 break-words'
             style={{
               overflow: 'hidden',
               textOverflow: 'ellipsis',
