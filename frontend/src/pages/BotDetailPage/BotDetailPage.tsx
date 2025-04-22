@@ -85,7 +85,7 @@ function BotDetailPage() {
         ></SearchBar>
       </div>
       <div className='pt-5 pb-5'>
-        <BotCard readonly={true} data={mezonAppDetail} isNavigate={false}></BotCard>
+        <BotCard readonly={true} data={mezonAppDetail} canNavigateOnClick={false}></BotCard>
       </div>
       <MtbTypography variant='h3' textStyle={[TypographyStyle.UNDERLINE]}>
         Overview
