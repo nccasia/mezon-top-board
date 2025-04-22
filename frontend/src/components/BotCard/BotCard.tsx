@@ -11,7 +11,7 @@ import { Popover, Tag } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import ShareButton from './components/ShareButton'
 
-function BotCard({ readonly = false, data }: IBotCardProps) {
+function BotCard({ readonly = false, data, isNavigate = true }: IBotCardProps) {
   const navigate = useNavigate()
   const handleInvite = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
@@ -29,7 +29,7 @@ function BotCard({ readonly = false, data }: IBotCardProps) {
   return (
     <div
       className='shadow-md pb-8 pt-8 px-8 border border-gray-300 relative rounded-xl cursor-pointer'
-      onClick={() => navigate(`/bot/${data?.id}`)}
+      onClick={isNavigate ? () => navigate(`/bot/${data?.id}`) : undefined}
     >
       <div className='flex flex-col md:flex-row items-start gap-6 w-full'>
         <div className='w-24 md:w-36 flex-shrink-0'>
