@@ -3,6 +3,7 @@ import { GetMezonAppDetailsResponse, GetRelatedMezonAppResponse } from '@app/ser
 export interface IBotCardProps {
   readonly?: boolean
   data?: GetMezonAppDetailsResponse
+  canNavigateOnClick?: boolean
 }
 
 export interface ICompactBotCardProps {
