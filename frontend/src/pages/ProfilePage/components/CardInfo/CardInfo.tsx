@@ -1,26 +1,27 @@
 import {
   CreditCardOutlined,
-  EditOutlined,
   InfoCircleOutlined,
-  LoadingOutlined,
   SettingOutlined,
+  SyncOutlined,
   UserAddOutlined
 } from '@ant-design/icons'
 import avatar from '@app/assets/images/default-user.webp'
+import { AppEvent } from '@app/enums/AppEvent.enum'
 import { TypographyStyle } from '@app/enums/typography.enum'
+import MTBAvatar from '@app/mtb-ui/Avatar/MTBAvatar'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import { useMediaControllerCreateMediaMutation } from '@app/services/api/media/media'
-import { useUserControllerSelfUpdateUserMutation } from '@app/services/api/user/user'
+import { useUserControllerSelfUpdateUserMutation, useUserControllerSyncMezonMutation } from '@app/services/api/user/user'
 import { getUrlImage } from '@app/utils/stringHelper'
-import { Spin, Upload } from 'antd'
+import { Button, Popconfirm, Upload } from 'antd'
 import { toast } from 'react-toastify'
 import { CardInfoProps } from './CardInfo.types'
-import MTBAvatar from '@app/mtb-ui/Avatar/MTBAvatar'
 
 function CardInfo({ isPublic, userInfo }: CardInfoProps) {
   const imgUrl = userInfo?.profileImage ? getUrlImage(userInfo.profileImage) : avatar
   const [selfUpdate] = useUserControllerSelfUpdateUserMutation()
   const [uploadImage, { isLoading: isUpdatingAvatar }] = useMediaControllerCreateMediaMutation()
+  const [syncMezon] = useUserControllerSyncMezonMutation()
 
   const cardInfoLink = [
     {
@@ -71,6 +72,18 @@ function CardInfo({ isPublic, userInfo }: CardInfoProps) {
     }
   }
 
+  const handleSyncMezon = async () => {
+    if (isPublic) return
+
+    try {
+      await syncMezon(undefined).unwrap()
+      window.dispatchEvent(new Event(AppEvent.SYNC_MEZON));
+      toast.success('Sync Success')
+    } catch (error) {
+      toast.error('Sync failed!')
+    }
+  }
+
   return (
     <div className='flex flex-col gap-7 p-4 shadow-sm rounded-2xl'>
       <div className='flex items-center gap-4 w-full max-lg:flex-col max-2xl:flex-col'>
@@ -102,6 +115,23 @@ function CardInfo({ isPublic, userInfo }: CardInfoProps) {
             ))}
         </ul>
       </div>
+      <Popconfirm
+        title='Confirm Sync from Mezon'
+        description='Are you sure to sync name and avatar for this user? This action cannot be undone!'
+        onConfirm={handleSyncMezon}
+        okText='Yes'
+        cancelText='No'
+      >
+        <Button
+          className='mt-2'
+          color='danger'
+          size='large'
+          variant='outlined'
+          icon={<SyncOutlined />}
+        >
+          Sync from Mezon
+        </Button>
+      </Popconfirm>
     </div>
   )
 }

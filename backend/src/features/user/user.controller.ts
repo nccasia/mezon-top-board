@@ -88,4 +88,10 @@ export class UserController {
   async activateUser(@Body() body: RequestWithId) {
     return this.userService.activateUser(body);
   }
+
+  @Post("/sync-mezon")
+  @ApiBearerAuth()
+  async markWaitingForSync(@GetUserFromHeader() user: User) {
+    return this.userService.markWillSyncFromMezon(user.id);
+  }
 }

@@ -44,7 +44,10 @@ const injectedRtkApi = api.injectEndpoints({
       UserControllerSelfUpdateUserApiArg
     >({
       query: (queryArg) => ({ url: `/api/user/self-update`, method: 'PUT', body: queryArg.selfUpdateUserRequest })
-    })
+    }),
+    userControllerSyncMezon: build.mutation<UserControllerSyncMezonApiResponse, unknown>({
+      query: () => ({ url: `/api/user/sync-mezon`, method: 'POST' })
+    }),
   }),
   overrideExisting: false
 })
@@ -74,6 +77,7 @@ export type UserControllerActivateUserApiResponse = unknown
 export type UserControllerActivateUserApiArg = {
   requestWithId: RequestWithId
 }
+export type UserControllerSyncMezonApiResponse = unknown
 export type UserControllerGetUserDetailsApiResponse = HttpResponse<GetUserDetailsResponse>
 export type UserControllerGetUserDetailsApiArg = void
 export type UserControllerGetPublicProfileApiResponse = HttpResponse<GetPublicProfileResponse>
@@ -131,5 +135,6 @@ export const {
   useLazyUserControllerGetUserDetailsQuery,
   useUserControllerGetPublicProfileQuery,
   useLazyUserControllerGetPublicProfileQuery,
-  useUserControllerSelfUpdateUserMutation
+  useUserControllerSelfUpdateUserMutation,
+  useUserControllerSyncMezonMutation,
 } = injectedRtkApi
