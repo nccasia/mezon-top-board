@@ -8,8 +8,8 @@ const useAdminCheck = () => {
   const navigate = useNavigate()
   const { userInfo } = useSelector<RootState, IUserStore>((s) => s.user)
 
-  const checkAdmin = () => {
-    if (userInfo.role !== 'ADMIN') {
+  const checkAdmin = ({userRole}: { userRole?: string }) => {
+    if (userInfo.role !== 'ADMIN' || userRole !== 'ADMIN') {
       toast.warning('You do not have permission to access this page.')
       navigate('/')
       return false

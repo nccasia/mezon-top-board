@@ -7,8 +7,18 @@ import { useSelector } from 'react-redux'
 import { Route, useLocation } from 'react-router'
 import { adminRoutePaths } from './adminRoutePaths'
 import { routePaths } from './routePaths'
+import { useEffect, useState } from 'react'
+import { IUserStore } from '@app/store/user'
 
 export const renderRoutes = () => {
+  const { userInfo } = useSelector<RootState, IUserStore>((s) => s.user)
+  const [userRole, setUserRole] = useState<string>(userInfo.role || undefined)
+  useEffect(() => {
+    if (userInfo.id) {
+      setUserRole(userInfo.role)
+    }
+  }, [userInfo]) 
+
   const getRouteCompact = (route: RoutePath) => {
     const getRouteSingular = (route: RoutePath, key?: string) => <Route key={key || route.path} path={route.path} element={route.element} index={route.index} />
 
@@ -30,9 +40,11 @@ export const renderRoutes = () => {
       </Route>
 
       {/* ROUTE FOR ADMIN */}
-      <Route path='/manage' element={<AdminLayout />}>
-        {adminRoutePaths.map((route) => getRouteCompact(route))}
-      </Route>
+      {userRole !== undefined && (
+        <Route path='/manage' element={<AdminLayout hasUserRole={userRole}/>}>
+          {adminRoutePaths.map((route) => getRouteCompact(route))}
+        </Route>
+      )}
     </>
   )
 }
