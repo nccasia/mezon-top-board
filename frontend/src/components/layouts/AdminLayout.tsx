@@ -6,6 +6,8 @@ import { Breadcrumb, Image, Layout, Menu } from 'antd'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import styles from './AdminLayout.module.scss'; // Import the styles
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
+import useAdminCheck from '@app/hook/useAdminCheck'
+import { useEffect } from 'react'
 
 const { Header, Footer, Sider, Content } = Layout
 
@@ -13,9 +15,12 @@ function AdminLayout() {
   document.title = 'Management - Mezon Top Board'
   const location = useLocation()
   const pathSnippets = location.pathname.split('/').filter((i) => i)
-  const { isLogin } = useAuth()
 
+  const { checkAdmin } = useAdminCheck()
   useAuthRedirect()
+  useEffect(() => {
+    checkAdmin()
+  }, [])
 
   return (
     <Layout className={styles['admin-layout']}>

@@ -44,7 +44,7 @@ export const LoginRedirectPage = () => {
     } catch (_) {
       toast.error('Login failed!')
     } finally {
-      navigate('/')
+      navigate('/', { replace: true })
     }
   }
 
