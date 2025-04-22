@@ -40,11 +40,10 @@ export type RatingControllerCreateRatingApiArg = {
 
 export type Rating = {
   id: string
-  userId: string
   score: number
   comment: string
   updatedAt: string
-  user: User
+  user: Pick<User, 'id' | 'name' | 'profileImage'>
   app: App
 }
 
