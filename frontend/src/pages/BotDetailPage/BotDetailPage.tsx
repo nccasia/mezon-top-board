@@ -91,8 +91,8 @@ function BotDetailPage() {
         Overview
       </MtbTypography>
       <div className='flex gap-10 pt-5 pb-5'>
-        <div className='flex-3'>
-          <div dangerouslySetInnerHTML={{ __html: mezonAppDetail.description }}></div>
+        <div className='flex-3 max-w-[calc(75%-2.5rem)]'>
+          <div dangerouslySetInnerHTML={{ __html: mezonAppDetail.description }} className='break-words'></div>
           <div className='pt-5'>
             <MtbTypography variant='h3'>More like this</MtbTypography>
             <Divider className='bg-gray-200'></Divider>
