@@ -8,14 +8,15 @@ import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import { useEffect } from 'react'
 import useAdminCheck from '@app/hook/useAdminCheck'
 
+
 const { Header, Footer, Sider, Content } = Layout
 
 function AdminLayout({hasUserRole}: { hasUserRole: string }) {
   document.title = 'Management - Mezon Top Board'
   const location = useLocation()
   const pathSnippets = location.pathname.split('/').filter((i) => i)
-  const {checkAdmin} = useAdminCheck()
 
+  const { checkAdmin } = useAdminCheck()
   useAuthRedirect()
   useEffect(() => {
     checkAdmin({userRole: hasUserRole})

@@ -51,6 +51,10 @@ export const handleMapOption = (enums: Record<string, string>) => {
 }
 
 export const getUrlImage = (path: string) => {
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    return path
+  }
+
   return `${process.env.REACT_APP_BACKEND_URL}/api${path}`;
 }
 

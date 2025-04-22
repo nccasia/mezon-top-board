@@ -14,6 +14,7 @@ import { useNavigate } from 'react-router-dom'
 import MtbTypography from '../Typography/Typography'
 import styles from './Header.module.scss'
 import { useAuth } from '@app/hook/useAuth'
+import { AppEvent } from '@app/enums/AppEvent.enum'
 
 function Header() {
   const navigate = useNavigate()
@@ -31,6 +32,11 @@ function Header() {
     window.scrollTo(0, 0)
   }
 
+  const handleSyncMezon = () => {
+    handleLogout()
+    handleLogin()
+  }
+
   const itemsDropdown: MenuProps['items'] = [
     {
       key: '1',
@@ -45,6 +51,16 @@ function Header() {
       getUserInfo()
     }
   }, [isLogin])
+
+  useEffect(() => {
+    // window.addEventListener(AppEvent.LOGOUT, handleLogout)
+    window.addEventListener(AppEvent.SYNC_MEZON, handleSyncMezon)
+
+    return () => {
+      // window.removeEventListener(AppEvent.LOGOUT, handleLogout)
+      window.removeEventListener(AppEvent.SYNC_MEZON, handleSyncMezon)
+    }
+  }, [])
 
   const renderHeaderItems = () => {
     return (

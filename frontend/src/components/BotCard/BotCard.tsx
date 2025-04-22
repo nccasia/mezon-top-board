@@ -11,7 +11,7 @@ import { Popover, Tag } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import ShareButton from './components/ShareButton'
 
-function BotCard({ readonly = false, data }: IBotCardProps) {
+function BotCard({ readonly = false, data, canNavigateOnClick = true }: IBotCardProps) {
   const navigate = useNavigate()
   const handleInvite = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
@@ -29,14 +29,14 @@ function BotCard({ readonly = false, data }: IBotCardProps) {
   return (
     <div
       className='shadow-md pb-8 pt-8 px-8 border border-gray-300 relative rounded-xl cursor-pointer'
-      onClick={() => navigate(`/bot/${data?.id}`)}
+      onClick={canNavigateOnClick ? () => navigate(`/bot/${data?.id}`) : undefined}
     >
       <div className='flex flex-col md:flex-row items-start gap-6 w-full'>
         <div className='w-24 md:w-36 flex-shrink-0'>
           <img src={imgUrl} alt='Bot' className='w-full h-auto object-cover aspect-square' />
         </div>
 
-        <div className='flex flex-1 flex-col gap-3 overflow-hidden min-w-0'>
+        <div className='flex flex-1 flex-col gap-3 overflow-hidden min-w-0 w-full'>
           <div className='truncate-title '>
             <style>
               {`
@@ -49,7 +49,7 @@ function BotCard({ readonly = false, data }: IBotCardProps) {
                   }
                 `}
             </style>
-            <MtbTypography variant='h4' customClassName='max-w-6/7' >{data?.name}</MtbTypography>
+            <MtbTypography variant='h4' customClassName='md:max-w-[calc(100%-100px)] max-w-full' >{data?.name}</MtbTypography>
           </div>
           <div className='flex gap-1'>
             {data?.status !== AppStatus.PUBLISHED && <Tag color='red'>UNPUBLISHED</Tag>}
