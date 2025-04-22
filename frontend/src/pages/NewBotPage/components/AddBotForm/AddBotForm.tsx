@@ -240,6 +240,7 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
                 <Select
                   {...field}
                   allowClear
+                  optionFilterProp='label'
                   value={field.value || []}
                   mode='multiple'
                   options={options}
