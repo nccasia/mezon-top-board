@@ -159,7 +159,7 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
           <Controller
             control={control}
             name='name'
-            render={({ field }) => <Input {...field} onBlur={(e) => field.onChange(e.target.value.trim())} placeholder='MezonBot' status={errorStatus(errors.name)} />}
+            render={({ field }) => <Input {...field} placeholder='MezonBot' status={errorStatus(errors.name)} />}
           />
         </FormField>
         <FormField
@@ -173,7 +173,6 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
             render={({ field }) => (
               <TextArea
                 {...field}
-                onBlur={(e) => field.onChange(e.target.value.trim())}
                 placeholder='A powerful and multi-functional role bot.'
                 status={errorStatus(errors.headline)}
               />
@@ -211,7 +210,6 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
             render={({ field }) => (
               <Input
                 {...field}
-                onBlur={(e) => field.onChange(e.target.value.trim())}
                 placeholder='https://mezon.ai/oauth2/authorize?client_id=1261258962204889149&scope=bot'
                 status={errorStatus(errors.installLink)}
               />
@@ -226,7 +224,7 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
           <Controller
             control={control}
             name='prefix'
-            render={({ field }) => <Input {...field} placeholder='*' onBlur={(e) => field.onChange(e.target.value.trim())} status={errorStatus(errors.prefix)} />}
+            render={({ field }) => <Input {...field} placeholder='*' status={errorStatus(errors.prefix)} />}
           />
         </FormField>
         <FormField
@@ -286,7 +284,7 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
             control={control}
             name='supportUrl'
             render={({ field }) => (
-              <Input {...field} placeholder='https://mezon.ai/support' onBlur={(e) => field.onChange(e.target.value.trim())} status={errorStatus(errors.supportUrl)} />
+              <Input {...field} placeholder='https://mezon.ai/support' status={errorStatus(errors.supportUrl)} />
             )}
           />
         </FormField>
