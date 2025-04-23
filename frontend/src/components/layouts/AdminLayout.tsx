@@ -2,16 +2,14 @@ import logo from '@app/assets/images/topLogo.png'
 import useAuthRedirect from '@app/hook/useAuthRedirect'
 import { adminRoutePaths } from '@app/navigation/adminRoutePaths'
 import { Breadcrumb, Layout, Menu } from 'antd'
-import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import styles from './AdminLayout.module.scss'; // Import the styles
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import { useEffect } from 'react'
 import useAdminCheck from '@app/hook/useAdminCheck'
-
-
 const { Header, Footer, Sider, Content } = Layout
 
-function AdminLayout({hasUserRole}: { hasUserRole: string }) {
+function AdminLayout() {
   document.title = 'Management - Mezon Top Board'
   const location = useLocation()
   const pathSnippets = location.pathname.split('/').filter((i) => i)
@@ -19,7 +17,7 @@ function AdminLayout({hasUserRole}: { hasUserRole: string }) {
   const { checkAdmin } = useAdminCheck()
   useAuthRedirect()
   useEffect(() => {
-    checkAdmin({userRole: hasUserRole})
+    checkAdmin()
   }, [])
 
   return (

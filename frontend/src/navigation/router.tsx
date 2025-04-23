@@ -7,17 +7,19 @@ import { useSelector } from 'react-redux'
 import { Route, useLocation } from 'react-router'
 import { adminRoutePaths } from './adminRoutePaths'
 import { routePaths } from './routePaths'
-import { useEffect, useState } from 'react'
-import { IUserStore } from '@app/store/user'
+import { useEffect } from 'react'
+import { useLazyUserControllerGetUserDetailsQuery } from '@app/services/api/user/user'
 
 export const renderRoutes = () => {
-  const { userInfo } = useSelector<RootState, IUserStore>((s) => s.user)
-  const [userRole, setUserRole] = useState<string>(userInfo.role || undefined)
+  const [getUserInfo] = useLazyUserControllerGetUserDetailsQuery()
+  const { isLogin } = useSelector<RootState, IAuthStore>((s) => s.auth)
+
   useEffect(() => {
-    if (userInfo.id) {
-      setUserRole(userInfo.role)
+    if (isLogin) {
+      getUserInfo()
     }
-  }, [userInfo]) 
+  }, [isLogin])
+  
 
   const getRouteCompact = (route: RoutePath) => {
     const getRouteSingular = (route: RoutePath, key?: string) => <Route key={key || route.path} path={route.path} element={route.element} index={route.index} />
@@ -32,7 +34,7 @@ export const renderRoutes = () => {
       </Route>
     )
   }
-
+ 
   return (
     <>
       <Route path='/' element={<RootLayout />}>
@@ -40,11 +42,9 @@ export const renderRoutes = () => {
       </Route>
 
       {/* ROUTE FOR ADMIN */}
-      {userRole !== undefined && (
-        <Route path='/manage' element={<AdminLayout hasUserRole={userRole}/>}>
-          {adminRoutePaths.map((route) => getRouteCompact(route))}
-        </Route>
-      )}
+      <Route path='/manage' element={<AdminLayout />}>
+        {adminRoutePaths.map((route) => getRouteCompact(route))}
+      </Route>
     </>
   )
 }
