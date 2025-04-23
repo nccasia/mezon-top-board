@@ -341,6 +341,7 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
                         {...field}
                         className='flex-1 border p-2 rounded'
                         placeholder='Enter link'
+                        onChange={(e) => field.onChange(e.target.value)}
                         prefix={<SocialLinkIcon src={link?.type?.icon} prefixUrl={link?.type?.prefixUrl} />}
                       />
                       <Button onClick={() => remove(index)} customClassName='!w-[70px]'>
