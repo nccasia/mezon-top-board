@@ -10,8 +10,16 @@ import { getUrlImage, safeConcatUrl, uuidToNumber } from '@app/utils/stringHelpe
 import { Popover, Tag } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import ShareButton from './components/ShareButton'
+import { Dropdown, MenuProps, Modal } from 'antd'
+import { DeleteOutlined, EditOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
+import { useMezonAppControllerDeleteMezonAppMutation } from '@app/services/api/mezonApp/mezonApp'
+import { toast } from 'react-toastify'
+import { useSelector } from 'react-redux'
+import { RootState } from '@app/store'
+import { IUserStore } from '@app/store/user'
 
 function BotCard({ readonly = false, data, canNavigateOnClick = true }: IBotCardProps) {
+  const { userInfo } = useSelector<RootState, IUserStore>((s) => s.user)
   const navigate = useNavigate()
   const handleInvite = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
@@ -25,7 +33,58 @@ function BotCard({ readonly = false, data, canNavigateOnClick = true }: IBotCard
   // Share to social media
   const shareUrl = process.env.REACT_APP_SHARE_URL || 'https://top.mezon.ai/bot/'
   const title = data?.name || 'Check out this app!'
+  const handleMenuClick: MenuProps['onClick'] = (e) => {
+    e.domEvent.stopPropagation()
+  }
+  const [deleteBot] = useMezonAppControllerDeleteMezonAppMutation()
+  const { confirm } = Modal
 
+  const handleDeleteBot = (botId: string) => {
+    confirm({
+      title: 'Are you sure you want to delete this bot?',
+      icon: <ExclamationCircleOutlined />,
+      content: 'This action cannot be undone.',
+      okText: 'Yes, delete it',
+      okType: 'danger',
+      cancelText: 'Cancel',
+      onOk: async () => {
+        try {
+          await deleteBot({ requestWithId: { id: botId } }).unwrap()
+          toast.success('Bot deleted successfully.')
+        } catch (error) {
+          toast.error('Failed to delete bot.')
+        }
+      }
+    })
+  }
+  const items: MenuProps['items'] = [
+    {
+      label: 'Edit',
+      key: '1',
+      icon: <EditOutlined />,
+      onClick: () => {
+        navigate(`/new-bot/${data?.id}`)
+      }
+    },
+    {
+      label: 'Delete',
+      key: '2',
+      danger: true,
+      icon: <DeleteOutlined />,
+      onClick: () => {
+        if (!data?.id) {
+          toast.error('Invalid bot ID.')
+          return
+        }
+        handleDeleteBot(data?.id)
+      }
+    }
+  ]
+
+  const menuProps = {
+    items,
+    onClick: handleMenuClick
+  }
   return (
     <div
       className='shadow-md pb-8 pt-8 px-8 border border-gray-300 relative rounded-xl cursor-pointer'
@@ -40,16 +99,21 @@ function BotCard({ readonly = false, data, canNavigateOnClick = true }: IBotCard
           <div className='truncate-title '>
             <style>
               {`
-                  .truncate-title .ant-typography {
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    display: -webkit-box;
-                    -webkit-box-orient: vertical;
-                    -webkit-line-clamp: 1;
-                  }
-                `}
+                .truncate-title .ant-typography {
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  display: -webkit-box;
+                  -webkit-box-orient: vertical;
+                  -webkit-line-clamp: 1;
+                }
+              `}
             </style>
-            <MtbTypography variant='h4' customClassName='md:max-w-[calc(100%-100px)] max-w-full' >{data?.name}</MtbTypography>
+            <MtbTypography
+              variant='h4'
+              customClassName={`md:max-w-[calc(100%-${data?.owner?.id === userInfo?.id ? `150px` : `100px`})] max-w-full`}
+            >
+              {data?.name}
+            </MtbTypography>
           </div>
           <div className='flex gap-1'>
             {data?.status !== AppStatus.PUBLISHED && <Tag color='red'>UNPUBLISHED</Tag>}
@@ -77,11 +141,28 @@ function BotCard({ readonly = false, data, canNavigateOnClick = true }: IBotCard
         </div>
       </div>
       <div className='absolute top-2 right-2 flex gap-3'>
+        {data?.owner?.id === userInfo?.id && (
+          <Dropdown.Button
+            style={{ display: 'contents' }}
+            size='large'
+            buttonsRender={([leftBtn, rightBtn]) => [
+              null,
+              <span onClick={(e) => e.stopPropagation()}>{rightBtn}</span>
+            ]}
+            trigger={['click']}
+            menu={menuProps}
+          />
+        )}
         <Button variant='solid' color='secondary' size='large' onClick={handleInvite}>
           Invite
         </Button>
         <Popover
-          content={<ShareButton text={`Check out ${title} Mezon Bot on top.nccsoft.vn, the #1 Mezon Bot and Mezon App List!`} url={safeConcatUrl(shareUrl, data?.id || '')} />}
+          content={
+            <ShareButton
+              text={`Check out ${title} Mezon Bot on top.nccsoft.vn, the #1 Mezon Bot and Mezon App List!`}
+              url={safeConcatUrl(shareUrl, data?.id || '')}
+            />
+          }
           trigger='click'
           placement='bottomRight'
           arrow={false}
