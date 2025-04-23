@@ -109,6 +109,7 @@ export class CreateMezonAppRequest {
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()
+  @Transform(({ value }) => (typeof value === "string" ? value.trim() : value))
   remark?: string;
  
   @ApiPropertyOptional()
