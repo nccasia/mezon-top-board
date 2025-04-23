@@ -41,7 +41,7 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
   const { tagList } = useSelector<RootState, ITagStore>((s) => s.tag)
   const { linkTypeList } = useSelector<RootState, ILinkTypeStore>((s) => s.link)
   const [selectedSocialLink, setSelectedSocialLink] = useState<string>('') // holds selected link type id
-  const { fields: socialLinksData, append, remove } = useFieldArray({
+  const { fields: socialLinksData, append, remove, update } = useFieldArray({
     control,
     name: 'socialLinks'
   });
@@ -342,6 +342,7 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
                         className='flex-1 border p-2 rounded'
                         placeholder='Enter link'
                         onChange={(e) => field.onChange(e.target.value)}
+                        onBlur={() => update(index, { ...socialLinksData[index], url: field.value })}
                         prefix={<SocialLinkIcon src={link?.type?.icon} prefixUrl={link?.type?.prefixUrl} />}
                       />
                       <Button onClick={() => remove(index)} customClassName='!w-[70px]'>
