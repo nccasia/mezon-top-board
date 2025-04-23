@@ -16,6 +16,7 @@ import { getUrlImage } from '@app/utils/stringHelper'
 import { Button, Popconfirm, Upload } from 'antd'
 import { toast } from 'react-toastify'
 import { CardInfoProps } from './CardInfo.types'
+import { imageMimeTypes } from '@app/constants/mimeTypes'
 
 function CardInfo({ isPublic, userInfo }: CardInfoProps) {
   const imgUrl = userInfo?.profileImage ? getUrlImage(userInfo.profileImage) : avatar
@@ -54,6 +55,12 @@ function CardInfo({ isPublic, userInfo }: CardInfoProps) {
     if (isPublic) return
 
     const { file, onSuccess, onError } = options
+    
+    if (!imageMimeTypes.includes(file.type)) {
+      toast.error('Please upload a valid image file!');
+      onError(new Error('Invalid file type'));
+      return;
+    }
 
     try {
       const formData = new FormData()
