@@ -18,29 +18,28 @@ function CompactBotCard({ data, isPublic = true }: ICompactBotCardProps) {
 
   const handleMenuClick: MenuProps['onClick'] = (e) => {
     e.domEvent.stopPropagation()
-  };
+  }
   const [deleteBot] = useMezonAppControllerDeleteMezonAppMutation()
-  const { confirm } = Modal;
-
+  const { confirm } = Modal
 
   const handleDeleteBot = (botId: string) => {
     confirm({
-      title: "Are you sure you want to delete this bot?",
+      title: 'Are you sure you want to delete this bot?',
       icon: <ExclamationCircleOutlined />,
-      content: "This action cannot be undone.",
-      okText: "Yes, delete it",
-      okType: "danger",
-      cancelText: "Cancel",
+      content: 'This action cannot be undone.',
+      okText: 'Yes, delete it',
+      okType: 'danger',
+      cancelText: 'Cancel',
       onOk: async () => {
         try {
-          await deleteBot({ requestWithId: { id: botId } }).unwrap();
-          toast.success("Bot deleted successfully.");
+          await deleteBot({ requestWithId: { id: botId } }).unwrap()
+          toast.success('Bot deleted successfully.')
         } catch (error) {
-          toast.error("Failed to delete bot.");
+          toast.error('Failed to delete bot.')
         }
-      },
-    });
-  };
+      }
+    })
+  }
   const items: MenuProps['items'] = [
     {
       label: 'Edit',
@@ -57,26 +56,37 @@ function CompactBotCard({ data, isPublic = true }: ICompactBotCardProps) {
       icon: <DeleteOutlined />,
       onClick: () => {
         if (!data?.id) {
-          toast.error("Invalid bot ID.");
+          toast.error('Invalid bot ID.')
           return
         }
-        handleDeleteBot(data?.id);
+        handleDeleteBot(data?.id)
       }
-    },
-  ];
+    }
+  ]
 
   const menuProps = {
     items,
-    onClick: handleMenuClick,
-  };
+    onClick: handleMenuClick
+  }
   return (
-    <div className='shadow-sm rounded-2xl p-4 bg-white cursor-pointer' onClick={handleNavigateDetail}>
+    <div className='shadow-sm rounded-2xl p-4 bg-white cursor-pointer relative z-1' onClick={handleNavigateDetail}>
       <div className='relative'>
         <div className='w-20 m-auto'>
           <img src={imgUrl} alt='' className='aspect-square rounded-full object-cover w-full' width={'100%'} />
         </div>
-        {!isPublic && <Dropdown.Button buttonsRender={([leftBtn, rightBtn]) => [null, <span onClick={(e) => e.stopPropagation()} className='!absolute !top-0 !right-0'>{rightBtn}</span>]} trigger={["click"]} menu={menuProps}>
-        </Dropdown.Button>}
+        {!isPublic && (
+          <Dropdown.Button
+            buttonsRender={([leftBtn, rightBtn]) => [
+              null,
+              <span onClick={(e) => e.stopPropagation()} className='!absolute !top-0 !right-0'>
+                {rightBtn}
+              </span>
+            ]}
+            trigger={['click']}
+            menu={menuProps}
+            getPopupContainer={(trigger) => trigger.parentElement as HTMLElement}
+          ></Dropdown.Button>
+        )}
       </div>
       <div className='pt-3 pb-3 font-black truncate'>{data?.name || 'Name'}</div>
       <div className='flex justify-between items-center'>

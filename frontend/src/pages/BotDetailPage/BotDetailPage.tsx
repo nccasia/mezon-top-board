@@ -95,17 +95,22 @@ function BotDetailPage() {
       <div className='pt-5 pb-5'>
         <BotCard readonly={true} data={mezonAppDetail} canNavigateOnClick={false}></BotCard>
       </div>
-      <MtbTypography variant='h3' textStyle={[TypographyStyle.UNDERLINE]}>
-        Overview
-      </MtbTypography>
-      <div className='flex gap-10 pt-5 pb-5'>
-        <div className='flex-3 max-w-[calc(75%-2.5rem)]'>
+      <div className='sm:flex sm:gap-10 pt-5 pb-5 sm:flex-row-reverse'>
+        <div className='flex-1 sm:max-w-1/4'>
+          <DetailCard></DetailCard>
+        </div>
+        <div className='flex-3 sm:max-w-[calc(75%-2.5rem)] max-w-full mt-7'>
+          <MtbTypography variant='h3' textStyle={[TypographyStyle.UNDERLINE]}>
+            Overview
+          </MtbTypography>
+          <Divider className='bg-gray-200'></Divider>
           <div dangerouslySetInnerHTML={{ __html: mezonAppDetail.description }} className='break-words'></div>
           <div className='pt-5'>
             <MtbTypography variant='h3'>More like this</MtbTypography>
             <Divider className='bg-gray-200'></Divider>
             {relatedMezonApp?.length > 0 ? (
-              <div className='flex gap-10 items-center max-lg:text-center max-2xl:text-center max-lg:flex-wrap max-2xl:flex-wrap max-lg:justify-center max-2xl:justify-center'>
+              <div className='flex gap-10 items-center max-lg:text-center max-2xl:text-center max-lg:flex-wrap 
+                max-2xl:flex-wrap max-lg:justify-center max-2xl:justify-center 2xl:flex-wrap 2xl:justify-center'>
                 {relatedMezonApp.map((bot) => (
                   <div className="w-45 flex-shrink-0" key={bot.id}>
                     <CompactBotCard data={bot} />
@@ -169,9 +174,6 @@ function BotDetailPage() {
               )}
             </div>
           </div>
-        </div>
-        <div className='flex-1 max-w-1/4'>
-          <DetailCard></DetailCard>
         </div>
       </div>
     </div>

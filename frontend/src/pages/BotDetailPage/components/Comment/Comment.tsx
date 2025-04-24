@@ -9,15 +9,23 @@ function Comment({ rating }: { rating: Rating }) {
   return (
     <>
       <div className='flex gap-10 p-4 shadow-sm rounded-2xl'>
-        <Link to={`/profile/${rating.user.id}`} className='w-15'>
-          <img src={rating.user?.profileImage ? getUrlImage(rating.user?.profileImage) : avatar} alt='' className='rounded-full w-full aspect-square object-cover' />
+        <Link to={`/profile/${rating.user.id}`} className='w-15 flex-shrink-0'>
+          <img
+            src={rating.user?.profileImage ? getUrlImage(rating.user?.profileImage) : avatar}
+            alt=''
+            className='rounded-full w-full aspect-square'
+          />
         </Link>
         <div className='flex flex-col gap-5'>
           <div>
             <Link to={`/profile/${rating.user.id}`} className='inline-block'>
-              <MtbTypography variant='h4' customClassName='!mt-1'>{rating.user.name}</MtbTypography>
+              <MtbTypography variant='h4' customClassName='!mt-1'>
+                {rating.user.name}
+              </MtbTypography>
             </Link>
-            <MtbTypography variant='p' weight='italic'>{formatAgo(rating.updatedAt)}</MtbTypography>
+            <MtbTypography variant='p' weight='italic'>
+              {formatAgo(rating.updatedAt)}
+            </MtbTypography>
           </div>
           <div className='flex gap-5'>
             <MtbRate value={rating.score} readonly={true}></MtbRate>
