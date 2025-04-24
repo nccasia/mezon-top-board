@@ -41,7 +41,7 @@ const SearchBar = ({
   }
 
   const updateSearchParams = (q: string, tags: string[]) => {
-    setSearchParams({ q, tags: tags.join(',') })
+    setSearchParams({ q, tags: tags.join(',') }, { replace: true })
   }
 
   const handleSearch = (inpSearchTags?: string[]) => {

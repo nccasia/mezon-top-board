@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 
 import { EntityManager, IsNull, Not } from "typeorm";
 
@@ -96,6 +96,17 @@ export class UserService {
       bio: req.bio,
       profileImage: req.profileImage,
     });
+    return new Result();
+  }
+
+  async markWillSyncFromMezon(userId: string) {
+    const user = await this.userRepository.findById(userId);
+    if (!user) throw new NotFoundException(ErrorMessages.NOT_FOUND_MSG);
+
+    await this.userRepository.update(userId, {
+      willSyncFromMezon: true,
+    });
+
     return new Result();
   }
 }

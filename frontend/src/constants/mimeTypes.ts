@@ -10,7 +10,7 @@ const imageMimeTypes = [
   'image/vnd.wap.wbmp',
   'image/bmp',
   'image/tiff'
-];
+]
 
 const videoMimeTypes = [
   'video/mp4',
@@ -20,13 +20,6 @@ const videoMimeTypes = [
   'video/quicktime',
   'video/x-flv',
   'video/x-ms-wmv'
-];
-const maxImageFileSize = 4 * 1024 * 1024;
-const maxVideoFileSize = 25 * 1024 * 1024;
+]
 
-export {
-  imageMimeTypes,
-  videoMimeTypes,
-  maxImageFileSize,
-  maxVideoFileSize
-}
+export { imageMimeTypes, videoMimeTypes }

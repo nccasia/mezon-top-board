@@ -197,6 +197,7 @@ export type Media = {
   owner: User
 }
 export type User = {
+  id: string
   name: string | null
   email: string
   password: string

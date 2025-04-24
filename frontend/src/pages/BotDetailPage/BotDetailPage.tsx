@@ -25,6 +25,8 @@ import { toast } from 'react-toastify'
 import Comment from './components/Comment/Comment'
 import DetailCard from './components/DetailCard/DetailCard'
 import RatingForm from './components/RatingForm/RatingForm'
+import useOwnershipCheck from '@app/hook/useOwnershipCheck'
+import { AppStatus } from '@app/enums/AppStatus.enum'
 function BotDetailPage() {
   const navigate = useNavigate()
   const [getMezonAppDetail, { isError, error, isSuccess }] = useLazyMezonAppControllerGetMezonAppDetailQuery()
@@ -35,6 +37,7 @@ function BotDetailPage() {
   const { botId } = useParams()
   const { mezonAppDetail, relatedMezonApp } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
   const { ratings } = useSelector<RootState, IRatingStore>((s) => s.rating)
+  const { checkOwnership } = useOwnershipCheck();
   const ratingCounts = ratings?.data?.reduce(
     (acc, rating) => {
       acc[rating.score] = (acc[rating.score] || 0) + 1
@@ -73,6 +76,11 @@ function BotDetailPage() {
       }
     }
   }, [isError, error]);
+  useEffect(() => {
+      if (mezonAppDetail?.status !== AppStatus.PUBLISHED) {
+        checkOwnership(mezonAppDetail?.owner?.id, true);
+      }
+    }, [mezonAppDetail])
 
   return (
     <div className='m-auto pt-10 pb-10 w-[75%]'>
@@ -85,21 +93,28 @@ function BotDetailPage() {
         ></SearchBar>
       </div>
       <div className='pt-5 pb-5'>
-        <BotCard readonly={true} data={mezonAppDetail}></BotCard>
+        <BotCard readonly={true} data={mezonAppDetail} canNavigateOnClick={false}></BotCard>
       </div>
-      <MtbTypography variant='h3' textStyle={[TypographyStyle.UNDERLINE]}>
-        Overview
-      </MtbTypography>
-      <div className='flex gap-10 pt-5 pb-5'>
-        <div className='flex-3'>
-          <div dangerouslySetInnerHTML={{ __html: mezonAppDetail.description }}></div>
+      <div className='sm:flex sm:gap-10 pt-5 pb-5 sm:flex-row-reverse'>
+        <div className='flex-1 sm:max-w-1/4'>
+          <DetailCard></DetailCard>
+        </div>
+        <div className='flex-3 sm:max-w-[calc(75%-2.5rem)] max-w-full mt-7'>
+          <MtbTypography variant='h3' textStyle={[TypographyStyle.UNDERLINE]}>
+            Overview
+          </MtbTypography>
+          <Divider className='bg-gray-200'></Divider>
+          <div dangerouslySetInnerHTML={{ __html: mezonAppDetail.description }} className='break-words'></div>
           <div className='pt-5'>
             <MtbTypography variant='h3'>More like this</MtbTypography>
             <Divider className='bg-gray-200'></Divider>
             {relatedMezonApp?.length > 0 ? (
-              <div className='flex gap-10 items-center max-lg:text-center max-2xl:text-center max-lg:flex-wrap max-2xl:flex-wrap max-lg:justify-center max-2xl:justify-center'>
+              <div className='flex gap-10 items-center max-lg:text-center max-2xl:text-center max-lg:flex-wrap 
+                max-2xl:flex-wrap max-lg:justify-center max-2xl:justify-center 2xl:flex-wrap 2xl:justify-center'>
                 {relatedMezonApp.map((bot) => (
-                  <CompactBotCard key={bot.id} data={bot} />
+                  <div className="w-45 flex-shrink-0" key={bot.id}>
+                    <CompactBotCard data={bot} />
+                  </div>
                 ))}
               </div>
             ) : (
@@ -159,9 +174,6 @@ function BotDetailPage() {
               )}
             </div>
           </div>
-        </div>
-        <div className='flex-1 max-w-1/4'>
-          <DetailCard></DetailCard>
         </div>
       </div>
     </div>

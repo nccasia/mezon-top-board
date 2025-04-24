@@ -53,7 +53,7 @@ export class ReviewerResponse {
     public role: string;
 }
 
-export class GetUserDetailsResponse extends OmitType(SearchUserResponse, ["role"]) {
+export class GetUserDetailsResponse extends OmitType(SearchUserResponse, []) {
 }
 export class GetPublicProfileResponse extends OmitType(SearchUserResponse, ["role", "email"]) { }
 
