@@ -7,8 +7,20 @@ import { useSelector } from 'react-redux'
 import { Route, useLocation } from 'react-router'
 import { adminRoutePaths } from './adminRoutePaths'
 import { routePaths } from './routePaths'
+import { useEffect } from 'react'
+import { useLazyUserControllerGetUserDetailsQuery } from '@app/services/api/user/user'
 
 export const renderRoutes = () => {
+  const [getUserInfo] = useLazyUserControllerGetUserDetailsQuery()
+  const { isLogin } = useSelector<RootState, IAuthStore>((s) => s.auth)
+
+  useEffect(() => {
+    if (isLogin) {
+      getUserInfo()
+    }
+  }, [isLogin])
+  
+
   const getRouteCompact = (route: RoutePath) => {
     const getRouteSingular = (route: RoutePath, key?: string) => <Route key={key || route.path} path={route.path} element={route.element} index={route.index} />
 
@@ -22,7 +34,7 @@ export const renderRoutes = () => {
       </Route>
     )
   }
-
+ 
   return (
     <>
       <Route path='/' element={<RootLayout />}>
