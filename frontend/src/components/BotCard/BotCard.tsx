@@ -25,7 +25,8 @@ function BotCard({ readonly = false, data, canNavigateOnClick = true }: IBotCard
   const handleShare = (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation()
   }
-  console.log(data?.owner?.id === userInfo?.id)
+  const titleMaxWidth = data?.owner?.id === userInfo?.id ? 'md:max-w-[calc(100%-150px)]' : 'md:max-w-[calc(100%-100px)]';
+
   const imgUrl = data?.featuredImage ? getUrlImage(data.featuredImage) : avatarBotDefault
   // Share to social media
   const shareUrl = process.env.REACT_APP_SHARE_URL || 'https://top.mezon.ai/bot/'
@@ -57,7 +58,7 @@ function BotCard({ readonly = false, data, canNavigateOnClick = true }: IBotCard
             </style>
             <MtbTypography
               variant='h4'
-              customClassName={`md:max-w-[calc(100%-${data?.owner?.id === userInfo?.id ? `150px` : `100px`})] max-w-full`}
+              customClassName={`${titleMaxWidth} max-w-full`}
             >
               {data?.name}
             </MtbTypography>
