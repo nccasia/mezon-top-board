@@ -119,12 +119,26 @@ function BotCard({ readonly = false, data, canNavigateOnClick = true }: IBotCard
             {data?.status !== AppStatus.PUBLISHED && <Tag color='red'>UNPUBLISHED</Tag>}
             <MtbRate readonly={readonly} value={data?.rateScore}></MtbRate>
           </div>
-          <div className='flex gap-2'>
+          <div className='flex-wrap gap-2'>
             {data?.tags?.map((tag) => (
-              <Tag key={tag?.id} color={randomColor('normal', uuidToNumber(tag?.id))}>
+              <Tag key={tag?.id} color={randomColor('normal', uuidToNumber(tag?.id))} style={{ marginBottom: '0.2rem' }} >
                 {tag?.name}
               </Tag>
             ))}
+          </div>
+          <div className='sm:absolute sm:top-2 sm:right-2 flex gap-3'>
+            <Button variant='solid' color='secondary' size='large' onClick={handleInvite}>
+              Invite
+            </Button>
+            <Popover
+              content={<ShareButton text={`Check out ${title} Mezon Bot on top.nccsoft.vn, the #1 Mezon Bot and Mezon App List!`} url={safeConcatUrl(shareUrl, data?.id || '')} />}
+              trigger='click'
+              placement='bottomRight'
+              arrow={false}
+              overlayInnerStyle={{ marginTop: '8px', minWidth: '200px', maxWidth: '300px' }}
+            >
+              <Button size='large' color='default' icon={<UploadOutlined />} onClick={handleShare} />
+            </Popover>
           </div>
           <div
             className='text-gray-700 break-words max-w-full'
