@@ -16,6 +16,7 @@ import { getUrlImage } from '@app/utils/stringHelper'
 import { Button, Popconfirm, Upload } from 'antd'
 import { toast } from 'react-toastify'
 import { CardInfoProps } from './CardInfo.types'
+import { imageMimeTypes } from '@app/constants/mimeTypes'
 
 function CardInfo({ isPublic, userInfo }: CardInfoProps) {
   const imgUrl = userInfo?.profileImage ? getUrlImage(userInfo.profileImage) : avatar
@@ -58,7 +59,14 @@ function CardInfo({ isPublic, userInfo }: CardInfoProps) {
     if (file.size > maxFileSize) {
       toast.error(`${file.name} file upload failed (exceeds 4MB)`);
       return ;
-  }
+    }
+    
+    if (!imageMimeTypes.includes(file.type)) {
+      toast.error('Please upload a valid image file!');
+      onError(new Error('Invalid file type'));
+      return;
+    }
+
     try {
       const formData = new FormData()
       formData.append('file', file)
@@ -92,7 +100,7 @@ function CardInfo({ isPublic, userInfo }: CardInfoProps) {
     <div className='flex flex-col gap-7 p-4 shadow-sm rounded-2xl'>
       <div className='flex items-center gap-4 w-full max-lg:flex-col max-2xl:flex-col'>
         <div className='flex-shrink-0'>
-          <Upload disabled={isPublic} listType='picture-circle' customRequest={handleUpload} showUploadList={false} >
+          <Upload accept={imageMimeTypes.join(',')} disabled={isPublic} listType='picture-circle' customRequest={handleUpload} showUploadList={false}>
             <MTBAvatar imgUrl={imgUrl} isAllowUpdate={!isPublic} isUpdatingAvatar={isUpdatingAvatar} />
           </Upload>
         </div>

@@ -25,6 +25,8 @@ import { toast } from 'react-toastify'
 import Comment from './components/Comment/Comment'
 import DetailCard from './components/DetailCard/DetailCard'
 import RatingForm from './components/RatingForm/RatingForm'
+import useOwnershipCheck from '@app/hook/useOwnershipCheck'
+import { AppStatus } from '@app/enums/AppStatus.enum'
 function BotDetailPage() {
   const navigate = useNavigate()
   const [getMezonAppDetail, { isError, error, isSuccess }] = useLazyMezonAppControllerGetMezonAppDetailQuery()
@@ -35,6 +37,7 @@ function BotDetailPage() {
   const { botId } = useParams()
   const { mezonAppDetail, relatedMezonApp } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
   const { ratings } = useSelector<RootState, IRatingStore>((s) => s.rating)
+  const { checkOwnership } = useOwnershipCheck();
   const ratingCounts = ratings?.data?.reduce(
     (acc, rating) => {
       acc[rating.score] = (acc[rating.score] || 0) + 1
@@ -73,6 +76,11 @@ function BotDetailPage() {
       }
     }
   }, [isError, error]);
+  useEffect(() => {
+      if (mezonAppDetail?.status !== AppStatus.PUBLISHED) {
+        checkOwnership(mezonAppDetail?.owner?.id, true);
+      }
+    }, [mezonAppDetail])
 
   return (
     <div className='m-auto pt-10 pb-10 w-[75%]'>
