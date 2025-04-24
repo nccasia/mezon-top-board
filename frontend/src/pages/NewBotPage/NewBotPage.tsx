@@ -21,6 +21,7 @@ import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import AddBotForm from './components/AddBotForm/AddBotForm'
 import useOwnershipCheck from '@app/hook/useOwnershipCheck'
+import { imageMimeTypes } from '@app/constants/mimeTypes'
 function NewBotPage() {
   const { mezonAppDetail } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
   const { tagList } = useSelector<RootState, ITagStore>((s) => s.tag)
@@ -82,7 +83,11 @@ function NewBotPage() {
 
   const handleUpload = async (options: any) => {
     const { file, onSuccess, onError } = options
-
+    if (!imageMimeTypes.includes(file.type)) {
+      toast.error('Please upload a valid image file!');
+      onError(new Error('Invalid file type'));
+      return;
+    }
     try {
       const formData = new FormData()
       formData.append('file', file)
@@ -106,7 +111,7 @@ function NewBotPage() {
       <div className='flex items-center justify-between'>
         <div className='flex gap-6'>
           <div className='w-[80px] object-cover flex-shrink-0'>
-            <Upload customRequest={handleUpload} showUploadList={false}>
+            <Upload accept={imageMimeTypes.join(',')} customRequest={handleUpload} showUploadList={false}>
               <MTBAvatar imgUrl={avatar} isAllowUpdate={true} isUpdatingAvatar={isUpdatingAvatar} />
             </Upload>
           </div>
