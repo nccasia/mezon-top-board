@@ -312,11 +312,7 @@ export class MezonAppService {
       app.socialLinks = links;
     }
 
-    const cleanedDescription = sanitizeHtml(description, {
-      transformTags: {
-        'pre': 'p'
-      }
-    });
+    const cleanedDescription = sanitizeHtml(description);
 
     this.appRepository.getRepository().merge(app, {
       ...updateData,
