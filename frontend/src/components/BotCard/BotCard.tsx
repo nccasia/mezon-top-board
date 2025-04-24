@@ -10,8 +10,13 @@ import { getUrlImage, safeConcatUrl, uuidToNumber } from '@app/utils/stringHelpe
 import { Popover, Tag } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import ShareButton from './components/ShareButton'
+import { useSelector } from 'react-redux'
+import { RootState } from '@app/store'
+import { IUserStore } from '@app/store/user'
+import OwnerActions from '../OwnerActions/OwnerActions'
 
 function BotCard({ readonly = false, data, canNavigateOnClick = true }: IBotCardProps) {
+  const { userInfo } = useSelector<RootState, IUserStore>((s) => s.user)
   const navigate = useNavigate()
   const handleInvite = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
@@ -20,12 +25,13 @@ function BotCard({ readonly = false, data, canNavigateOnClick = true }: IBotCard
   const handleShare = (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation()
   }
-
+  console.log(data?.owner?.id === userInfo?.id)
   const imgUrl = data?.featuredImage ? getUrlImage(data.featuredImage) : avatarBotDefault
   // Share to social media
   const shareUrl = process.env.REACT_APP_SHARE_URL || 'https://top.mezon.ai/bot/'
   const title = data?.name || 'Check out this app!'
 
+  
   return (
     <div
       className='shadow-md pb-8 pt-8 px-8 border border-gray-300 relative rounded-xl cursor-pointer'
@@ -40,16 +46,21 @@ function BotCard({ readonly = false, data, canNavigateOnClick = true }: IBotCard
           <div className='truncate-title '>
             <style>
               {`
-                  .truncate-title .ant-typography {
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    display: -webkit-box;
-                    -webkit-box-orient: vertical;
-                    -webkit-line-clamp: 1;
-                  }
-                `}
+                .truncate-title .ant-typography {
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  display: -webkit-box;
+                  -webkit-box-orient: vertical;
+                  -webkit-line-clamp: 1;
+                }
+              `}
             </style>
-            <MtbTypography variant='h4' customClassName='md:max-w-[calc(100%-100px)] max-w-full' >{data?.name}</MtbTypography>
+            <MtbTypography
+              variant='h4'
+              customClassName={`md:max-w-[calc(100%-${data?.owner?.id === userInfo?.id ? `150px` : `100px`})] max-w-full`}
+            >
+              {data?.name}
+            </MtbTypography>
           </div>
           <div className='flex gap-1'>
             {data?.status !== AppStatus.PUBLISHED && <Tag color='red'>UNPUBLISHED</Tag>}
@@ -63,6 +74,9 @@ function BotCard({ readonly = false, data, canNavigateOnClick = true }: IBotCard
             ))}
           </div>
           <div className='sm:absolute sm:top-2 sm:right-2 flex gap-3'>
+            {data?.owner?.id === userInfo?.id && (
+              <OwnerActions data={data} isBotCard={true} />
+            )}
             <Button variant='solid' color='secondary' size='large' onClick={handleInvite}>
               Invite
             </Button>
