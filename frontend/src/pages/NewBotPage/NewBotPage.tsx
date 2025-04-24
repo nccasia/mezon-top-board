@@ -111,7 +111,7 @@ function NewBotPage() {
       <div className='flex items-center justify-between'>
         <div className='flex gap-6'>
           <div className='w-[80px] object-cover flex-shrink-0'>
-            <Upload customRequest={handleUpload} showUploadList={false}>
+            <Upload accept={imageMimeTypes.join(',')} customRequest={handleUpload} showUploadList={false}>
               <MTBAvatar imgUrl={avatar} isAllowUpdate={true} isUpdatingAvatar={isUpdatingAvatar} />
             </Upload>
           </div>

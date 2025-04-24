@@ -95,7 +95,7 @@ function CardInfo({ isPublic, userInfo }: CardInfoProps) {
     <div className='flex flex-col gap-7 p-4 shadow-sm rounded-2xl'>
       <div className='flex items-center gap-4 w-full max-lg:flex-col max-2xl:flex-col'>
         <div className='flex-shrink-0'>
-          <Upload disabled={isPublic} listType='picture-circle' customRequest={handleUpload} showUploadList={false}>
+          <Upload accept={imageMimeTypes.join(',')} disabled={isPublic} listType='picture-circle' customRequest={handleUpload} showUploadList={false}>
             <MTBAvatar imgUrl={imgUrl} isAllowUpdate={!isPublic} isUpdatingAvatar={isUpdatingAvatar} />
           </Upload>
         </div>
