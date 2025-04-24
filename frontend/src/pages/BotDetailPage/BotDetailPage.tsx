@@ -77,12 +77,10 @@ function BotDetailPage() {
     }
   }, [isError, error]);
   useEffect(() => {
-    if (mezonAppDetail?.status !== AppStatus.PUBLISHED) {
-      if (!checkOwnership(mezonAppDetail?.owner?.id)) {
-        return;
+      if (mezonAppDetail?.status !== AppStatus.PUBLISHED) {
+        checkOwnership(mezonAppDetail?.owner?.id, true);
       }
-    }
-  }, [mezonAppDetail])
+    }, [mezonAppDetail])
 
   return (
     <div className='m-auto pt-10 pb-10 w-[75%]'>
