@@ -65,7 +65,7 @@ function Header() {
             className='!align-middle'
           />
         </div> */}
-        <ul className='flex flex-col lg:flex-row gap-5 flex-none text-sm'>{renderMenu(true)}</ul>
+        <ul className='flex flex-col lg:flex-row gap-5 flex-none text-sm mb-2'>{renderMenu(true)}</ul>
         <div className='flex flex-col lg:flex-row gap-3 mt-5 lg:mt-0 w-full'>
           {isLogin ? (
             <Dropdown
