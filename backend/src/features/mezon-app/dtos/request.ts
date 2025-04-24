@@ -56,8 +56,8 @@ class SocialLinkDto {
 export class CreateMezonAppRequest {
   @ApiProperty()
   @IsString()
-  @MinLength(3, { message: "Name must be at least 3 characters" })
-  @MaxLength(128, { message: "Name must not exceed 128 characters" })
+  @MinLength(1, { message: "Name must be at least 1 characters" })
+  @MaxLength(64, { message: "Name must not exceed 64 characters" })
   @Transform(({ value }) => (typeof value === "string" ? value.trim() : value))
   name: string;
 

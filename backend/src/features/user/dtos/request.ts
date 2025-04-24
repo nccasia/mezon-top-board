@@ -23,7 +23,7 @@ export class GetPublicProfileInfoRequest {
 export class UpdateUserRequest extends RequestWithId {
   @ApiPropertyOptional()
   @IsOptional()
-  @MinLength(1, { message: 'Name must be at least 1 character' })
+  @MinLength(3, { message: 'Name must be at least 3 character' })
   @MaxLength(50, { message: 'Name must not exceed 50 characters' })
   @Transform(({ value }) => (typeof value === "string" ? value.trim() : value))
   @IsString()

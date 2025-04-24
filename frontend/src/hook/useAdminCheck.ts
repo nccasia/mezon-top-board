@@ -9,7 +9,7 @@ const useAdminCheck = () => {
   const { userInfo } = useSelector<RootState, IUserStore>((s) => s.user)
 
   const checkAdmin = () => {
-    if (userInfo.role !== 'ADMIN') {
+    if (userInfo.id && userInfo.role !== 'ADMIN') {
       toast.warning('You do not have permission to access this page.')
       navigate('/')
       return false

@@ -1,7 +1,7 @@
 import * as yup from 'yup'
 
 export const ADD_BOT_SCHEMA = yup.object({
-  name: yup.string().required('Name is required').min(3, 'Minimum 3 characters').max(128, 'Maximum 128 characters'),
+  name: yup.string().required('Name is required').min(1, 'Minimum 1 characters').max(64, 'Maximum 64 characters'),
   isAutoPublished: yup.boolean().optional(),
   installLink: yup
     .string()
