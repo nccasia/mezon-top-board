@@ -105,7 +105,7 @@ function Main({ isSearchPage = false }: IMainProps) {
   }
 
   return (
-    <div className={`flex flex-col justify-center pt-8 pb-12 w-[75%] m-auto `}>
+    <div className={`flex flex-col justify-center pt-8 pb-12 w-[75%] m-auto relative z-1`}>
       <Divider variant='solid' style={{ borderColor: 'gray' }}>
         <MtbTypography variant='h1' customClassName='max-md:whitespace-normal'>
           Explore millions of Mezon Bots
@@ -127,6 +127,7 @@ function Main({ isSearchPage = false }: IMainProps) {
             </MtbTypography>
           </div>
           <SingleSelect
+            getPopupContainer={(trigger) => trigger.parentElement}
             onChange={handlePageSizeChange}
             options={options}
             placeholder='Select'
