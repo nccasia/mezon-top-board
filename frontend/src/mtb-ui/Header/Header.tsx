@@ -2,7 +2,6 @@ import { DownOutlined, MenuOutlined } from '@ant-design/icons'
 import logo from '@app/assets/images/topLogo.png'
 import Button from '@app/mtb-ui/Button'
 import { renderMenu } from '@app/navigation/router'
-import { useLazyUserControllerGetUserDetailsQuery } from '@app/services/api/user/user'
 import { RootState } from '@app/store'
 import { IUserStore } from '@app/store/user'
 import { redirectToOAuth } from '@app/utils/auth'
@@ -20,7 +19,6 @@ function Header() {
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   // const { theme, setTheme } = useTheme()
-  const [getUserInfo] = useLazyUserControllerGetUserDetailsQuery()
   const { userInfo } = useSelector<RootState, IUserStore>((s) => s.user)
   const { isLogin, postLogout } = useAuth()
 
@@ -44,13 +42,6 @@ function Header() {
       onClick: handleLogout
     }
   ]
-
-  useEffect(() => {
-    // TODO: Prevent multiple calls to getUserInfo (Set expiration time for data)
-    if (isLogin) {
-      getUserInfo()
-    }
-  }, [isLogin])
 
   useEffect(() => {
     // window.addEventListener(AppEvent.LOGOUT, handleLogout)
