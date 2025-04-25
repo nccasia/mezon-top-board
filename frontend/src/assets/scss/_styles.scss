@@ -46,7 +46,9 @@ a {
   min-height: 120px;
   max-height: 240px;
 }
-
+.ant-carousel {
+  cursor: grab;
+}
 .ant-carousel .slick-dots li button {
   background: #d1006b !important;
   width: 5px !important;
