@@ -55,6 +55,11 @@ function CardInfo({ isPublic, userInfo }: CardInfoProps) {
     if (isPublic) return
 
     const { file, onSuccess, onError } = options
+    const maxFileSize = 4 * 1024 * 1024
+    if (file.size > maxFileSize) {
+      toast.error(`${file.name} file upload failed (exceeds 4MB)`);
+      return ;
+    }
     
     if (!imageMimeTypes.includes(file.type)) {
       toast.error('Please upload a valid image file!');
