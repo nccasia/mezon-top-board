@@ -18,13 +18,14 @@ import { IRatingStore } from '@app/store/rating'
 import { ITagStore } from '@app/store/tag'
 import { ApiError } from '@app/types/API.types'
 import { Divider, Spin } from 'antd'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import Comment from './components/Comment/Comment'
 import DetailCard from './components/DetailCard/DetailCard'
 import RatingForm from './components/RatingForm/RatingForm'
+import Button from '@app/mtb-ui/Button'
 function BotDetailPage() {
   const navigate = useNavigate()
   const [getMezonAppDetail, { isError, error, isSuccess }] = useLazyMezonAppControllerGetMezonAppDetailQuery()
@@ -47,6 +48,9 @@ function BotDetailPage() {
   const { handleSearch } = useMezonAppSearch(1, 5)
   const [searchParams] = useSearchParams()
   const searchQuery = searchParams.get('q') || ''
+  const [page, setPage] = useState(1)
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+
   useEffect(() => {
     if (botId && botId !== 'undefined' && botId.trim() !== '') {
       getMezonAppDetail({ id: botId });
@@ -73,6 +77,21 @@ function BotDetailPage() {
       }
     }
   }, [isError, error]);
+
+  const onLoadMore = async () => {
+    if (botId && botId !== 'undefined' && botId.trim() !== '') {
+      try {
+        const nextPage = page + 1
+        setIsLoadingMore(true)
+        await getRatingsByApp({ appId: botId, pageNumber: nextPage }).unwrap()
+        setPage(nextPage)
+      } catch (error) {
+        toast.error('Error loading more')
+      } finally {
+        setIsLoadingMore(false)
+      }
+    }
+  }
 
   return (
     <div className='m-auto pt-10 pb-10 w-[75%]'>
@@ -152,18 +171,15 @@ function BotDetailPage() {
               </div>
             </div>
             <Divider className='bg-gray-200'></Divider>
-            <RatingForm
-              onSubmitted={() => {
-                getRatingsByApp({ appId: botId || '' })
-              }}
-            />
+            <RatingForm />
             <Divider className='bg-gray-200'></Divider>
             <div className='flex flex-col gap-5'>
               {isLoadingReview && Object.keys(ratings).length == 0 ? (
                 <Spin size='large' />
               ) : (
-                ratings?.data?.map((rating) => <Comment rating={rating}></Comment>) || null
+                ratings?.data?.map((rating) => <Comment key={rating.id} rating={rating}></Comment>) || null
               )}
+              {ratings.hasNextPage && <Button size='large' disabled={isLoadingMore} loading={isLoadingMore} onClick={onLoadMore}>Load More</Button>}
             </div>
           </div>
         </div>
