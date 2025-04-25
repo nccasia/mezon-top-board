@@ -109,7 +109,7 @@ function BotDetailPage() {
             <MtbTypography variant='h3'>More like this</MtbTypography>
             <Divider className='bg-gray-200'></Divider>
             {relatedMezonApp?.length > 0 ? (
-              <Carousel arrows infinite={true} draggable variableWidth={true} centerMode={true}
+              <Carousel arrows infinite={true} draggable swipeToSlide={true} touchThreshold={5} variableWidth={true} centerMode={true}
                 className='text-center'>
                 {relatedMezonApp.map((bot) => (
                   <div className="p-1" style={{ width: 200 }} key={bot.id}>
