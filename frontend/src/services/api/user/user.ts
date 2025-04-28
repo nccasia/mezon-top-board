@@ -55,7 +55,7 @@ export { injectedRtkApi as userService }
 export type UserControllerSearchUserApiResponse = HttpResponse<SearchUserResponse[]>
 export type UserControllerSearchUserApiArg = {
   /** Keyword to search user by name or email */
-  search?: string
+  search: string
   pageSize: number
   pageNumber: number
   sortField: string
@@ -125,7 +125,7 @@ export type SelfUpdateUserRequest = {
   profileImage?: string
 }
 export const {
-  useUserControllerSearchUserQuery,
+  useUserControllerSearchUserQuery, 
   useLazyUserControllerSearchUserQuery,
   useUserControllerUpdateUserMutation,
   useUserControllerDeleteUserMutation,
