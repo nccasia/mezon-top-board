@@ -37,7 +37,7 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
   } = useFormContext<CreateMezonAppRequest>()
   const [addBot] = useMezonAppControllerCreateMezonAppMutation()
   const navigate = useNavigate()
-  const [updateBot] = useMezonAppControllerUpdateMezonAppMutation()
+  const [updateBot, { isLoading: isUpdating }] = useMezonAppControllerUpdateMezonAppMutation()
   const { tagList } = useSelector<RootState, ITagStore>((s) => s.tag)
   const { linkTypeList } = useSelector<RootState, ILinkTypeStore>((s) => s.link)
   const [selectedSocialLink, setSelectedSocialLink] = useState<string>('') // holds selected link type id
@@ -76,13 +76,13 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
         return
       }
       if (!botId) return
-      updateBot({ updateMezonAppRequest: { ...data, id: botId, socialLinks: formattedSocialLinks } })
+      await updateBot({ updateMezonAppRequest: { ...data, id: botId, socialLinks: formattedSocialLinks } }).unwrap()
       toast.success('Edit bot success')
     } catch (error: unknown) {
       const err = error as ApiError
       const message =
         err?.data?.message && Array.isArray(err.data.message)
-          ? err.data.message.join(', ')
+          ? err.data.message.join('\n')
           : err?.data?.message || 'Something went wrong'
       toast.error(message)
     }
@@ -358,7 +358,7 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
           <Button color='default' customClassName='w-[200px] !text-blue-500'>
             Preview
           </Button>
-          <Button htmlType='submit' customClassName='w-[200px]'>
+          <Button disabled={isUpdating} loading={isUpdating} htmlType='submit' customClassName='w-[200px]'>
             Save
           </Button>
         </div>
