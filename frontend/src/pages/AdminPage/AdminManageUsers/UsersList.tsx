@@ -24,7 +24,9 @@ const { Option } = Select
 const pageOptions = [5, 10, 15]
 
 interface SearchFormValues {
-  search: string;
+  search: string;    
+  pageSize: 5 | 10 | 15,
+  pageNumber: number,
   sortField: string;
   sortOrder: 'ASC' | 'DESC';
 }
@@ -42,6 +44,8 @@ function UsersList() {
 
   const initialValues: SearchFormValues = {
     search: '',
+    pageSize: 5,
+    pageNumber: 1,
     sortField: 'createdAt',
     sortOrder: 'DESC'
   };
