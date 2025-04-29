@@ -89,7 +89,22 @@ function ReviewHistoryPage() {
 
   const dataHistoryTable = !!data?.data?.length ? mapDataSourceTable(data?.data) : []
   const columns = [
-    ...REVIEW_HISTORY_COLUMNS,
+    ...REVIEW_HISTORY_COLUMNS.map(col => {
+      if (['remark', 'app', 'reviewer'].includes(col.key)) {
+        return {
+          ...col,
+          ellipsis: true,
+          render: (_: any, record: ReviewHistoryResponse) => (
+            <Tooltip title={col.key === 'remark' ? record.remark : col.key === 'app' ? record.app?.name : record.reviewer?.name}>
+              <span className="break-words whitespace-pre-wrap block">
+                {col.key === 'remark' ? record.remark : col.key === 'app' ? record.app?.name : record.reviewer?.name || ''}
+              </span>
+            </Tooltip>
+          )
+        }
+      }
+      return col
+    }),
     {
       title: 'Action',
       key: 'action',
