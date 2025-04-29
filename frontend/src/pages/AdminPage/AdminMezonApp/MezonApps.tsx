@@ -203,7 +203,6 @@ const MezonApps = ({ onEdit }: { onEdit: (app: GetMezonAppDetailsResponse) => vo
         >
           Search
         </Button>
-
       </div>
       {
         isLoading ? (

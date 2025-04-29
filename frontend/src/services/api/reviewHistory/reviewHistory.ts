@@ -2,13 +2,14 @@ import { HttpResponse } from '@app/types/API.types'
 import { api } from '../../apiInstance'
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
-    reviewHistoryControllerGetAppReviews: build.query<
-      ReviewHistoryControllerGetAppReviewsApiResponse,
-      ReviewHistoryControllerGetAppReviewsApiArg
+    reviewHistoryControllerSearchAppReviews: build.query<
+      ReviewHistoryControllerSearchAppReviewsApiResponse,
+      ReviewHistoryControllerSearchAppReviewsApiArg
     >({
       query: (queryArg) => ({
-        url: `/api/review-history`,
+        url: `/api/review-history/search`,
         params: {
+          search: queryArg.search,
           appId: queryArg.appId,
           pageSize: queryArg.pageSize,
           pageNumber: queryArg.pageNumber,
@@ -39,8 +40,9 @@ const injectedRtkApi = api.injectEndpoints({
   overrideExisting: false
 })
 export { injectedRtkApi as reviewHistoryService }
-export type ReviewHistoryControllerGetAppReviewsApiResponse = HttpResponse<ReviewHistoryResponse[]>
-export type ReviewHistoryControllerGetAppReviewsApiArg = {
+export type ReviewHistoryControllerSearchAppReviewsApiResponse = HttpResponse<ReviewHistoryResponse[]>
+export type ReviewHistoryControllerSearchAppReviewsApiArg = {
+  search?: string
   appId?: string
   pageSize: number
   pageNumber: number
@@ -100,8 +102,8 @@ export type RequestWithId = {
   id: string
 }
 export const {
-  useReviewHistoryControllerGetAppReviewsQuery,
-  useLazyReviewHistoryControllerGetAppReviewsQuery,
+  useReviewHistoryControllerSearchAppReviewsQuery,
+  useLazyReviewHistoryControllerSearchAppReviewsQuery,
   useReviewHistoryControllerCreateAppReviewMutation,
   useReviewHistoryControllerUpdateAppReviewMutation,
   useReviewHistoryControllerDeleteAppReviewMutation

@@ -1,8 +1,8 @@
-import { DeleteOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons'
+import { DeleteOutlined, EditOutlined, EyeOutlined, SearchOutlined } from '@ant-design/icons'
 import { REVIEW_HISTORY_COLUMNS } from '@app/constants/table.constant'
 import {
   ReviewHistoryResponse,
-  useLazyReviewHistoryControllerGetAppReviewsQuery,
+  useLazyReviewHistoryControllerSearchAppReviewsQuery,
   useReviewHistoryControllerDeleteAppReviewMutation,
   useReviewHistoryControllerUpdateAppReviewMutation
 } from '@app/services/api/reviewHistory/reviewHistory'
@@ -13,8 +13,8 @@ import ReviewHistoryInfo from './ReviewHistoryInfo/ReviewHistoryInfo'
 import { toast } from 'react-toastify'
 
 function ReviewHistoryPage() {
-  const [getReviewHistory, { data }] = useLazyReviewHistoryControllerGetAppReviewsQuery()
-  const [getReviewHistoryDetail, { data: reviewHistoryDetail }] = useLazyReviewHistoryControllerGetAppReviewsQuery()
+  const [getReviewHistory, { data }] = useLazyReviewHistoryControllerSearchAppReviewsQuery()
+  const [getReviewHistoryDetail, { data: reviewHistoryDetail }] = useLazyReviewHistoryControllerSearchAppReviewsQuery()
   const [updateReviewHistory] = useReviewHistoryControllerUpdateAppReviewMutation()
   const [deleteReviewHistory] = useReviewHistoryControllerDeleteAppReviewMutation()
   const [currentPageNumber, setCurrentPageNumber] = useState<number>(1)
@@ -23,9 +23,11 @@ function ReviewHistoryPage() {
   const [isEdit, setIsEdit] = useState<boolean>(false)
   const [remark, setRemark] = useState<string>('')
   const [selectedHistory, setSelectedHistory] = useState<string>('')
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const fetchData = async () => {
     getReviewHistory({
+      search: searchQuery,
       pageNumber: currentPageNumber,
       pageSize: currentPageSize,
       sortField: 'createdAt',
@@ -36,6 +38,11 @@ function ReviewHistoryPage() {
   useEffect(() => {
     fetchData()
   }, [currentPageSize, currentPageNumber])
+  
+  const handleSearchSubmit = () => {
+    setCurrentPageNumber(1); 
+    fetchData();
+  }
 
   const handleView = (id: string) => {
     setIsEdit(false)
@@ -144,6 +151,24 @@ function ReviewHistoryPage() {
 
   return (
     <>
+      <div className='flex gap-4 mb-3'>
+        <Input
+          placeholder='Search by name or email'
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          prefix={<SearchOutlined style={{ color: '#bbb' }} />}
+          onPressEnter={handleSearchSubmit}
+          className='w-full'
+          style={{ borderRadius: '8px', height: '40px' }}
+        />
+        <Button className="w-50"
+          type='primary' 
+          onClick={handleSearchSubmit}
+          icon={<SearchOutlined />}
+        >
+          Search
+        </Button>
+      </div>
       <Table
         dataSource={dataHistoryTable}
         columns={columns}
