@@ -13,7 +13,7 @@ function Comment({ rating }: { rating: Rating }) {
           <img
             src={rating.user?.profileImage ? getUrlImage(rating.user?.profileImage) : avatar}
             alt=''
-            className='rounded-full w-full aspect-square'
+            className='rounded-full w-full aspect-square object-cover'
           />
         </Link>
         <div className='flex flex-col gap-5'>
