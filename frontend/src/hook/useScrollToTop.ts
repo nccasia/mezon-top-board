@@ -6,9 +6,29 @@ const useScrollToTop = () => {
 
   useEffect(() => {
     if ('scrollRestoration' in history) {
-      history.scrollRestoration = 'manual';
+      history.scrollRestoration = 'manual'
     }
-    window.scrollTo(0, 0)
+
+    const restoreKey = `scroll-position:${pathname}`
+    const listPages = ['/search', '/profile']
+
+    const ignoreScrollPaths = listPages.some((path) => pathname.startsWith(path))
+
+    if (ignoreScrollPaths) {
+      const saved = sessionStorage.getItem(restoreKey)
+      if (saved) {
+        requestAnimationFrame(() => {
+          window.scrollTo(0, parseInt(saved, 10))
+        })
+      }
+    } else {
+      window.scrollTo(0, 0)
+    }
+
+    return () => {
+      sessionStorage.setItem(restoreKey, window.scrollY.toString())
+    }
   }, [pathname])
 }
-export default useScrollToTop;
+
+export default useScrollToTop

@@ -18,7 +18,7 @@ const pageOptions = [5, 10, 15]
 function Main({ isSearchPage = false }: IMainProps) {
   const navigate = useNavigate()
 
-  const [searchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
   const defaultSearchQuery = useMemo(() => searchParams.get('q')?.trim() || '', [searchParams.get('q')?.trim()])
   const defaultTagIds = useMemo(() => searchParams.get('tags')?.split(',').filter(Boolean) || [], [searchParams.get('tags')])
 
@@ -29,7 +29,11 @@ function Main({ isSearchPage = false }: IMainProps) {
 
   const [botPerPage, setBotPerPage] = useState<number>(pageOptions[0])
   const [isInitialized, setIsInitialized] = useState<boolean>(false)
-  const [page, setPage] = useState<number>(1)
+  const [page, setPage] = useState<number>(() => {
+    const param = parseInt(searchParams.get('page') || '1', 10)
+    return isNaN(param) || param < 1 ? 1 : param
+  })
+  
   const [isOpen, setIsOpen] = useState<boolean>(false)
   const [searchQuery, setSearchQuery] = useState<string>(searchParams.get('q')?.trim() || '');
   const [tagIds, setTagIds] = useState<string[]>(searchParams.get('tags')?.split(',').filter(Boolean) || []);
@@ -61,6 +65,13 @@ function Main({ isSearchPage = false }: IMainProps) {
     searchMezonAppList(searchQuery, tagIds);
   }, [page, botPerPage, isSearchPage])
 
+  useEffect(() => {
+    const param = parseInt(searchParams.get('page') || '1', 10)
+    if (!isNaN(param) && param !== page) {
+      setPage(param)
+    }
+  }, [searchParams])  
+
   const searchMezonAppList = (searchQuery?: string, tagIds?: string[]) => {
     getMezonApp({
       search: isSearchPage ? searchQuery : undefined,
@@ -89,6 +100,11 @@ function Main({ isSearchPage = false }: IMainProps) {
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage)
+
+    const newParams = new URLSearchParams(searchParams)
+    newParams.set('page', newPage.toString())
+    setSearchParams(newParams)
+
     if (newPage > Math.ceil(totals / botPerPage)) {
       setPage(1)
     }
