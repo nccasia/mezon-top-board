@@ -1,17 +1,17 @@
-import { GetPublicProfileResponse, GetUserDetailsResponse, userService } from '@app/services/api/user/user'
+import { GetPublicProfileResponse, GetUserDetailsResponse, UserControllerSearchUserApiResponse } from '@app/services/api/user/user'
 import { createSlice } from '@reduxjs/toolkit'
 import { manageUsersExtraReducers } from './extraReducer'
 
 export interface IUserStore {
   userInfo: GetUserDetailsResponse,
   publicProfile: GetPublicProfileResponse,
-  adminUserList?: GetUserDetailsResponse[],
+  adminUserList?: UserControllerSearchUserApiResponse,
 }
 
 const initialState: IUserStore = {
   userInfo: {} as GetUserDetailsResponse,
   publicProfile: {} as GetPublicProfileResponse,
-  adminUserList: [],
+  adminUserList: {} as UserControllerSearchUserApiResponse,
 }
 
 const userSlice = createSlice({

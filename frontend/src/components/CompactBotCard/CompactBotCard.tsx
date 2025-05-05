@@ -21,7 +21,7 @@ function CompactBotCard({ data, isPublic = true }: ICompactBotCardProps) {
           <img src={imgUrl} alt='' className='aspect-square rounded-full object-cover w-full' width={'100%'} />
         </div>
         {!isPublic && (
-          <OwnerActions data={data} size='large' />
+          <OwnerActions data={data} />
         )}
       </div>
       <div className='pt-3 pb-3 font-black truncate'>{data?.name || 'Name'}</div>
