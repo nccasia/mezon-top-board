@@ -46,6 +46,12 @@ a {
   min-height: 120px;
   max-height: 240px;
 }
+
+pre {
+  overflow-wrap: break-word; 
+  white-space: pre-wrap;
+}
+
 .ant-carousel {
   cursor: grab;
 }
