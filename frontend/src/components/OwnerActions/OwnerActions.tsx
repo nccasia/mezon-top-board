@@ -64,6 +64,7 @@ function OwnerActions({ data, isBotCard }: { data: any; isBotCard?: boolean }) {
     <Dropdown.Button
       style={{ display: 'contents' }}
       size={isBotCard ? 'large' : 'middle'}
+      getPopupContainer={(trigger) => trigger.parentElement as HTMLElement}
       buttonsRender={([leftBtn, rightBtn]) => [
         null,
         <span onClick={(e) => e.stopPropagation()} className={isBotCard ? '' : '!absolute !top-0 !right-0'}>

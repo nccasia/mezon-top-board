@@ -31,8 +31,8 @@ function Main({ isSearchPage = false }: IMainProps) {
   const [isInitialized, setIsInitialized] = useState<boolean>(false)
   const [page, setPage] = useState<number>(1)
   const [isOpen, setIsOpen] = useState<boolean>(false)
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [tagIds, setTagIds] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>(searchParams.get('q')?.trim() || '');
+  const [tagIds, setTagIds] = useState<string[]>(searchParams.get('tags')?.split(',').filter(Boolean) || []);
 
   const totals = useMemo(() => mezonApp.totalCount || 0, [mezonApp])
 

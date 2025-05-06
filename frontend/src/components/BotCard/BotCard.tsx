@@ -74,8 +74,8 @@ function BotCard({ readonly = false, data, canNavigateOnClick = true }: IBotCard
               </Tag>
             ))}
           </div>
-          <div className='sm:absolute sm:top-2 sm:right-2 flex gap-3'>
-            {data?.owner?.id === userInfo?.id && (
+          <div className='sm:absolute sm:top-2 sm:right-2 flex gap-3 relative z-1'>
+            {userInfo?.id && data?.owner?.id === userInfo?.id && (
               <OwnerActions data={data} isBotCard={true} />
             )}
             <Button variant='solid' color='secondary' size='large' onClick={handleInvite}>
