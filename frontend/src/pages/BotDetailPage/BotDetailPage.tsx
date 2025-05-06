@@ -30,7 +30,7 @@ import { AppStatus } from '@app/enums/AppStatus.enum'
 import Button from '@app/mtb-ui/Button'
 function BotDetailPage() {
   const navigate = useNavigate()
-  const [getMezonAppDetail, { isError, error, isSuccess, data: GetMezonAppDetailApiResponse }] = useLazyMezonAppControllerGetMezonAppDetailQuery()
+  const [getMezonAppDetail, { isError, error, isSuccess, data: getMezonAppDetailApiResponse }] = useLazyMezonAppControllerGetMezonAppDetailQuery()
   const [getrelatedMezonApp] = useLazyMezonAppControllerGetRelatedMezonAppQuery()
   const [getTagList] = useLazyTagControllerGetTagsQuery()
   const [getRatingsByApp, { isLoading: isLoadingReview }] = useLazyRatingControllerGetRatingsByAppQuery()
@@ -81,10 +81,11 @@ function BotDetailPage() {
     }
   }, [isError, error]);
   useEffect(() => {
-    if (GetMezonAppDetailApiResponse?.data && GetMezonAppDetailApiResponse?.data?.status !== AppStatus.PUBLISHED) {
-      checkOwnership(GetMezonAppDetailApiResponse.data?.owner?.id, true);
-      }
-  }, [GetMezonAppDetailApiResponse])
+    // TODO: improve logic
+    if (getMezonAppDetailApiResponse?.data && getMezonAppDetailApiResponse?.data?.status !== AppStatus.PUBLISHED) {
+      checkOwnership(getMezonAppDetailApiResponse.data?.owner?.id, true);
+    }
+  }, [getMezonAppDetailApiResponse])
 
   const onLoadMore = async () => {
     if (botId && botId !== 'undefined' && botId.trim() !== '') {
