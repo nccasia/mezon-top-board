@@ -127,23 +127,25 @@ function CardInfo({ isPublic, userInfo }: CardInfoProps) {
             ))}
         </ul>
       </div>
-      <Popconfirm
-        title='Confirm Sync from Mezon'
-        description='Are you sure to sync name and avatar for this user? This action cannot be undone!'
-        onConfirm={handleSyncMezon}
-        okText='Yes'
-        cancelText='No'
-      >
-        <Button
-          className='mt-2'
-          color='danger'
-          size='large'
-          variant='outlined'
-          icon={<SyncOutlined />}
+      {!isPublic &&
+        <Popconfirm
+          title='Confirm Sync from Mezon'
+          description='Are you sure to sync name and avatar for this user? This action cannot be undone!'
+          onConfirm={handleSyncMezon}
+          okText='Yes'
+          cancelText='No'
         >
-          Sync from Mezon
-        </Button>
-      </Popconfirm>
+          <Button
+            className='mt-2'
+            color='danger'
+            size='large'
+            variant='outlined'
+            icon={<SyncOutlined />}
+          >
+            Sync from Mezon
+          </Button>
+        </Popconfirm>
+      }
     </div>
   )
 }
