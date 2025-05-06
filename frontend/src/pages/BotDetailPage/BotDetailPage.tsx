@@ -17,8 +17,8 @@ import { IMezonAppStore } from '@app/store/mezonApp'
 import { IRatingStore } from '@app/store/rating'
 import { ITagStore } from '@app/store/tag'
 import { ApiError } from '@app/types/API.types'
-import { Divider, Spin } from 'antd'
-import { useEffect, useState } from 'react'
+import { Carousel, Divider, Spin } from 'antd'
+import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -128,14 +128,14 @@ function BotDetailPage() {
             <MtbTypography variant='h3'>More like this</MtbTypography>
             <Divider className='bg-gray-200'></Divider>
             {relatedMezonApp?.length > 0 ? (
-              <div className='flex gap-10 items-center max-lg:text-center max-2xl:text-center max-lg:flex-wrap 
-                max-2xl:flex-wrap max-lg:justify-center max-2xl:justify-center 2xl:flex-wrap 2xl:justify-center'>
+              <Carousel arrows infinite={true} draggable swipeToSlide={true} touchThreshold={5} variableWidth={true} centerMode={true}
+                className='text-center'>
                 {relatedMezonApp.map((bot) => (
-                  <div className="w-45 flex-shrink-0" key={bot.id}>
+                  <div className="p-1" style={{ width: 200 }} key={bot.id}>
                     <CompactBotCard data={bot} />
                   </div>
                 ))}
-              </div>
+              </Carousel>
             ) : (
               <MtbTypography variant='h4' weight='normal' customClassName='!text-gray-500 !text-center !block'>
                 No related bot
