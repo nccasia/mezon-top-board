@@ -30,7 +30,7 @@ import { AppStatus } from '@app/enums/AppStatus.enum'
 import Button from '@app/mtb-ui/Button'
 function BotDetailPage() {
   const navigate = useNavigate()
-  const [getMezonAppDetail, { isError, error, isSuccess }] = useLazyMezonAppControllerGetMezonAppDetailQuery()
+  const [getMezonAppDetail, { isError, error, isSuccess, data: GetMezonAppDetailApiResponse }] = useLazyMezonAppControllerGetMezonAppDetailQuery()
   const [getrelatedMezonApp] = useLazyMezonAppControllerGetRelatedMezonAppQuery()
   const [getTagList] = useLazyTagControllerGetTagsQuery()
   const [getRatingsByApp, { isLoading: isLoadingReview }] = useLazyRatingControllerGetRatingsByAppQuery()
@@ -81,10 +81,10 @@ function BotDetailPage() {
     }
   }, [isError, error]);
   useEffect(() => {
-      if (mezonAppDetail?.status !== AppStatus.PUBLISHED) {
-        checkOwnership(mezonAppDetail?.owner?.id, true);
+    if (GetMezonAppDetailApiResponse?.data && GetMezonAppDetailApiResponse?.data?.status !== AppStatus.PUBLISHED) {
+      checkOwnership(GetMezonAppDetailApiResponse.data?.owner?.id, true);
       }
-    }, [mezonAppDetail])
+  }, [GetMezonAppDetailApiResponse])
 
   const onLoadMore = async () => {
     if (botId && botId !== 'undefined' && botId.trim() !== '') {
