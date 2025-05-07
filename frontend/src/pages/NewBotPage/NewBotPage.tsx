@@ -9,7 +9,7 @@ import { useLazyTagControllerGetTagsQuery } from '@app/services/api/tag/tag'
 import { RootState } from '@app/store'
 import { IMezonAppStore } from '@app/store/mezonApp'
 import { ITagStore } from '@app/store/tag'
-import { getUrlImage } from '@app/utils/stringHelper'
+import { getUrlMedia } from '@app/utils/stringHelper'
 import { ADD_BOT_SCHEMA } from '@app/validations/addBot.validations'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Upload } from 'antd'
@@ -27,7 +27,7 @@ function NewBotPage() {
   const { tagList } = useSelector<RootState, ITagStore>((s) => s.tag)
   const { botId } = useParams()
   const { checkOwnership } = useOwnershipCheck();
-  const imgUrl = botId && mezonAppDetail.featuredImage ? getUrlImage(mezonAppDetail.featuredImage) : avatarBotDefault
+  const imgUrl = botId && mezonAppDetail.featuredImage ? getUrlMedia(mezonAppDetail.featuredImage) : avatarBotDefault
   const [avatar, setAvatar] = useState<string>(imgUrl)
   const methods = useForm<CreateMezonAppRequest>({
     defaultValues: {
@@ -94,7 +94,7 @@ function NewBotPage() {
       const response = await uploadImage(formData).unwrap()
 
       if (response?.statusCode === 200) {
-        setAvatar(getUrlImage(response?.data?.filePath))
+        setAvatar(getUrlMedia(response?.data?.filePath))
         setValue('featuredImage', response?.data?.filePath)
       }
 

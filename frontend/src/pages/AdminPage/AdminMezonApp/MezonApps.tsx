@@ -6,7 +6,7 @@ import { useReviewHistoryControllerCreateAppReviewMutation } from "@app/services
 import { RootState } from "@app/store";
 import { useAppSelector } from "@app/store/hook";
 import { mapStatusToColor, mapStatusToText } from "@app/utils/mezonApp";
-import { getUrlImage } from "@app/utils/stringHelper";
+import { getUrlMedia } from "@app/utils/stringHelper";
 import { Button, Input, Modal, Popconfirm, Spin, Table, Tag, Tooltip } from "antd";
 import { ChangeEvent, useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -104,7 +104,7 @@ const MezonApps = ({ onEdit }: { onEdit: (app: GetMezonAppDetailsResponse) => vo
         <img
           src={
             featuredImage
-              ? getUrlImage(featuredImage)
+              ? getUrlMedia(featuredImage)
               : sampleBotImg
           }
           alt={data.name}

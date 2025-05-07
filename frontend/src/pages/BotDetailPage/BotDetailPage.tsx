@@ -28,6 +28,7 @@ import RatingForm from './components/RatingForm/RatingForm'
 import useOwnershipCheck from '@app/hook/useOwnershipCheck'
 import { AppStatus } from '@app/enums/AppStatus.enum'
 import Button from '@app/mtb-ui/Button'
+import { getUrlMedia } from '@app/utils/stringHelper'
 function BotDetailPage() {
   const navigate = useNavigate()
   const [getMezonAppDetail, { isError, error, isSuccess }] = useLazyMezonAppControllerGetMezonAppDetailQuery()
@@ -100,6 +101,29 @@ function BotDetailPage() {
       }
     }
   }
+  function transformMediaSrc(html: string): string {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+  
+    const images = doc.querySelectorAll('img');
+    images.forEach((img) => {
+      const rawSrc = img.getAttribute('src');
+      if (rawSrc && rawSrc.startsWith('/')) {
+        img.setAttribute('src', getUrlMedia(rawSrc));
+      }
+    });
+  
+    const videos = doc.querySelectorAll('video');
+    videos.forEach((video) => {
+      const rawSrc = video.getAttribute('src');
+      if (rawSrc && rawSrc.startsWith('/')) {
+        video.setAttribute('src', getUrlMedia(rawSrc));
+      }
+    });
+  
+    return doc.body.innerHTML;
+  }
+  
 
   return (
     <div className='m-auto pt-10 pb-10 w-[75%]'>
@@ -123,7 +147,13 @@ function BotDetailPage() {
             Overview
           </MtbTypography>
           <Divider className='bg-gray-200'></Divider>
-          <div dangerouslySetInnerHTML={{ __html: mezonAppDetail.description }} className='break-words'></div>
+          <div dangerouslySetInnerHTML={{ __html: transformMediaSrc(mezonAppDetail.description || '') }} className='break-words description'></div>
+          {/* <div
+            dangerouslySetInnerHTML={{
+              __html: `<video src="http://localhost:8778/api/uploads/2025/05/VID_20250506_103537_33800000.mp4" controls style="max-width: 100%; height: auto;"></video>`
+            }}
+            className="break-words"
+          /> */}
           <div className='pt-5'>
             <MtbTypography variant='h3'>More like this</MtbTypography>
             <Divider className='bg-gray-200'></Divider>

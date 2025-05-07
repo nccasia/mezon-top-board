@@ -1,7 +1,7 @@
 import { RiseOutlined, StarOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { ICompactBotCardProps } from '@app/types/Botcard.types'
-import { getUrlImage } from '@app/utils/stringHelper'
+import { getUrlMedia } from '@app/utils/stringHelper'
 import { avatarBotDefault } from '@app/assets'
 import OwnerActions from '../OwnerActions/OwnerActions'
 
@@ -12,7 +12,7 @@ function CompactBotCard({ data, isPublic = true }: ICompactBotCardProps) {
       navigate(`/bot/${data?.id}`)
     }
   }
-  const imgUrl = data?.featuredImage ? getUrlImage(data.featuredImage) : avatarBotDefault
+  const imgUrl = data?.featuredImage ? getUrlMedia(data.featuredImage) : avatarBotDefault
 
   return (
     <div className='shadow-sm rounded-2xl p-4 bg-white cursor-pointer relative z-1' onClick={handleNavigateDetail}>
