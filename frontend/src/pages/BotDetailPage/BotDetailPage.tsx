@@ -18,7 +18,7 @@ import { IRatingStore } from '@app/store/rating'
 import { ITagStore } from '@app/store/tag'
 import { ApiError } from '@app/types/API.types'
 import { Carousel, Divider, Spin } from 'antd'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -30,7 +30,7 @@ import { AppStatus } from '@app/enums/AppStatus.enum'
 import Button from '@app/mtb-ui/Button'
 function BotDetailPage() {
   const navigate = useNavigate()
-  const [getMezonAppDetail, { isError, error, isSuccess }] = useLazyMezonAppControllerGetMezonAppDetailQuery()
+  const [getMezonAppDetail, { isError, error, isSuccess, data: getMezonAppDetailApiResponse }] = useLazyMezonAppControllerGetMezonAppDetailQuery()
   const [getrelatedMezonApp] = useLazyMezonAppControllerGetRelatedMezonAppQuery()
   const [getTagList] = useLazyTagControllerGetTagsQuery()
   const [getRatingsByApp, { isLoading: isLoadingReview }] = useLazyRatingControllerGetRatingsByAppQuery()
@@ -81,10 +81,11 @@ function BotDetailPage() {
     }
   }, [isError, error]);
   useEffect(() => {
-      if (mezonAppDetail?.status !== AppStatus.PUBLISHED) {
-        checkOwnership(mezonAppDetail?.owner?.id, true);
-      }
-    }, [mezonAppDetail])
+    // TODO: improve logic
+    if (getMezonAppDetailApiResponse?.data && getMezonAppDetailApiResponse?.data?.status !== AppStatus.PUBLISHED) {
+      checkOwnership(getMezonAppDetailApiResponse.data?.owner?.id, true);
+    }
+  }, [getMezonAppDetailApiResponse])
 
   const onLoadMore = async () => {
     if (botId && botId !== 'undefined' && botId.trim() !== '') {
