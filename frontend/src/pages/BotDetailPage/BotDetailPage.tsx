@@ -110,17 +110,10 @@ function BotDetailPage() {
       const rawSrc = img.getAttribute('src');
       if (rawSrc && rawSrc.startsWith('/')) {
         img.setAttribute('src', getUrlMedia(rawSrc));
+        const existingStyle = img.getAttribute('style') || ''
+        img.setAttribute('style', `${existingStyle}; max-width: 100%;`.trim())
       }
     });
-  
-    const videos = doc.querySelectorAll('video');
-    videos.forEach((video) => {
-      const rawSrc = video.getAttribute('src');
-      if (rawSrc && rawSrc.startsWith('/')) {
-        video.setAttribute('src', getUrlMedia(rawSrc));
-      }
-    });
-  
     return doc.body.innerHTML;
   }
   
@@ -148,12 +141,6 @@ function BotDetailPage() {
           </MtbTypography>
           <Divider className='bg-gray-200'></Divider>
           <div dangerouslySetInnerHTML={{ __html: transformMediaSrc(mezonAppDetail.description || '') }} className='break-words description'></div>
-          {/* <div
-            dangerouslySetInnerHTML={{
-              __html: `<video src="http://localhost:8778/api/uploads/2025/05/VID_20250506_103537_33800000.mp4" controls style="max-width: 100%; height: auto;"></video>`
-            }}
-            className="break-words"
-          /> */}
           <div className='pt-5'>
             <MtbTypography variant='h3'>More like this</MtbTypography>
             <Divider className='bg-gray-200'></Divider>

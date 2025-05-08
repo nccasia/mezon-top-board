@@ -1,9 +1,9 @@
 import ReactQuill, { Value } from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
-import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react'
-import { imageMimeTypes, videoMimeTypes } from '@app/constants/mimeTypes'
-import { useMediaControllerCreateMediaMutation } from '@app/services/api/media/media'
+import { useCallback, useRef } from 'react'
+import { imageMimeTypes } from '@app/constants/mimeTypes'
 import { toast } from 'react-toastify'
+import { getUrlMedia } from '@app/utils/stringHelper'
 
 export const isMimeTypeValid = (mimeType: string, mimeTypes: string[]): boolean => mimeTypes.includes(mimeType)
 
@@ -20,53 +20,20 @@ interface IRichTextEditorProps {
 
 function RichTextEditor({ value = '', placeholder = 'Type here...', onChange, customClass }: IRichTextEditorProps) {
   const quillRef = useRef<ReactQuill | null>(null)
-  const uploadedMediaIds = useRef<string[]>([])
-  const [uploadMedia] = useMediaControllerCreateMediaMutation()
-
-  const videoHandler = useCallback(() => {
-    const input = document.createElement('input')
-    input.setAttribute('type', 'file')
-    input.setAttribute('accept', videoMimeTypes.join(','))
-    input.click()
-
-    input.onchange = async () => {
-      const file = input.files?.[0]
-      if (!file) return
-      
-      console.log(file)
-      if (!isMimeTypeValid(file.type, videoMimeTypes)) {
-        toast.error('Please upload a valid video file!')
-        return
+  function transformMediaSrc(html: string): string {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+  
+    const images = doc.querySelectorAll('img');
+    images.forEach((img) => {
+      const rawSrc = img.getAttribute('src');
+      if (rawSrc && rawSrc.startsWith('/')) {
+        img.setAttribute('src', getUrlMedia(rawSrc));
       }
-
-      const maxVideoSize = 25 * 1024 * 1024
-      if (file.size > maxVideoSize) {
-        toast.error(`${file.name} upload failed (exceeds 25MB)`)
-        return
-      }
-
-      const formData = new FormData()
-      formData.append('file', file)
-
-      try {
-        const response = await uploadMedia(formData).unwrap()
-        const url = response?.data?.filePath
-        const id = response?.data?.id
-        if (id) uploadedMediaIds.current.push(id)
-
-        const editor = quillRef.current?.getEditor()
-        const range = editor?.getSelection()
-        if (range) {
-          editor?.insertEmbed(range.index, 'video', url)
-        } else {
-          toast.error('No editor selection found.')
-        }
-      } catch (err) {
-        toast.error('Upload failed!')
-        console.error('Upload error:', err)
-      }
-    }
-  }, [])
+    });
+  
+    return doc.body.innerHTML;
+  }
 
   const imageHandler = useCallback(() => {
     const input = document.createElement('input')
@@ -88,27 +55,27 @@ function RichTextEditor({ value = '', placeholder = 'Type here...', onChange, cu
         toast.error(`${file.name} upload failed (exceeds 4MB)`)
         return
       }
-
-      const formData = new FormData()
-      formData.append('file', file)
-
-      try {
-        const response = await uploadMedia(formData).unwrap()
-        const url = response?.data?.filePath
-        const id = response?.data?.id
-        if (id) uploadedMediaIds.current.push(id)
-
-        const editor = quillRef.current?.getEditor()
-        const range = editor?.getSelection()
-        if (range) {
-          editor?.insertEmbed(range.index, 'image', url)
-        } else {
-          toast.error('No editor selection found.')
+      const reader = new FileReader()
+      reader.onload = () => {
+        const img = new Image()
+        img.onload = () => {
+          const editor = quillRef.current?.getEditor()
+          const range = editor?.getSelection()
+          
+          if (range) {
+            editor?.insertEmbed(range.index, 'image', reader.result as string)
+            
+            editor?.formatText(range.index, 1, {
+              width: `${img.width}px`,
+              height: `${img.height}px`
+            })
+            
+            editor?.setSelection({ index: range.index + 1, length: 0 })
+          }
         }
-      } catch (err) {
-        toast.error('Upload failed!')
-        console.error('Upload error:', err)
+        img.src = reader.result as string
       }
+      reader.readAsDataURL(file)
     }
   }, [])
 
@@ -122,12 +89,11 @@ function RichTextEditor({ value = '', placeholder = 'Type here...', onChange, cu
         [{ list: 'ordered' }, { list: 'bullet' }],
         [{ size: ['small', false, 'large', 'huge'] }],
         [{ color: [] }, { background: [] }],
-        ['link', 'image', 'video'],
+        ['link', 'image'],
         ['clean']
       ],
       handlers: {
-        image: imageHandler,
-        video: videoHandler
+        image: imageHandler
       }
     }
   }
@@ -140,7 +106,7 @@ function RichTextEditor({ value = '', placeholder = 'Type here...', onChange, cu
     <ReactQuill
       ref={quillRef}
       theme='snow'
-      value={value}
+      value={transformMediaSrc(value || '')}
       onChange={handleChange}
       placeholder={placeholder}
       modules={modules}
