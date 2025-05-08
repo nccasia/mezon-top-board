@@ -4,14 +4,14 @@ body {
   padding: 0;
   box-sizing: border-box;
 }
-h1 {
+.description h1 {
   font-size: 2em;
   // font-weight: bold;
 }
-h2 {
+.description h2 {
   font-size: 1.5em;
 }
-h3 {
+.description h3 {
   font-size: 1.25em;
 }
 a {
@@ -82,22 +82,45 @@ pre {
 .ql-size-small {
   font-size: 0.75em;
 }
-
 .ql-size-large {
   font-size: 1.5em;
 }
-
 .ql-size-huge {
   font-size: 2.5em;
 }
+
 .ql-align-center {
   text-align: center;
 }
-
 .ql-align-right {
   text-align: right;
 }
-
 .ql-align-justify {
   text-align: justify;
+  overflow-wrap: break-word; 
+  white-space: pre-wrap;
+}
+
+.ant-carousel {
+  cursor: grab;
+}
+.ant-carousel .slick-dots li button {
+  background: #d1006b !important;
+  width: 5px !important;
+  height: 5px !important;
+}
+.ant-carousel .slick-dots li {
+  width: 10px !important;
+  height: 10px !important;
+}
+.ant-carousel .slick-dots li.slick-active::after {
+  background: #d1006b !important;
+  width: 10px !important;
+  height: 5px !important;
+}
+.ant-carousel .slick-dots {
+  bottom: -1rem !important;
+}
+.ant-carousel .slick-arrow {
+  color: #d1006b !important;
 }

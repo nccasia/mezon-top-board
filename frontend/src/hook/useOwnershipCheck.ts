@@ -12,8 +12,8 @@ const useOwnershipCheck = () => {
 
   const checkOwnership = (ownerId?: string, shouldReplaceRoute?: boolean) => {
     if (!isLogin) {
-      toast.error('You need to login to access this page.')
-      navigate('/login')
+      toast.error("You need to login to access this page.")
+      navigate("/login")
       return false
     }
 
