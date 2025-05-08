@@ -1,3 +1,4 @@
+import { IGNORE_SCROLL_PAGES } from '@app/constants/ignoreScrollPage'
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 
@@ -6,13 +7,11 @@ const useScrollToTop = () => {
 
   useEffect(() => {
     if ('scrollRestoration' in history) {
-      history.scrollRestoration = 'manual'
+      history.scrollRestoration = 'manual' 
     }
 
     const restoreKey = `scroll-position:${pathname}`
-    const listPages = ['/search', '/profile']
-
-    const ignoreScrollPaths = listPages.some((path) => pathname.startsWith(path))
+    const ignoreScrollPaths = IGNORE_SCROLL_PAGES.some((path) => pathname.startsWith(path))
 
     if (ignoreScrollPaths) {
       const saved = sessionStorage.getItem(restoreKey)
