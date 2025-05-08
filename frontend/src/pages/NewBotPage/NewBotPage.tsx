@@ -88,6 +88,11 @@ function NewBotPage() {
       onError(new Error('Invalid file type'));
       return;
     }
+    const maxFileSize = 4 * 1024 * 1024
+    if (file.size > maxFileSize) {
+      toast.error(`${file.name} file upload failed (exceeds 4MB)`);
+      return ;
+    }
     try {
       const formData = new FormData()
       formData.append('file', file)
