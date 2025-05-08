@@ -55,7 +55,7 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
   })
   const [socialLinkUrl, setSocialLinkUrl] = useState<string>('')
   const [dropdownOpen, setDropdownOpen] = useState(false)
-    const [uploadMedia] = useMediaControllerCreateMediaMutation()
+  const [uploadMedia] = useMediaControllerCreateMediaMutation()
 
   const { botId } = useParams()
 
@@ -125,13 +125,7 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
 
       if (!botId) return
 
-      const result = await updateBot({ updateMezonAppRequest: { ...data, id: botId, socialLinks: formattedSocialLinks } });
-
-      if ('error' in result) {
-        console.error(result.error);
-        toast.error('Failed to update');
-        return;
-      }
+      await updateBot({ updateMezonAppRequest: { ...data, id: botId, socialLinks: formattedSocialLinks } });
 
       toast.success('Edit bot success')
     } catch (error: unknown) {
@@ -140,7 +134,6 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
         err?.data?.message && Array.isArray(err.data.message)
           ? err.data.message.join(', ')
           : err?.data?.message || 'Something went wrong'
-      if (err?.data?.statusCode === 200 || !message) return;
       toast.error(message)
     }
   }
