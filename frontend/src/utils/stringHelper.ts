@@ -50,7 +50,7 @@ export const handleMapOption = (enums: Record<string, string>) => {
   }))
 }
 
-export const getUrlImage = (path: string) => {
+export const getUrlMedia= (path: string) => {
   if (path.startsWith('http://') || path.startsWith('https://')) {
     return path
   }

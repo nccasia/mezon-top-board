@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux'
 import { RootState } from '@app/store'
 import { IMezonAppStore } from '@app/store/mezonApp'
 import { IUserStore } from '@app/store/user'
-import { getUrlImage } from '@app/utils/stringHelper'
+import { getUrlMedia } from '@app/utils/stringHelper'
 import { ImgIcon } from '@app/mtb-ui/ImgIcon/ImgIcon'
 
 function DetailCard() {
@@ -70,7 +70,7 @@ function DetailCard() {
               <div className='flex gap-4 items-center'>
                 <div className='w-[40px] h-[40px] overflow-hidden rounded-xl flex-shrink-0'>
                   <img
-                    src={mezonAppDetail?.owner?.profileImage ? getUrlImage(mezonAppDetail?.owner.profileImage) : avatar}
+                    src={mezonAppDetail?.owner?.profileImage ? getUrlMedia(mezonAppDetail?.owner.profileImage) : avatar}
                     alt=''
                     className='w-full h-full object-cover'
                   />

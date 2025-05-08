@@ -12,14 +12,14 @@ import MTBAvatar from '@app/mtb-ui/Avatar/MTBAvatar'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import { useMediaControllerCreateMediaMutation } from '@app/services/api/media/media'
 import { useUserControllerSelfUpdateUserMutation, useUserControllerSyncMezonMutation } from '@app/services/api/user/user'
-import { getUrlImage } from '@app/utils/stringHelper'
+import { getUrlMedia } from '@app/utils/stringHelper'
 import { Button, Popconfirm, Upload } from 'antd'
 import { toast } from 'react-toastify'
 import { CardInfoProps } from './CardInfo.types'
 import { imageMimeTypes } from '@app/constants/mimeTypes'
 
 function CardInfo({ isPublic, userInfo }: CardInfoProps) {
-  const imgUrl = userInfo?.profileImage ? getUrlImage(userInfo.profileImage) : avatar
+  const imgUrl = userInfo?.profileImage ? getUrlMedia(userInfo.profileImage) : avatar
   const [selfUpdate] = useUserControllerSelfUpdateUserMutation()
   const [uploadImage, { isLoading: isUpdatingAvatar }] = useMediaControllerCreateMediaMutation()
   const [syncMezon] = useUserControllerSyncMezonMutation()
