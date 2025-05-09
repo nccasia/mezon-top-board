@@ -21,6 +21,9 @@ export const ratingExtraReducers = (builder: ActionReducerMapBuilder<any>) => {
     .addMatcher(ratingService.endpoints.ratingControllerGetRatingsByApp.matchRejected, (state, { payload }) => {
       state.ratings = {}
     })
+    .addMatcher(ratingService.endpoints.ratingControllerGetAllRatingsByApp.matchFulfilled, (state, { payload }) => {
+      state.allRatings = payload
+    })
     .addMatcher(ratingService.endpoints.ratingControllerCreateRating.matchFulfilled, (state, { payload }) => {
       state.ratings.data.unshift(payload)
     })

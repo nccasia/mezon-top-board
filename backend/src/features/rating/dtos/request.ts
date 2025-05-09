@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional, PickType } from "@nestjs/swagger";
 
 import { IsNumber, IsString, IsUUID, Max, Min } from "class-validator";
 
@@ -9,6 +9,10 @@ export class GetAppRatingRequest extends PaginationQuery {
     @IsUUID()
     appId: string;
 }
+
+export class GetAllAppRatingRequest extends PickType(GetAppRatingRequest, [
+  "appId",
+]) {}
 
 export class CreateRatingRequest {
     @ApiProperty()

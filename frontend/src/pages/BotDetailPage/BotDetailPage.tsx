@@ -10,7 +10,7 @@ import {
   useLazyMezonAppControllerGetMezonAppDetailQuery,
   useLazyMezonAppControllerGetRelatedMezonAppQuery
 } from '@app/services/api/mezonApp/mezonApp'
-import { useLazyRatingControllerGetRatingsByAppQuery } from '@app/services/api/rating/rating'
+import { useLazyRatingControllerGetAllRatingsByAppQuery, useLazyRatingControllerGetRatingsByAppQuery } from '@app/services/api/rating/rating'
 import { useLazyTagControllerGetTagsQuery } from '@app/services/api/tag/tag'
 import { RootState } from '@app/store'
 import { IMezonAppStore } from '@app/store/mezonApp'
@@ -34,12 +34,13 @@ function BotDetailPage() {
   const [getrelatedMezonApp] = useLazyMezonAppControllerGetRelatedMezonAppQuery()
   const [getTagList] = useLazyTagControllerGetTagsQuery()
   const [getRatingsByApp, { isLoading: isLoadingReview }] = useLazyRatingControllerGetRatingsByAppQuery()
+  const [getAllRatingsByApp, { isLoading: isLoadingAllReview }] = useLazyRatingControllerGetAllRatingsByAppQuery()
 
   const { botId } = useParams()
   const { mezonAppDetail, relatedMezonApp } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
-  const { ratings } = useSelector<RootState, IRatingStore>((s) => s.rating)
+  const { ratings, allRatings } = useSelector<RootState, IRatingStore>((s) => s.rating)
   const { checkOwnership } = useOwnershipCheck();
-  const ratingCounts = ratings?.data?.reduce(
+  const ratingCounts = allRatings?.reduce(
     (acc, rating) => {
       acc[rating.score] = (acc[rating.score] || 0) + 1
       return acc
@@ -67,6 +68,9 @@ function BotDetailPage() {
   useEffect(() => {
     if (!tagList?.data?.length) {
       getTagList()
+    }
+    if (botId && botId !== 'undefined' && botId.trim() !== '') {
+      getAllRatingsByApp({ appId: botId })
     }
   }, [])
 
@@ -152,7 +156,7 @@ function BotDetailPage() {
                   <p className='text-6xl'>{mezonAppDetail.rateScore}</p>
                   <div>
                     <MtbRate readonly={true} value={mezonAppDetail.rateScore}></MtbRate>
-                    <p className='pt-2'>{ratings?.data?.length} reviews</p>
+                    <p className='pt-2'>{allRatings?.length} reviews</p>
                   </div>
                 </div>
                 <p className='pt-5 max-lg:pt-7 max-2xl:pt-7'>
