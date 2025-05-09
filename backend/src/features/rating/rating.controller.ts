@@ -27,7 +27,14 @@ export class RatingController {
     @ApiResponse({ type: GetAppRatingResponse, isArray: true })
     async getAppRating(@Query() query: GetAppRatingRequest) {
         return this.ratingService.getAppRating(query);
-    }
+  }
+
+  @Get("get-all")
+  @Public()
+  @ApiResponse({ type: GetAppRatingResponse, isArray: true })
+  async getAllAppRating(@Query() query: GetAppRatingRequest) {
+    return this.ratingService.getAllAppRating(query);
+  }
 
     @Post()
     @ApiBearerAuth()

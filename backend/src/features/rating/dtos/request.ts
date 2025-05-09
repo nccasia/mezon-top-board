@@ -10,6 +10,10 @@ export class GetAppRatingRequest extends PaginationQuery {
     appId: string;
 }
 
+export class GetAllAppRatingRequest extends PickType(GetAppRatingRequest, [
+  "appId",
+]) {}
+
 export class CreateRatingRequest {
     @ApiProperty()
     @IsUUID()

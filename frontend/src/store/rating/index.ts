@@ -1,13 +1,15 @@
-import { RatingControllerGetRatingByAppApiResponse } from '@app/services/api/rating/rating';
+import { RatingControllerGetAllRatingByAppApiResponse, RatingControllerGetRatingByAppApiResponse } from '@app/services/api/rating/rating';
 import { createSlice } from '@reduxjs/toolkit';
 import { ratingExtraReducers } from './extraReducer';
 
 export interface IRatingStore {
   ratings: RatingControllerGetRatingByAppApiResponse;
+  allRatings: RatingControllerGetAllRatingByAppApiResponse
 }
 
 const initialState: IRatingStore = {
-  ratings: {} as RatingControllerGetRatingByAppApiResponse
+  ratings: {} as RatingControllerGetRatingByAppApiResponse,
+  allRatings: [] as RatingControllerGetAllRatingByAppApiResponse
 }
 
 const ratingSlice = createSlice({

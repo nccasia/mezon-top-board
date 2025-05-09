@@ -12,7 +12,12 @@ import { GenericRepository } from "@libs/repository/genericRepository";
 import { Mapper } from "@libs/utils/mapper";
 import { paginate } from "@libs/utils/paginate";
 
-import { CreateRatingRequest, GetAppRatingRequest, UpdateRatingRequest } from "./dtos/request";
+import {
+  CreateRatingRequest,
+  GetAllAppRatingRequest,
+  GetAppRatingRequest,
+  UpdateRatingRequest,
+} from "./dtos/request";
 import { CreateAppRatingResponse, GetAppRatingResponse } from "./dtos/response";
 
 @Injectable()
@@ -46,6 +51,16 @@ export class RatingService {
             },
         );
     }
+
+  async getAllAppRating(query: GetAllAppRatingRequest) {
+    const mezonApp = await this.mezonAppRepository.findById(query.appId);
+    if (!mezonApp || mezonApp.status !== AppStatus.PUBLISHED)
+      throw new BadRequestException(ErrorMessages.INVALID_APP);
+    const allRatings = await this.ratingRepository.find({
+      where: { appId: query.appId },
+    });
+    return Mapper(CreateAppRatingResponse, allRatings);
+  }
 
     async createRating(userId: string, body: CreateRatingRequest) {
         const mezonApp = await this.mezonAppRepository.findById(body.appId)

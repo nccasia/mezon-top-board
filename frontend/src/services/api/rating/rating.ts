@@ -20,6 +20,12 @@ const injectedRtkApi = api.injectEndpoints({
           pageNumber: queryArg.pageNumber
         }
       })
+    }),
+    ratingControllerGetAllRatingsByApp: build.query<
+      RatingControllerGetAllRatingByAppApiResponse,
+      RatingControllerGetAllRatingByAppApiArg
+    >({
+      query: (queryArg) => ({ url: `/api/rating/get-all`, params: { appId: queryArg.appId } })
     })
   }),
   overrideExisting: false
@@ -35,6 +41,12 @@ export type RatingControllerGetRatingByAppApiArg = {
   appId: string
   pageNumber?: number
 }
+
+export type RatingControllerGetAllRatingByAppApiResponse = Rating[]
+export type RatingControllerGetAllRatingByAppApiArg = {
+  appId: string
+}
+
 export type RatingControllerCreateRatingApiResponse = unknown
 export type RatingControllerCreateRatingApiArg = {
   createRatingRequest: CreateRatingRequest
@@ -52,5 +64,7 @@ export type Rating = {
 export const {
   useRatingControllerCreateRatingMutation,
   useRatingControllerGetRatingsByAppQuery,
-  useLazyRatingControllerGetRatingsByAppQuery
+  useLazyRatingControllerGetRatingsByAppQuery,
+  useRatingControllerGetAllRatingsByAppQuery,
+  useLazyRatingControllerGetAllRatingsByAppQuery
 } = injectedRtkApi
