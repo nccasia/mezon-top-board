@@ -8,8 +8,8 @@ import { Public } from "@libs/decorator/authorization.decorator";
 import { GetUserFromHeader } from "@libs/decorator/getUserFromHeader.decorator";
 import { Logger } from "@libs/logger";
 
-import { CreateRatingRequest, GetAppRatingRequest, UpdateRatingRequest } from "./dtos/request";
-import { GetAppRatingResponse } from "./dtos/response";
+import { CreateRatingRequest, GetAllAppRatingRequest, GetAppRatingRequest, UpdateRatingRequest } from "./dtos/request";
+import { GetAllAppRatingResponse, GetAppRatingResponse } from "./dtos/response";
 import { RatingService } from "./rating.service";
 
 @Controller("rating")
@@ -31,8 +31,8 @@ export class RatingController {
 
   @Get("get-all")
   @Public()
-  @ApiResponse({ type: GetAppRatingResponse, isArray: true })
-  async getAllAppRating(@Query() query: GetAppRatingRequest) {
+  @ApiResponse({ type: GetAllAppRatingResponse, isArray: true })
+  async getAllAppRating(@Query() query: GetAllAppRatingRequest) {
     return this.ratingService.getAllAppRating(query);
   }
 

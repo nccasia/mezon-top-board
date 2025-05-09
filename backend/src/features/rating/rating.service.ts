@@ -18,7 +18,7 @@ import {
   GetAppRatingRequest,
   UpdateRatingRequest,
 } from "./dtos/request";
-import { CreateAppRatingResponse, GetAppRatingResponse } from "./dtos/response";
+import { CreateAppRatingResponse, GetAllAppRatingResponse, GetAppRatingResponse } from "./dtos/response";
 
 @Injectable()
 export class RatingService {
@@ -59,7 +59,7 @@ export class RatingService {
     const allRatings = await this.ratingRepository.find({
       where: { appId: query.appId },
     });
-    return Mapper(CreateAppRatingResponse, allRatings);
+    return Mapper(GetAllAppRatingResponse, allRatings);
   }
 
     async createRating(userId: string, body: CreateRatingRequest) {

@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, OmitType } from "@nestjs/swagger";
 
 import { Expose, Type } from "class-transformer";
 
@@ -22,5 +22,10 @@ export class GetAppRatingResponse {
   @Type(() => OwnerInAppRatingResponse)
   public user: OwnerInAppRatingResponse;
 }
+
+export class GetAllAppRatingResponse extends OmitType(GetAppRatingResponse, [
+  "user",
+]) {}
+
 
 export class CreateAppRatingResponse extends GetAppRatingResponse {}
