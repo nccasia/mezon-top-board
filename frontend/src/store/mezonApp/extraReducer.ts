@@ -31,8 +31,9 @@ export const mezonAppExtraReducers = (builder: ActionReducerMapBuilder<any>) => 
       }
     })
     .addMatcher(mezonAppService.endpoints.mezonAppControllerUpdateMezonApp.matchFulfilled, (state, { payload }) => {
-      // get the app you want to update
-      const index = state.mezonAppOfAdmin.data.findIndex((app: App) => app.id === payload.id);
+      if (!state.mezonAppOfAdmin.data) return
+        // get the app you want to update
+        const index = state.mezonAppOfAdmin.data.findIndex((app: App) => app.id === payload.id)
 
       if (index !== -1) {
         state.mezonAppOfAdmin.data[index] = {
