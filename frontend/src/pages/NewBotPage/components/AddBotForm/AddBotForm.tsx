@@ -152,7 +152,7 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
   }
 
   return (
-    <div className='shadow-md p-8 rounded-md bg-white'>
+    <div className='shadow-md p-6 sm:p-8 rounded-md bg-white'>
       <Form layout='vertical' onFinish={handleSubmit(onSubmit)} className='overflow-hidden'>
         <MtbTypography variant='h4'>Your Bot Detail</MtbTypography>
         <FormField label='Name' description='Name your bot' errorText={errors.name?.message}>
@@ -307,7 +307,7 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
           />
         </FormField>
         <FormField label='Social Links' description='Link your social channels'>
-          <div className='flex items-center gap-4 w-full'>
+          <div className='flex flex-col sm:flex-row sm:items-center gap-4 w-full'>
             <div className='flex-1'>
               <Select
                 options={optionsLink}
@@ -319,13 +319,15 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
                 }}
               />
             </div>
-            <div className='flex-1'>
-              <Input value={socialLinkUrl} prefix={selectedSocialLink ? (linkTypeList.find(item => item.id === selectedSocialLink)?.prefixUrl || '') : ''} onChange={handleSocialLinkUrlChange} disabled={!selectedSocialLink} />
-            </div>
-            <div className='flex justify-end'>
-              <Button onClick={addNewLink} customClassName='!w-[70px]'>
-                Add
-              </Button>
+            <div className='flex flex-2 items-center gap-4'>
+              <div className='flex-1'>
+                <Input value={socialLinkUrl} prefix={selectedSocialLink ? (linkTypeList.find(item => item.id === selectedSocialLink)?.prefixUrl || '') : ''} onChange={handleSocialLinkUrlChange} disabled={!selectedSocialLink} />
+              </div>
+              <div className='flex justify-end'>
+                <Button onClick={addNewLink} customClassName='!w-[70px]'>
+                  Add
+                </Button>
+              </div>
             </div>
           </div>
           {!!socialLinksData.length &&
