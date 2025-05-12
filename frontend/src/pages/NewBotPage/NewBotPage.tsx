@@ -112,7 +112,7 @@ function NewBotPage() {
   }
 
   return (
-    <div className='pt-8 pb-12 w-[75%] m-auto'>
+    <div className='pt-8 pb-12 w-[85%] sm:w-[75%] m-auto'>
       <div className='flex items-center justify-between'>
         <div className='flex gap-6'>
           <div className='w-[80px] object-cover flex-shrink-0'>
