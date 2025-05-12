@@ -1,9 +1,10 @@
 import FormField from '@app/components/FormField/FormField'
-import RichTextEditor from "@app/components/RichText/RichText"
+import RichTextEditor from '@app/components/RichText/RichText'
 import { errorStatus } from '@app/constants/common.constant'
 import Button from '@app/mtb-ui/Button'
 import { ImgIcon } from '@app/mtb-ui/ImgIcon/ImgIcon'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
+import { useMediaControllerCreateMediaMutation } from '@app/services/api/media/media'
 import {
   CreateMezonAppRequest,
   useMezonAppControllerCreateMezonAppMutation,
@@ -22,10 +23,12 @@ import { useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
-const SocialLinkIcon = ({ src, prefixUrl }: { src?: string, prefixUrl?: string }) => {
-  return <div className='flex items-center gap-2'>
-    <ImgIcon src={src || ''} width={17} /> {prefixUrl}
-  </div>
+const SocialLinkIcon = ({ src, prefixUrl }: { src?: string; prefixUrl?: string }) => {
+  return (
+    <div className='flex items-center gap-2'>
+      <ImgIcon src={src || ''} width={17} /> {prefixUrl}
+    </div>
+  )
 }
 
 function AddBotForm({ isEdit }: IAddBotFormProps) {
@@ -41,23 +44,66 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
   const { tagList } = useSelector<RootState, ITagStore>((s) => s.tag)
   const { linkTypeList } = useSelector<RootState, ILinkTypeStore>((s) => s.link)
   const [selectedSocialLink, setSelectedSocialLink] = useState<string>('') // holds selected link type id
-  const { fields: socialLinksData, append, remove, update } = useFieldArray({
+  const {
+    fields: socialLinksData,
+    append,
+    remove,
+    update
+  } = useFieldArray({
     control,
     name: 'socialLinks'
-  });
+  })
   const [socialLinkUrl, setSocialLinkUrl] = useState<string>('')
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [uploadMedia] = useMediaControllerCreateMediaMutation()
 
   const { botId } = useParams()
 
+  function dataURLtoFile(dataurl: string, filename = 'image.png') {
+    const arr = dataurl.split(',')
+    const mime = arr[0].match(/:(.*?);/)?.[1]
+    const bstr = atob(arr[1])
+    let n = bstr.length
+    const u8arr = new Uint8Array(n)
+
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n)
+    }
+
+    return new File([u8arr], filename, { type: mime })
+  }
+
   const onSubmit = async (data: CreateMezonAppRequest) => {
     try {
+      const parser = new DOMParser()
+      const doc = parser.parseFromString(data.description || '', 'text/html')
+      const imgs = doc.querySelectorAll('img')
+      await Promise.all(
+        Array.from(imgs).map(async (img, index) => {
+          const src = img.getAttribute('src')
+          if (src?.startsWith('data:image')) {
+            const file = dataURLtoFile(src, `image-${index}.png`)
+            const formData = new FormData()
+            formData.append('file', file)
+
+            const response = await uploadMedia(formData).unwrap()
+            const newUrl = response?.data?.filePath
+            if (newUrl) {
+              img.setAttribute('src', newUrl)
+            }
+          }
+        })
+      )
+
+      const updatedDescription = doc.body.innerHTML
+      data.description = updatedDescription
+
       const formattedSocialLinks = socialLinksData.map((link) => {
         const selectedLink = optionsLink?.find((item) => item.value === link.linkTypeId)
         if (!selectedLink) return link
         return {
           url: link.url,
-          linkTypeId: selectedLink.value,
+          linkTypeId: selectedLink.value
         }
       })
 
@@ -67,6 +113,7 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
         ...restData,
         socialLinks: formattedSocialLinks
       }
+
       if (!isEdit && !botId) {
         const response = await addBot({ createMezonAppRequest: addBotData }).unwrap()
         toast.success('Add new bot success')
@@ -75,8 +122,11 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
         }
         return
       }
+
       if (!botId) return
-      updateBot({ updateMezonAppRequest: { ...data, id: botId, socialLinks: formattedSocialLinks } })
+
+      await updateBot({ updateMezonAppRequest: { ...data, id: botId, socialLinks: formattedSocialLinks } });
+
       toast.success('Edit bot success')
     } catch (error: unknown) {
       const err = error as ApiError
@@ -94,8 +144,6 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
       value: tag.id
     }))
   }, [tagList])
-
-
 
   const tagRender = (props: TagProps & { label?: string }) => {
     const { label, closable, onClose } = props
@@ -118,7 +166,7 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
       label: <SocialLinkIcon src={item?.icon} prefixUrl={item?.name} />,
       name: item.name,
       value: item.id,
-      siteName: item.prefixUrl,
+      siteName: item.prefixUrl
     }))
   }, [linkTypeList])
 
@@ -189,9 +237,9 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
             name='description'
             render={({ field }) => (
               <RichTextEditor
-                value={field.value || ""}
+                value={field.value || ''}
                 onChange={field.onChange}
-                customClass="custom-editor"
+                customClass='custom-editor'
               />
             )}
           />
@@ -251,8 +299,7 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
                   onDropdownVisibleChange={(visible) => setDropdownOpen(visible)}
                   onChange={(value) => {
                     field.onChange(value)
-                    setDropdownOpen(false); // Close the dropdown after selection
-
+                    setDropdownOpen(false) // Close the dropdown after selection
                   }}
                 />
                 {(field.value ?? []).length > 0 && (

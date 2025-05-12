@@ -28,6 +28,7 @@ import RatingForm from './components/RatingForm/RatingForm'
 import useOwnershipCheck from '@app/hook/useOwnershipCheck'
 import { AppStatus } from '@app/enums/AppStatus.enum'
 import Button from '@app/mtb-ui/Button'
+import { getUrlMedia } from '@app/utils/stringHelper'
 function BotDetailPage() {
   const navigate = useNavigate()
   const [getMezonAppDetail, { isError, error, isSuccess, data: getMezonAppDetailApiResponse }] = useLazyMezonAppControllerGetMezonAppDetailQuery()
@@ -101,6 +102,22 @@ function BotDetailPage() {
       }
     }
   }
+  function transformMediaSrc(html: string): string {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+  
+    const images = doc.querySelectorAll('img');
+    images.forEach((img) => {
+      const rawSrc = img.getAttribute('src');
+      if (rawSrc && rawSrc.startsWith('/')) {
+        img.setAttribute('src', getUrlMedia(rawSrc));
+        const existingStyle = img.getAttribute('style') || ''
+        img.setAttribute('style', `${existingStyle}; max-width: 100%;`.trim())
+      }
+    });
+    return doc.body.innerHTML;
+  }
+  
 
   return (
     <div className='m-auto pt-10 pb-10 w-[75%]'>
@@ -124,7 +141,7 @@ function BotDetailPage() {
             Overview
           </MtbTypography>
           <Divider className='bg-gray-200'></Divider>
-          <div dangerouslySetInnerHTML={{ __html: mezonAppDetail.description }} className='break-words'></div>
+          <div dangerouslySetInnerHTML={{ __html: transformMediaSrc(mezonAppDetail.description || '') }} className='break-words description'></div>
           <div className='pt-5'>
             <MtbTypography variant='h3'>More like this</MtbTypography>
             <Divider className='bg-gray-200'></Divider>
