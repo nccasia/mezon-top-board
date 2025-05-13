@@ -88,13 +88,7 @@ export type UserControllerSelfUpdateUserApiResponse = unknown
 export type UserControllerSelfUpdateUserApiArg = {
   selfUpdateUserRequest: SelfUpdateUserRequest
 }
-export type SearchUserResponse = {
-  id: string
-  name: string
-  email: string
-  bio: string
-  role: string
-}
+export type SearchUserResponse = Omit<GetUserDetailsResponse, 'profileImage' | 'deletedAt'> 
 export type UpdateUserRequest = {
   id: string
   name?: string
@@ -113,12 +107,7 @@ export type GetUserDetailsResponse = {
   profileImage: string
   deletedAt: Date | null
 }
-export type GetPublicProfileResponse = {
-  id: string
-  name: string
-  bio: string
-  profileImage: string
-}
+export type GetPublicProfileResponse = Omit<GetUserDetailsResponse, 'role' | 'email' | 'deletedAt'>
 export type SelfUpdateUserRequest = {
   name?: string
   bio?: string

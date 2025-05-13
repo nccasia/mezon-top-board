@@ -95,25 +95,9 @@ const injectedRtkApi = api.injectEndpoints({
 })
 export { injectedRtkApi as mezonAppService }
 export type MezonAppControllerListAdminMezonAppApiResponse = unknown
-export type MezonAppControllerListAdminMezonAppApiArg = {
-  /** Keyword to search mezonApps by name or headline */
-  search?: string
-  tags?: string[]
-  pageSize: number
-  pageNumber: number
-  sortField: string
-  sortOrder: 'ASC' | 'DESC'
-}
+export type MezonAppControllerListAdminMezonAppApiArg = Omit<MezonAppControllerSearchMezonAppApiArg, "ownerId">
 export type MezonAppControllerGetMyAppApiResponse = unknown
-export type MezonAppControllerGetMyAppApiArg = {
-  /** Keyword to search mezonApps by name or headline */
-  search?: string
-  tags?: string[]
-  pageSize: number
-  pageNumber: number
-  sortField: string
-  sortOrder: 'ASC' | 'DESC'
-}
+export type MezonAppControllerGetMyAppApiArg = Omit<MezonAppControllerSearchMezonAppApiArg, 'ownerId'>
 export type MezonAppControllerGetMezonAppDetailApiResponse = HttpResponse<GetMezonAppDetailsResponse>
 export type MezonAppControllerGetMezonAppDetailApiArg = {
   id: string
@@ -144,7 +128,7 @@ export type MezonAppControllerSearchMezonAppApiArg = {
   pageSize: number
   pageNumber: number
   sortField: string
-  sortOrder: string
+  sortOrder: "ASC" | "DESC"
 }
 export type OwnerInMezonAppDetailResponse = {
   id: string
@@ -264,19 +248,9 @@ export type CreateMezonAppRequest = {
   tagIds: string[]
   socialLinks?: SocialLinkDto[]
 }
-export type UpdateMezonAppRequest = {
+export type UpdateMezonAppRequest = Partial<CreateMezonAppRequest> & {
   id: string
-  name?: string
-  isAutoPublished?: boolean
-  installLink?: string
-  headline?: string
-  description?: string
-  prefix?: string
-  featuredImage?: string
-  supportUrl?: string
-  remark?: string
   tagIds: string[]
-  socialLinks?: SocialLinkDto[]
 }
 export type GetRelatedMezonAppResponse = {
   id: string
