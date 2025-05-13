@@ -19,7 +19,9 @@ const videoMimeTypes = [
   'video/mpeg',
   'video/quicktime',
   'video/x-flv',
-  'video/x-ms-wmv'
+  'video/x-ms-wmv',
+  'video/webm',
+  'video/ogg'
 ]
 
 export { imageMimeTypes, videoMimeTypes }
