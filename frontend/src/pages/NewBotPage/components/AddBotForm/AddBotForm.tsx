@@ -125,7 +125,10 @@ function AddBotForm({ isEdit }: IAddBotFormProps) {
 
       if (!botId) return
 
-      await updateBot({ updateMezonAppRequest: { ...data, id: botId, socialLinks: formattedSocialLinks } });
+      const updateResponse = await updateBot({ updateMezonAppRequest: { ...data, id: botId, socialLinks: formattedSocialLinks } });
+      if ( updateResponse.data?.id) {
+        navigate(`/bot/${ updateResponse.data?.id}`)
+      }
 
       toast.success('Edit bot success')
     } catch (error: unknown) {
