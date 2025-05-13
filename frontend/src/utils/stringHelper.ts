@@ -15,7 +15,7 @@ export const safeConcatUrl = (baseUrl: string, path: string, params?: { [key: st
     return url.toString()
   } catch (error) {
     console.error('Invalid URL:', error)
-    return null
+    return baseUrl
   }
 }
 
@@ -50,7 +50,11 @@ export const handleMapOption = (enums: Record<string, string>) => {
   }))
 }
 
-export const getUrlImage = (path: string) => {
+export const getUrlMedia= (path: string) => {
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    return path
+  }
+
   return `${process.env.REACT_APP_BACKEND_URL}/api${path}`;
 }
 

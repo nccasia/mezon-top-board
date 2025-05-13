@@ -3,14 +3,7 @@ import { GetMezonAppDetailsResponse, GetRelatedMezonAppResponse } from '@app/ser
 export interface IBotCardProps {
   readonly?: boolean
   data?: GetMezonAppDetailsResponse
-}
-
-export interface ISocialLinksData {
-  icon: string
-  name: string
-  url: string
-  id: string
-  siteName: string
+  canNavigateOnClick?: boolean
 }
 
 export interface ICompactBotCardProps {

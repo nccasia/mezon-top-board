@@ -12,11 +12,12 @@ const injectedRtkApi = api.injectEndpoints({
   overrideExisting: false
 })
 export { injectedRtkApi as linkTypeService }
-export type LinkTypeControllerGetAllLinksApiResponse = HttpResponse<SocialLinkInMezonAppDetailResponse[]>
+export type LinkTypeControllerGetAllLinksApiResponse = HttpResponse<LinkTypeResponse[]>
 export type LinkTypeControllerGetAllLinksApiArg = void
-export type SocialLinkInMezonAppDetailResponse = {
+export type LinkTypeResponse = {
   id: string
   name: string
   icon: string
+  prefixUrl: string
 }
 export const { useLinkTypeControllerGetAllLinksQuery, useLazyLinkTypeControllerGetAllLinksQuery } = injectedRtkApi

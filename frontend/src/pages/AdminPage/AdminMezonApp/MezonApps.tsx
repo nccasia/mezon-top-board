@@ -1,4 +1,4 @@
-import { DeleteOutlined, EditOutlined, LockOutlined } from "@ant-design/icons";
+import { CiOutlined, DeleteOutlined, EditOutlined, LockOutlined, SearchOutlined } from "@ant-design/icons";
 import sampleBotImg from "@app/assets/images/avatar-bot-default.png";
 import { AppStatus } from "@app/enums/AppStatus.enum";
 import { GetMezonAppDetailsResponse, useLazyMezonAppControllerListAdminMezonAppQuery, useMezonAppControllerDeleteMezonAppMutation } from "@app/services/api/mezonApp/mezonApp";
@@ -6,7 +6,7 @@ import { useReviewHistoryControllerCreateAppReviewMutation } from "@app/services
 import { RootState } from "@app/store";
 import { useAppSelector } from "@app/store/hook";
 import { mapStatusToColor, mapStatusToText } from "@app/utils/mezonApp";
-import { getUrlImage } from "@app/utils/stringHelper";
+import { getUrlMedia } from "@app/utils/stringHelper";
 import { Button, Input, Modal, Popconfirm, Spin, Table, Tag, Tooltip } from "antd";
 import { ChangeEvent, useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -25,6 +25,7 @@ const MezonApps = ({ onEdit }: { onEdit: (app: GetMezonAppDetailsResponse) => vo
     data: apps,
   } = dataAPI || { totalCount: 0, data: [] };
 
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const [deleteMezonApp, { isLoading: isDeleting }] = useMezonAppControllerDeleteMezonAppMutation();
   const [
     createReviewHistory,
@@ -77,6 +78,7 @@ const MezonApps = ({ onEdit }: { onEdit: (app: GetMezonAppDetailsResponse) => vo
 
   const fetchApps = async () => {
     listAdminMezonApp({
+      search: searchQuery,
       pageSize: currentPageSize,
       pageNumber: currentPageNumber,
       sortField: "createdAt",
@@ -88,6 +90,11 @@ const MezonApps = ({ onEdit }: { onEdit: (app: GetMezonAppDetailsResponse) => vo
     fetchApps();
   }, [currentPageSize, currentPageNumber]);
 
+  const handleSearchSubmit = () => {
+    setCurrentPageNumber(1); 
+    fetchApps();
+  }
+
   const columns = [
     {
       title: "Image",
@@ -97,7 +104,7 @@ const MezonApps = ({ onEdit }: { onEdit: (app: GetMezonAppDetailsResponse) => vo
         <img
           src={
             featuredImage
-              ? getUrlImage(featuredImage)
+              ? getUrlMedia(featuredImage)
               : sampleBotImg
           }
           alt={data.name}
@@ -108,6 +115,25 @@ const MezonApps = ({ onEdit }: { onEdit: (app: GetMezonAppDetailsResponse) => vo
       title: "Name",
       dataIndex: "name",
       key: "name",
+    },
+    {
+      title: "Owner",
+      dataIndex: "owner",
+      key: "owner",
+      render: (owner: { name: string }) => owner.name,
+    },
+    {
+      title: "Try",
+      dataIndex: "installLink",
+      key: "installLink",
+      render: (installLink: string) => (
+        <Tooltip title="Try Install">
+          <Button type="primary" color="cyan" variant="outlined" href={installLink} target="_blank" rel="noopener noreferrer">
+            <CiOutlined />
+          </Button>
+        </Tooltip>
+      )
+
     },
     {
       title: "Status",
@@ -125,6 +151,9 @@ const MezonApps = ({ onEdit }: { onEdit: (app: GetMezonAppDetailsResponse) => vo
       dataIndex: "description",
       key: "description",
       ellipsis: true, // Truncate long text
+      render: (description: string) => (
+        <div dangerouslySetInnerHTML={{ __html: description }}></div>
+      )
     },
     {
       title: "Actions",
@@ -157,6 +186,24 @@ const MezonApps = ({ onEdit }: { onEdit: (app: GetMezonAppDetailsResponse) => vo
   ];
   return (
     <>
+      <div className='flex gap-4 mb-3'>
+        <Input
+          placeholder='Search by name or email'
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          prefix={<SearchOutlined style={{ color: '#bbb' }} />}
+          onPressEnter={handleSearchSubmit}
+          className='w-full'
+          style={{ borderRadius: '8px', height: '40px' }}
+        />
+        <Button className="w-50" size="large"
+          type='primary' 
+          onClick={handleSearchSubmit}
+          icon={<SearchOutlined />}
+        >
+          Search
+        </Button>
+      </div>
       {
         isLoading ? (
           <Spin size="large" className="text-center mt-5" />

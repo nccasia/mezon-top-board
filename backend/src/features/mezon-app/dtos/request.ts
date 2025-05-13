@@ -6,7 +6,7 @@ import {
   IntersectionType,
 } from "@nestjs/swagger";
 
-import { Type } from "class-transformer";
+import { Transform, Type } from "class-transformer";
 import {
   IsString,
   IsBoolean,
@@ -44,13 +44,11 @@ export class SearchMezonAppRequest extends PaginationQuery {
 }
 
 class SocialLinkDto {
-  @ApiPropertyOptional()
+  @ApiProperty()
   @IsString()
-  @ValidateIf(o => o.url !== '' && o.url !== null)
-  @IsUrl(undefined, { message: "SocialLink Invalid URL format" })
   url: string;
 
-  @ApiPropertyOptional()
+  @ApiProperty()
   @IsUUID()
   linkTypeId: string;
 }
@@ -58,8 +56,9 @@ class SocialLinkDto {
 export class CreateMezonAppRequest {
   @ApiProperty()
   @IsString()
-  @MinLength(3, { message: "Name must be at least 3 characters" })
-  @MaxLength(128, { message: "Name must not exceed 128 characters" })
+  @MinLength(1, { message: "Name must be at least 1 characters" })
+  @MaxLength(64, { message: "Name must not exceed 64 characters" })
+  @Transform(({ value }) => (typeof value === "string" ? value.trim() : value))
   name: string;
 
   @ApiPropertyOptional()
@@ -72,12 +71,14 @@ export class CreateMezonAppRequest {
   @IsString()
   @ValidateIf(o => o.installLink !== '' && o.installLink !== null)
   @IsUrl(undefined, { message: "Install Link Invalid URL format" })
+  @Transform(({ value }) => (typeof value === "string" ? value.trim() : value))
   installLink?: string;
 
   @ApiPropertyOptional()
   @IsString()
   @MinLength(50, { message: "Headline must be at least 50 characters" })
   @MaxLength(510, { message: "Headline must not exceed 510 characters" })
+  @Transform(({ value }) => (typeof value === "string" ? value.trim() : value))
   headline?: string;
 
   @ApiPropertyOptional()
@@ -89,6 +90,7 @@ export class CreateMezonAppRequest {
   @IsString()
   @MinLength(1, { message: "Prefix must be at least 1 character" })
   @MaxLength(10, { message: "Prefix must not exceed 10 characters" })
+  @Transform(({ value }) => (typeof value === "string" ? value.trim() : value))
   prefix?: string;
 
   @ApiPropertyOptional()
@@ -101,18 +103,20 @@ export class CreateMezonAppRequest {
   @IsOptional()
   @ValidateIf(o => o.supportUrl !== '' && o.supportUrl !== null)
   @IsUrl(undefined, { message: "Support URL Invalid URL format" })
+  @Transform(({ value }) => (typeof value === "string" ? value.trim() : value))
   supportUrl?: string;
 
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()
+  @Transform(({ value }) => (typeof value === "string" ? value.trim() : value))
   remark?: string;
-
+ 
   @ApiPropertyOptional()
   @IsArray()
   @ArrayMinSize(1, { message: "At least one tag is required" })
   @IsString({ each: true })
-  tagIds?: string[];
+  tagIds: string[];
 
   @ApiPropertyOptional({ type: [SocialLinkDto] })
   @IsArray()

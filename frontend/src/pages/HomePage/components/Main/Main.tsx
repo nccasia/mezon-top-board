@@ -9,45 +9,80 @@ import { useSelector } from 'react-redux'
 import { RootState } from '@app/store'
 import { useLazyMezonAppControllerSearchMezonAppQuery } from '@app/services/api/mezonApp/mezonApp'
 import { IMezonAppStore } from '@app/store/mezonApp'
-import { useMezonAppSearch } from '@app/hook/useSearch'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { ApiError } from '@app/types/API.types'
 import { IMainProps } from '@app/types/Main.type'
+import { getPageFromParams } from '@app/utils/uri'
 
 const pageOptions = [5, 10, 15]
 function Main({ isSearchPage = false }: IMainProps) {
-  const [botPerPage, setBotPerPage] = useState<number>(pageOptions[0])
-  const [page, setPage] = useState<number>(1)
-  const [isOpen, setIsOpen] = useState<boolean>(false)
+  const navigate = useNavigate()
+
+  const [searchParams, setSearchParams] = useSearchParams()
+  const defaultSearchQuery = useMemo(() => searchParams.get('q')?.trim() || '', [searchParams.get('q')?.trim()])
+  const defaultTagIds = useMemo(
+    () => searchParams.get('tags')?.split(',').filter(Boolean) || [],
+    [searchParams.get('tags')]
+  )
+
+  const { mezonApp } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
+
   const [getTagList] = useLazyTagControllerGetTagsQuery()
   const [getMezonApp, { isError, error }] = useLazyMezonAppControllerSearchMezonAppQuery()
-  const { mezonApp } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
+
+  const [botPerPage, setBotPerPage] = useState<number>(pageOptions[0])
+  const [isInitialized, setIsInitialized] = useState<boolean>(false)
+  const [page, setPage] = useState<number>(() => getPageFromParams(searchParams))
+
+  const [isOpen, setIsOpen] = useState<boolean>(false)
+  const [searchQuery, setSearchQuery] = useState<string>(searchParams.get('q')?.trim() || '')
+  const [tagIds, setTagIds] = useState<string[]>(searchParams.get('tags')?.split(',').filter(Boolean) || [])
+
   const totals = useMemo(() => mezonApp.totalCount || 0, [mezonApp])
-  const { handleSearch } = useMezonAppSearch(page, botPerPage)
-  const [searchParams] = useSearchParams()
-  const searchQuery = searchParams.get('q') || ''
 
   useEffect(() => {
     getTagList()
+    if (!isInitialized && isSearchPage) {
+      setSearchQuery(defaultSearchQuery)
+      setTagIds(defaultTagIds)
+      searchMezonAppList(defaultSearchQuery, defaultTagIds)
+      setIsInitialized(true)
+    }
   }, [])
 
   useEffect(() => {
     if (isError && error) {
       const apiError = error as ApiError
-      toast.error(apiError?.data?.message[0])
+      if (apiError?.status === 404 || apiError?.data?.statusCode === 404) {
+        navigate('/*')
+      } else {
+        toast.error(apiError?.data?.message)
+      }
     }
   }, [isError, error])
 
   useEffect(() => {
+    searchMezonAppList(searchQuery, tagIds)
+  }, [page, botPerPage, isSearchPage])
+
+  useEffect(() => {
+    const newPage = getPageFromParams(searchParams)
+    if (newPage !== page) {
+      setPage(newPage)
+    }
+  }, [searchParams])
+
+  const searchMezonAppList = (searchQuery?: string, tagIds?: string[]) => {
     getMezonApp({
       search: isSearchPage ? searchQuery : undefined,
+      tags: tagIds && tagIds.length ? tagIds : undefined,
       pageNumber: page,
       pageSize: botPerPage,
       sortField: 'createdAt',
       sortOrder: 'DESC'
     })
-  }, [page, botPerPage])
+  }
 
   const options = useMemo(() => {
     return pageOptions.map((value) => {
@@ -66,13 +101,28 @@ function Main({ isSearchPage = false }: IMainProps) {
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage)
+
+    const newParams = new URLSearchParams(searchParams)
+    newParams.set('page', newPage.toString())
+    setSearchParams(newParams)
+
     if (newPage > Math.ceil(totals / botPerPage)) {
       setPage(1)
     }
   }
 
+  const onPressSearch = (text: string, tagIds?: string[]) => {
+    setSearchQuery(text)
+    setTagIds(tagIds ?? [])
+    if (page !== 1) {
+      setPage(1)
+      return
+    }
+    searchMezonAppList(text, tagIds)
+  }
+
   return (
-    <div className={`flex flex-col justify-center pt-8 pb-12 w-[75%] m-auto `}>
+    <div className={`flex flex-col justify-center pt-8 pb-12 w-[75%] m-auto relative z-1`}>
       <Divider variant='solid' style={{ borderColor: 'gray' }}>
         <MtbTypography variant='h1' customClassName='max-md:whitespace-normal'>
           Explore millions of Mezon Bots
@@ -80,7 +130,7 @@ function Main({ isSearchPage = false }: IMainProps) {
       </Divider>
       <div className='pt-3'>
         <SearchBar
-          onSearch={(val, tagIds) => handleSearch(val ?? '', tagIds)}
+          onSearch={(val, tagIds) => onPressSearch(val ?? '', tagIds)}
           defaultValue={searchQuery}
           isResultPage={isSearchPage}
         ></SearchBar>
@@ -90,10 +140,11 @@ function Main({ isSearchPage = false }: IMainProps) {
           <div>
             <MtbTypography variant='h3'>Mezon Bots</MtbTypography>
             <MtbTypography variant='h5' weight='normal'>
-              Showing 1 of {mezonApp.totalPages} page
+              Showing 1 of {mezonApp.totalPages ?? 0} page
             </MtbTypography>
           </div>
           <SingleSelect
+            getPopupContainer={(trigger) => trigger.parentElement}
             onChange={handlePageSizeChange}
             options={options}
             placeholder='Select'

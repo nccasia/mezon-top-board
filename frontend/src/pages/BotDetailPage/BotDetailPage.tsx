@@ -17,17 +17,21 @@ import { IMezonAppStore } from '@app/store/mezonApp'
 import { IRatingStore } from '@app/store/rating'
 import { ITagStore } from '@app/store/tag'
 import { ApiError } from '@app/types/API.types'
-import { Divider, Spin } from 'antd'
-import { useEffect } from 'react'
+import { Carousel, Divider, Spin } from 'antd'
+import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import Comment from './components/Comment/Comment'
 import DetailCard from './components/DetailCard/DetailCard'
 import RatingForm from './components/RatingForm/RatingForm'
+import useOwnershipCheck from '@app/hook/useOwnershipCheck'
+import { AppStatus } from '@app/enums/AppStatus.enum'
+import Button from '@app/mtb-ui/Button'
+import { getUrlMedia } from '@app/utils/stringHelper'
 function BotDetailPage() {
   const navigate = useNavigate()
-  const [getMezonAppDetail, { isError, error, isSuccess }] = useLazyMezonAppControllerGetMezonAppDetailQuery()
+  const [getMezonAppDetail, { isError, error, isSuccess, data: getMezonAppDetailApiResponse }] = useLazyMezonAppControllerGetMezonAppDetailQuery()
   const [getrelatedMezonApp] = useLazyMezonAppControllerGetRelatedMezonAppQuery()
   const [getTagList] = useLazyTagControllerGetTagsQuery()
   const [getRatingsByApp, { isLoading: isLoadingReview }] = useLazyRatingControllerGetRatingsByAppQuery()
@@ -35,6 +39,7 @@ function BotDetailPage() {
   const { botId } = useParams()
   const { mezonAppDetail, relatedMezonApp } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
   const { ratings } = useSelector<RootState, IRatingStore>((s) => s.rating)
+  const { checkOwnership } = useOwnershipCheck();
   const ratingCounts = ratings?.data?.reduce(
     (acc, rating) => {
       acc[rating.score] = (acc[rating.score] || 0) + 1
@@ -47,6 +52,9 @@ function BotDetailPage() {
   const { handleSearch } = useMezonAppSearch(1, 5)
   const [searchParams] = useSearchParams()
   const searchQuery = searchParams.get('q') || ''
+  const [page, setPage] = useState(1)
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+
   useEffect(() => {
     if (botId && botId !== 'undefined' && botId.trim() !== '') {
       getMezonAppDetail({ id: botId });
@@ -64,7 +72,7 @@ function BotDetailPage() {
   }, [])
 
   useEffect(() => {
-    if (isError && error) {
+    if (isError && error && isSuccess) {
       const apiError = error as ApiError
       if (mezonAppDetail.id === undefined && apiError?.status === 500) {
         navigate('/*');
@@ -73,6 +81,43 @@ function BotDetailPage() {
       }
     }
   }, [isError, error]);
+  useEffect(() => {
+    // TODO: improve logic
+    if (getMezonAppDetailApiResponse?.data && getMezonAppDetailApiResponse?.data?.status !== AppStatus.PUBLISHED) {
+      checkOwnership(getMezonAppDetailApiResponse.data?.owner?.id, true);
+    }
+  }, [getMezonAppDetailApiResponse])
+
+  const onLoadMore = async () => {
+    if (botId && botId !== 'undefined' && botId.trim() !== '') {
+      try {
+        const nextPage = page + 1
+        setIsLoadingMore(true)
+        await getRatingsByApp({ appId: botId, pageNumber: nextPage }).unwrap()
+        setPage(nextPage)
+      } catch (error) {
+        toast.error('Error loading more')
+      } finally {
+        setIsLoadingMore(false)
+      }
+    }
+  }
+  function transformMediaSrc(html: string): string {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+  
+    const images = doc.querySelectorAll('img');
+    images.forEach((img) => {
+      const rawSrc = img.getAttribute('src');
+      if (rawSrc && rawSrc.startsWith('/')) {
+        img.setAttribute('src', getUrlMedia(rawSrc));
+        const existingStyle = img.getAttribute('style') || ''
+        img.setAttribute('style', `${existingStyle}; max-width: 100%;`.trim())
+      }
+    });
+    return doc.body.innerHTML;
+  }
+  
 
   return (
     <div className='m-auto pt-10 pb-10 w-[75%]'>
@@ -85,23 +130,30 @@ function BotDetailPage() {
         ></SearchBar>
       </div>
       <div className='pt-5 pb-5'>
-        <BotCard readonly={true} data={mezonAppDetail}></BotCard>
+        <BotCard readonly={true} data={mezonAppDetail} canNavigateOnClick={false}></BotCard>
       </div>
-      <MtbTypography variant='h3' textStyle={[TypographyStyle.UNDERLINE]}>
-        Overview
-      </MtbTypography>
-      <div className='flex gap-10 pt-5 pb-5'>
-        <div className='flex-3'>
-          <div dangerouslySetInnerHTML={{ __html: mezonAppDetail.description }}></div>
+      <div className='sm:flex sm:gap-10 pt-5 pb-5 sm:flex-row-reverse'>
+        <div className='flex-1 sm:max-w-1/4'>
+          <DetailCard></DetailCard>
+        </div>
+        <div className='flex-3 sm:max-w-[calc(75%-2.5rem)] max-w-full mt-7'>
+          <MtbTypography variant='h3' textStyle={[TypographyStyle.UNDERLINE]}>
+            Overview
+          </MtbTypography>
+          <Divider className='bg-gray-200'></Divider>
+          <div dangerouslySetInnerHTML={{ __html: transformMediaSrc(mezonAppDetail.description || '') }} className='break-words description'></div>
           <div className='pt-5'>
             <MtbTypography variant='h3'>More like this</MtbTypography>
             <Divider className='bg-gray-200'></Divider>
             {relatedMezonApp?.length > 0 ? (
-              <div className='flex gap-10 items-center max-lg:text-center max-2xl:text-center max-lg:flex-wrap max-2xl:flex-wrap max-lg:justify-center max-2xl:justify-center'>
+              <Carousel arrows infinite={true} draggable swipeToSlide={true} touchThreshold={5} variableWidth={true} centerMode={true}
+                className='text-center'>
                 {relatedMezonApp.map((bot) => (
-                  <CompactBotCard key={bot.id} data={bot} />
+                  <div className="p-1" style={{ width: 200 }} key={bot.id}>
+                    <CompactBotCard data={bot} />
+                  </div>
                 ))}
-              </div>
+              </Carousel>
             ) : (
               <MtbTypography variant='h4' weight='normal' customClassName='!text-gray-500 !text-center !block'>
                 No related bot
@@ -117,11 +169,11 @@ function BotDetailPage() {
                   <p className='text-6xl'>{mezonAppDetail.rateScore}</p>
                   <div>
                     <MtbRate readonly={true} value={mezonAppDetail.rateScore}></MtbRate>
-                    <p className='pt-2'>9,160 reviews</p>
+                    <p className='pt-2'>{ratings?.data?.length} reviews</p>
                   </div>
                 </div>
                 <p className='pt-5 max-lg:pt-7 max-2xl:pt-7'>
-                  Reviews can be left only by registered users. All reviews are moderated by Top.gg moderators. Please
+                  Reviews can be left only by registered users. All reviews are moderated by our moderators. Please
                   make sure to check our guidelines before posting.
                 </p>
               </div>
@@ -145,23 +197,17 @@ function BotDetailPage() {
               </div>
             </div>
             <Divider className='bg-gray-200'></Divider>
-            <RatingForm
-              onSubmitted={() => {
-                getRatingsByApp({ appId: botId || '' })
-              }}
-            />
+            <RatingForm />
             <Divider className='bg-gray-200'></Divider>
             <div className='flex flex-col gap-5'>
               {isLoadingReview && Object.keys(ratings).length == 0 ? (
                 <Spin size='large' />
               ) : (
-                ratings?.data?.map((rating) => <Comment rating={rating}></Comment>) || null
+                ratings?.data?.map((rating) => <Comment key={rating.id} rating={rating}></Comment>) || null
               )}
+              {ratings.hasNextPage && <Button size='large' disabled={isLoadingMore} loading={isLoadingMore} onClick={onLoadMore}>Load More</Button>}
             </div>
           </div>
-        </div>
-        <div className='flex-1 max-w-1/4'>
-          <DetailCard></DetailCard>
         </div>
       </div>
     </div>

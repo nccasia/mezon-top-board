@@ -12,6 +12,9 @@ import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import { CardInfo } from './components'
+import useAuthRedirect from '@app/hook/useAuthRedirect'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { PROFILE_SETTING_SCHEMA } from '@app/validations/profileSetting.validations'
 
 function SettingPage() {
   const { userInfo } = useAppSelector<RootState, IUserStore>((s) => s.user)
@@ -20,8 +23,11 @@ function SettingPage() {
     defaultValues: {
       name: '',
       bio: ''
-    }
+    },
+    resolver: yupResolver(PROFILE_SETTING_SCHEMA)
   })
+
+  useAuthRedirect()
 
   useEffect(() => {
     reset({
@@ -62,17 +68,6 @@ function SettingPage() {
               <Controller
                   control={control}
                   name='name'
-                  rules={{
-                    required: 'Name must be at least 1 character',
-                    minLength: {
-                      value: 1,
-                      message: 'Name must be at least 1 character'
-                    },
-                    maxLength: {
-                      value: 50,
-                      message: 'Name must not exceed 50 characters'
-                    }
-                  }}
                   render={({ field }) => (
                     <Form.Item
                       validateStatus={errors.name ? 'error' : ''}

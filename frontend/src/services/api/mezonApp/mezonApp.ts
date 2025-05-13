@@ -1,6 +1,7 @@
 import { HttpResponse } from '@app/types/API.types'
 import { api } from '../../apiInstance'
 import { Rating } from '../rating/rating'
+import { LinkTypeResponse } from '../linkType/linkType'
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
     mezonAppControllerListAdminMezonApp: build.query<
@@ -157,7 +158,8 @@ export type TagInMezonAppDetailResponse = {
 export type SocialLinkInMezonAppDetailResponse = {
   id: string
   url: string
-  icon: string
+  linkTypeId: string
+  type: LinkTypeResponse;
 }
 export type GetMezonAppDetailsResponse = {
   id: string
@@ -195,6 +197,7 @@ export type Media = {
   owner: User
 }
 export type User = {
+  id: string
   name: string | null
   email: string
   password: string
@@ -245,19 +248,20 @@ export type App = {
 }
 export type SocialLinkDto = {
   url?: string
-  linkTypeId?: string
+  linkTypeId: string
+  type?: LinkTypeResponse // For render only
 }
 export type CreateMezonAppRequest = {
   name: string
   isAutoPublished?: boolean
-  installLink?: string
-  headline?: string
-  description?: string
-  prefix?: string
+  installLink: string
+  headline: string
+  description: string
+  prefix: string
   featuredImage?: string
-  supportUrl?: string
+  supportUrl: string
   remark?: string
-  tagIds?: string[]
+  tagIds: string[]
   socialLinks?: SocialLinkDto[]
 }
 export type UpdateMezonAppRequest = {
@@ -271,7 +275,7 @@ export type UpdateMezonAppRequest = {
   featuredImage?: string
   supportUrl?: string
   remark?: string
-  tagIds?: string[]
+  tagIds: string[]
   socialLinks?: SocialLinkDto[]
 }
 export type GetRelatedMezonAppResponse = {

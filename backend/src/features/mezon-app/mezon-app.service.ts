@@ -1,10 +1,12 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
+import * as sanitizeHtml from "sanitize-html";
 
 import { Brackets, EntityManager, In, Not } from "typeorm";
 
 import { RequestWithId } from "@domain/common/dtos/request.dto";
 import { Result } from "@domain/common/dtos/result.dto";
 import { AppStatus } from "@domain/common/enum/appStatus";
+import { Role } from "@domain/common/enum/role";
 import { App, Link, LinkType, Tag, User } from "@domain/entities";
 
 import { ErrorMessages } from "@libs/constant/messages";
@@ -23,6 +25,7 @@ import {
   GetRelatedMezonAppResponse,
   SearchMezonAppResponse,
 } from "./dtos/response";
+
 
 @Injectable()
 export class MezonAppService {
@@ -81,7 +84,13 @@ export class MezonAppService {
     detail.socialLinks = mezonApp.socialLinks.map((link) => ({
       id: link.id,
       url: link.url,
-      icon: link.type.icon ?? "",
+      linkTypeId: link.type.id,
+      type: {
+        id: link.type.id,
+        name: link.type.name,
+        icon: link.type.icon,
+        prefixUrl: link.type.prefixUrl,
+      },
     }));
 
     return new Result({
@@ -123,7 +132,7 @@ export class MezonAppService {
     const whereCondition = this.appRepository
       .getRepository()
       .createQueryBuilder("app")
-      .leftJoinAndSelect("app.tags", "tag")
+      .leftJoinAndSelect("app.tags", "filterTag")
       .leftJoinAndSelect("app.ratings", "rating")
       .where("app.status = :status", { status: AppStatus.PUBLISHED });
 
@@ -140,7 +149,7 @@ export class MezonAppService {
       );
 
     if (query.tags?.length) {
-      whereCondition.andWhere("tag.id IN (:...tagIds)", { tagIds: query.tags });
+      whereCondition.andWhere("filterTag.id IN (:...tagIds)", { tagIds: query.tags }).leftJoinAndSelect("app.tags", "tag");
     }
 
     if (query?.ownerId) {
@@ -150,8 +159,11 @@ export class MezonAppService {
     }
 
     return paginate<App, SearchMezonAppResponse>(
-      () => whereCondition.skip((query.pageNumber - 1) * query.pageSize)
-      .take(query.pageSize).getManyAndCount(),
+      () =>
+        whereCondition
+          .skip((query.pageNumber - 1) * query.pageSize)
+          .take(query.pageSize)
+          .getManyAndCount(),
       query.pageSize,
       query.pageNumber,
       (entity) => {
@@ -166,7 +178,17 @@ export class MezonAppService {
     );
   }
 
-  async deleteMezonApp(req: RequestWithId) {
+  async deleteMezonApp(userDeleting: User, req: RequestWithId) {
+    const app = await this.appRepository.findById(req.id, ["tags", "socialLinks"]);
+    if (!app) {
+      throw new BadRequestException(ErrorMessages.NOT_FOUND_MSG);
+    }
+
+    if (app.ownerId !== userDeleting.id && userDeleting.role !== Role.ADMIN) {
+      throw new BadRequestException(ErrorMessages.PERMISSION_DENIED);
+    }
+
+    // Soft delete the app
     await this.appRepository.softDelete(req.id);
     return new Result({});
   }
@@ -225,7 +247,7 @@ export class MezonAppService {
     });
   }
 
-  async updateMezonApp(req: UpdateMezonAppRequest) {
+  async updateMezonApp(userUpdating: User, req: UpdateMezonAppRequest) {
     const app = await this.appRepository.findById(req.id, [
       "tags",
       "socialLinks",
@@ -235,11 +257,15 @@ export class MezonAppService {
       throw new BadRequestException(ErrorMessages.NOT_FOUND_MSG);
     }
 
-    const { tagIds, socialLinks, ...updateData } = req;
+    if (app.ownerId !== userUpdating.id && userUpdating.role !== Role.ADMIN) {
+      throw new BadRequestException(ErrorMessages.PERMISSION_DENIED);
+    }
+
+    const { tagIds, socialLinks, description, ...updateData } = req;
 
     let tags = app.tags;
     let links = app.socialLinks;
-    
+
     if (tagIds) {
       const existingTags = await this.tagRepository
         .getRepository()
@@ -255,7 +281,7 @@ export class MezonAppService {
       tags = existingTags;
     }
 
-    if (socialLinks && socialLinks.length > 0) {
+    if (socialLinks) {
       links = await Promise.all(
         socialLinks.map(async (socialLink) => {
           // Check if linkType exist.
@@ -284,12 +310,64 @@ export class MezonAppService {
           return existingLink;
         }),
       );
+      app.socialLinks = links;
     }
 
-    this.appRepository
-      .getRepository()
-      .merge(app, { ...updateData, socialLinks: links });
+    const cleanedDescription = sanitizeHtml(description, {
+      allowedTags: sanitizeHtml.defaults.allowedTags.concat([
+        "span", "img", "video", "source", "h1", "h2", "h3", "h4", "h5", "h6",
+        "li", "ol", "ul", "p", "pre", "a", "em", "strong", "u"
+      ]),
+      allowedAttributes: {
+        ...sanitizeHtml.defaults.allowedAttributes,
+        img: ['src', 'alt', 'width', 'height', 'style'],
+        video: ['src', 'controls', 'width', 'height'], 
+        source: ['src', 'type'],
+        embed: ['src', 'width', 'height', 'allowfullscreen'],
+        span: ['style', 'class'],
+        p: ['style', 'class'],
+        em: ['style', 'class'],       
+        strong: ['style', 'class'],   
+        u: ['style', 'class'],        
+      },
+      allowedClasses: {
+        '*': ['ql-size-small', 'ql-size-large', 'ql-size-huge',
+          'ql-align-center', 'ql-align-right', 'ql-align-justify',
+          'ql-font-monospace', 'ql-font-serif', 'fancy', 'simple']
+      },
+      allowedStyles: {
+        '*': {
+          'color': [/^.*$/],
+          'background-color': [/^.*$/],
+          'text-align': [/^.*$/],
+          'font-size': [/^\d+(?:px|em|%)$/],
+          'font-family': [/^.*$/],
+        },
+        img: {
+          'width': [/^\d+(px|%)?$/],
+          'height': [/^\d+(px|%)?$/],
+        },
+        em: {
+          'color': [/^.*$/],
+          'background-color': [/^.*$/],
+          'font-size': [/^\d+(?:px|em|%)$/],
+          'font-family': [/^.*$/],
+        },
+      }
+    });
+    
+
+    this.appRepository.getRepository().merge(app, {
+      ...updateData,
+      description: cleanedDescription,
+    });
+
     app.tags = tags;
+
+    if (app.status === AppStatus.REJECTED) {
+      app.status = AppStatus.PENDING;
+    }
+
     return this.appRepository.getRepository().save(app);
   }
 
@@ -298,7 +376,8 @@ export class MezonAppService {
       .getRepository()
       .createQueryBuilder("app")
       .leftJoinAndSelect("app.tags", "tag")
-      .leftJoinAndSelect("app.ratings", "rating");
+      .leftJoinAndSelect("app.ratings", "rating")
+      .leftJoinAndSelect("app.owner", "owner");
 
     // Priorize to search by keyword if field and search exist at the same time.
     if (query.search)
@@ -327,6 +406,7 @@ export class MezonAppService {
           id: tag.id,
           name: tag.name,
         }));
+        mappedMezonApp.owner = entity.owner;
         return mappedMezonApp;
       },
     );
@@ -355,8 +435,6 @@ export class MezonAppService {
     if (query.tags?.length) {
       whereCondition.andWhere("tag.id IN (:...tagIds)", { tagIds: query.tags });
     }
-
-    console.log("whereCondition", whereCondition.getQueryAndParameters());
 
     return paginate<App, SearchMezonAppResponse>(
       () => whereCondition.getManyAndCount(),
