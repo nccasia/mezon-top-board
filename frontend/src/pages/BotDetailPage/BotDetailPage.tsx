@@ -72,7 +72,7 @@ function BotDetailPage() {
   }, [])
 
   useEffect(() => {
-    if (isError && error && isSuccess) {
+    if (isError && error) {
       const apiError = error as ApiError
       if (mezonAppDetail.id === undefined && apiError?.status === 500) {
         navigate('/*');
