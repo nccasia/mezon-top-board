@@ -4,8 +4,7 @@ import { ActionReducerMapBuilder } from "@reduxjs/toolkit"
 export const manageUsersExtraReducers = (builder: ActionReducerMapBuilder<any>) => {
   builder
     .addMatcher(userService.endpoints.userControllerSearchUser.matchFulfilled, (state, action) => {
-      const { data } = action.payload
-      state.adminUserList = data
+      state.adminUserList = action.payload
     })
     .addMatcher(userService.endpoints.userControllerUpdateUser.matchFulfilled, (state, action) => {
       const updatedUser = action.meta.arg.originalArgs.updateUserRequest

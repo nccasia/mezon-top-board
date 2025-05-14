@@ -13,14 +13,18 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { ApiError } from '@app/types/API.types'
 import { IMainProps } from '@app/types/Main.type'
+import { getPageFromParams } from '@app/utils/uri'
 
 const pageOptions = [5, 10, 15]
 function Main({ isSearchPage = false }: IMainProps) {
   const navigate = useNavigate()
 
-  const [searchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
   const defaultSearchQuery = useMemo(() => searchParams.get('q')?.trim() || '', [searchParams.get('q')?.trim()])
-  const defaultTagIds = useMemo(() => searchParams.get('tags')?.split(',').filter(Boolean) || [], [searchParams.get('tags')])
+  const defaultTagIds = useMemo(
+    () => searchParams.get('tags')?.split(',').filter(Boolean) || [],
+    [searchParams.get('tags')]
+  )
 
   const { mezonApp } = useSelector<RootState, IMezonAppStore>((s) => s.mezonApp)
 
@@ -29,10 +33,11 @@ function Main({ isSearchPage = false }: IMainProps) {
 
   const [botPerPage, setBotPerPage] = useState<number>(pageOptions[0])
   const [isInitialized, setIsInitialized] = useState<boolean>(false)
-  const [page, setPage] = useState<number>(1)
+  const [page, setPage] = useState<number>(() => getPageFromParams(searchParams))
+
   const [isOpen, setIsOpen] = useState<boolean>(false)
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [tagIds, setTagIds] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>(searchParams.get('q')?.trim() || '')
+  const [tagIds, setTagIds] = useState<string[]>(searchParams.get('tags')?.split(',').filter(Boolean) || [])
 
   const totals = useMemo(() => mezonApp.totalCount || 0, [mezonApp])
 
@@ -41,7 +46,7 @@ function Main({ isSearchPage = false }: IMainProps) {
     if (!isInitialized && isSearchPage) {
       setSearchQuery(defaultSearchQuery)
       setTagIds(defaultTagIds)
-      searchMezonAppList(defaultSearchQuery, defaultTagIds);
+      searchMezonAppList(defaultSearchQuery, defaultTagIds)
       setIsInitialized(true)
     }
   }, [])
@@ -50,21 +55,28 @@ function Main({ isSearchPage = false }: IMainProps) {
     if (isError && error) {
       const apiError = error as ApiError
       if (apiError?.status === 404 || apiError?.data?.statusCode === 404) {
-        navigate('/*');
+        navigate('/*')
       } else {
-        toast.error(apiError?.data?.message);
+        toast.error(apiError?.data?.message)
       }
     }
   }, [isError, error])
 
   useEffect(() => {
-    searchMezonAppList(searchQuery, tagIds);
+    searchMezonAppList(searchQuery, tagIds)
   }, [page, botPerPage, isSearchPage])
+
+  useEffect(() => {
+    const newPage = getPageFromParams(searchParams)
+    if (newPage !== page) {
+      setPage(newPage)
+    }
+  }, [searchParams])
 
   const searchMezonAppList = (searchQuery?: string, tagIds?: string[]) => {
     getMezonApp({
       search: isSearchPage ? searchQuery : undefined,
-      tags: (tagIds && tagIds.length) ? tagIds : undefined,
+      tags: tagIds && tagIds.length ? tagIds : undefined,
       pageNumber: page,
       pageSize: botPerPage,
       sortField: 'createdAt',
@@ -89,6 +101,11 @@ function Main({ isSearchPage = false }: IMainProps) {
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage)
+
+    const newParams = new URLSearchParams(searchParams)
+    newParams.set('page', newPage.toString())
+    setSearchParams(newParams)
+
     if (newPage > Math.ceil(totals / botPerPage)) {
       setPage(1)
     }
@@ -99,7 +116,7 @@ function Main({ isSearchPage = false }: IMainProps) {
     setTagIds(tagIds ?? [])
     if (page !== 1) {
       setPage(1)
-      return;
+      return
     }
     searchMezonAppList(text, tagIds)
   }

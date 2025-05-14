@@ -6,6 +6,7 @@ import { Brackets, EntityManager, In, Not } from "typeorm";
 import { RequestWithId } from "@domain/common/dtos/request.dto";
 import { Result } from "@domain/common/dtos/result.dto";
 import { AppStatus } from "@domain/common/enum/appStatus";
+import { Role } from "@domain/common/enum/role";
 import { App, Link, LinkType, Tag, User } from "@domain/entities";
 
 import { ErrorMessages } from "@libs/constant/messages";
@@ -24,7 +25,7 @@ import {
   GetRelatedMezonAppResponse,
   SearchMezonAppResponse,
 } from "./dtos/response";
-import { Role } from "@domain/common/enum/role";
+
 
 @Injectable()
 export class MezonAppService {
@@ -319,7 +320,49 @@ export class MezonAppService {
       app.socialLinks = links;
     }
 
-    const cleanedDescription = sanitizeHtml(description);
+    const cleanedDescription = sanitizeHtml(description, {
+      allowedTags: sanitizeHtml.defaults.allowedTags.concat([
+        "span", "img", "video", "source", "h1", "h2", "h3", "h4", "h5", "h6",
+        "li", "ol", "ul", "p", "pre", "a", "em", "strong", "u"
+      ]),
+      allowedAttributes: {
+        ...sanitizeHtml.defaults.allowedAttributes,
+        img: ['src', 'alt', 'width', 'height', 'style'],
+        video: ['src', 'controls', 'width', 'height'], 
+        source: ['src', 'type'],
+        embed: ['src', 'width', 'height', 'allowfullscreen'],
+        span: ['style', 'class'],
+        p: ['style', 'class'],
+        em: ['style', 'class'],       
+        strong: ['style', 'class'],   
+        u: ['style', 'class'],        
+      },
+      allowedClasses: {
+        '*': ['ql-size-small', 'ql-size-large', 'ql-size-huge',
+          'ql-align-center', 'ql-align-right', 'ql-align-justify',
+          'ql-font-monospace', 'ql-font-serif', 'fancy', 'simple']
+      },
+      allowedStyles: {
+        '*': {
+          'color': [/^.*$/],
+          'background-color': [/^.*$/],
+          'text-align': [/^.*$/],
+          'font-size': [/^\d+(?:px|em|%)$/],
+          'font-family': [/^.*$/],
+        },
+        img: {
+          'width': [/^\d+(px|%)?$/],
+          'height': [/^\d+(px|%)?$/],
+        },
+        em: {
+          'color': [/^.*$/],
+          'background-color': [/^.*$/],
+          'font-size': [/^\d+(?:px|em|%)$/],
+          'font-family': [/^.*$/],
+        },
+      }
+    });
+    
 
     this.appRepository.getRepository().merge(app, {
       ...updateData,

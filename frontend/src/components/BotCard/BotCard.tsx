@@ -6,7 +6,7 @@ import MtbRate from '@app/mtb-ui/Rate/Rate'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import { IBotCardProps } from '@app/types/Botcard.types'
 import { randomColor } from '@app/utils/mezonApp'
-import { getUrlImage, safeConcatUrl, uuidToNumber } from '@app/utils/stringHelper'
+import { getUrlMedia, safeConcatUrl, uuidToNumber } from '@app/utils/stringHelper'
 import { Popover, Tag } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import ShareButton from './components/ShareButton'
@@ -27,7 +27,7 @@ function BotCard({ readonly = false, data, canNavigateOnClick = true }: IBotCard
   }
   const titleMaxWidth = data?.owner?.id === userInfo?.id ? 'md:max-w-[calc(100%-150px)]' : 'md:max-w-[calc(100%-100px)]';
 
-  const imgUrl = data?.featuredImage ? getUrlImage(data.featuredImage) : avatarBotDefault
+  const imgUrl = data?.featuredImage ? getUrlMedia(data.featuredImage) : avatarBotDefault
   // Share to social media
   const shareUrl = process.env.REACT_APP_SHARE_URL || 'https://top.mezon.ai/bot/'
   const title = data?.name || 'Check out this app!'
@@ -74,8 +74,8 @@ function BotCard({ readonly = false, data, canNavigateOnClick = true }: IBotCard
               </Tag>
             ))}
           </div>
-          <div className='sm:absolute sm:top-2 sm:right-2 flex gap-3'>
-            {data?.owner?.id === userInfo?.id && (
+          <div className='sm:absolute sm:top-2 sm:right-2 flex gap-3 relative z-1'>
+            {userInfo?.id && data?.owner?.id === userInfo?.id && (
               <OwnerActions data={data} isBotCard={true} />
             )}
             <Button variant='solid' color='secondary' size='large' onClick={handleInvite}>
