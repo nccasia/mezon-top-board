@@ -53,6 +53,18 @@ function Header() {
     }
   }, [])
 
+  useEffect(() => {
+    const handlePageShow = (event: PageTransitionEvent) => {
+      const navigationEntry = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming;
+      if (event.persisted || navigationEntry?.type === "back_forward") {
+        window.location.reload()
+      }
+    }
+
+    window.addEventListener("pageshow", handlePageShow)
+    return () => window.removeEventListener("pageshow", handlePageShow)
+  }, [])
+
   const renderHeaderItems = () => {
     return (
       <>
