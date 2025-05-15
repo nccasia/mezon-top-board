@@ -102,6 +102,44 @@ function BotDetailPage() {
       }
     }
   }
+  const responsive = [
+    {
+      breakpoint: 1535,
+      settings: {
+        slidesToShow: 4,
+        slidesToScroll: 1
+      }
+    },
+    {
+      breakpoint: 1279,
+      settings: {
+        slidesToShow: 3,
+        slidesToScroll: 1
+      }
+    },
+    {
+      breakpoint: 1023,
+      settings: {
+        slidesToShow: 2,
+        slidesToScroll: 1
+      }
+    },
+    {
+      breakpoint: 767,
+      settings: {
+        slidesToShow: 2,
+        slidesToScroll: 1
+      }
+    },
+    {
+      breakpoint: 479,
+      settings: {
+        slidesToShow: 1,
+        slidesToScroll: 1
+      }
+    }
+  ]
+
   function transformMediaSrc(html: string): string {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
@@ -117,7 +155,6 @@ function BotDetailPage() {
     });
     return doc.body.innerHTML;
   }
-  
 
   return (
     <div className='m-auto pt-10 pb-10 w-[75%]'>
@@ -146,10 +183,10 @@ function BotDetailPage() {
             <MtbTypography variant='h3'>More like this</MtbTypography>
             <Divider className='bg-gray-200'></Divider>
             {relatedMezonApp?.length > 0 ? (
-              <Carousel arrows infinite={true} draggable swipeToSlide={true} touchThreshold={5} variableWidth={true} centerMode={true}
-                className='text-center'>
+              <Carousel arrows infinite={true} draggable swipeToSlide={true} touchThreshold={5} variableWidth={false} 
+                slidesToShow={4}  responsive={responsive} className='text-center'>
                 {relatedMezonApp.map((bot) => (
-                  <div className="p-1" style={{ width: 200 }} key={bot.id}>
+                  <div className="p-1" key={bot.id}>
                     <CompactBotCard data={bot} />
                   </div>
                 ))}
@@ -169,7 +206,7 @@ function BotDetailPage() {
                   <p className='text-6xl'>{mezonAppDetail.rateScore}</p>
                   <div>
                     <MtbRate readonly={true} value={mezonAppDetail.rateScore}></MtbRate>
-                    <p className='pt-2'>{ratings?.data?.length} reviews</p>
+                    <p className='pt-2'>{ratings?.totalCount} reviews</p>
                   </div>
                 </div>
                 <p className='pt-5 max-lg:pt-7 max-2xl:pt-7'>
