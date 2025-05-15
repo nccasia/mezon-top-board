@@ -4,9 +4,36 @@ body {
   padding: 0;
   box-sizing: border-box;
 }
+.description h1 {
+  font-size: 2em;
+  // font-weight: bold;
+}
+.description h2 {
+  font-size: 1.5em;
+}
+.description h3 {
+  font-size: 1.25em;
+}
 a {
   text-decoration: none;
 }
+
+.description ol {
+  list-style-type: decimal;
+  padding-left: 1.5em;
+  margin-bottom: 1em;
+}
+
+.description ul {
+  list-style-type: disc;
+  padding-left: 1.5em;
+  margin-bottom: 1em;
+}
+
+.description li {
+  margin-bottom: 0.5em;
+}
+
 .ant-divider .ant-divider-inner-text {
   font-family: 'Open Sans', sans-serif;
 }
@@ -48,8 +75,35 @@ a {
 }
 
 pre {
-  overflow-wrap: break-word; 
+  overflow-wrap: break-word;
   white-space: pre-wrap;
+}
+
+.ql-size-small {
+  font-size: 0.75em;
+}
+.ql-size-large {
+  font-size: 1.5em;
+}
+.ql-size-huge {
+  font-size: 2.5em;
+}
+
+.ql-align-center {
+  text-align: center;
+}
+.ql-align-right {
+  text-align: right;
+}
+.ql-align-justify {
+  text-align: justify;
+}
+
+.ql-font-monospace {
+  font-family: monospace;
+}
+.ql-font-serif {
+  font-family: serif;
 }
 
 .ant-carousel {
