@@ -283,14 +283,15 @@ export class MezonAppService {
 
     if (socialLinks) {
       const seen = new Set<string>()
-      for (const link of socialLinks) {
+      const filteredSocialLinks = socialLinks.filter((link) => {
         const key = `${link.linkTypeId}_${link.url}`;
-        if (seen.has(key)) throw new BadRequestException(`Duplicate links detected: ${link.url}`);
-        seen.add(key)
-      }
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
 
       links = await Promise.all(
-        socialLinks.map(async (socialLink) => {
+        filteredSocialLinks.map(async (socialLink) => {
           // Check if linkType exist.
           const linkType = await this.linkTypeRepository.findById(
             socialLink.linkTypeId,
