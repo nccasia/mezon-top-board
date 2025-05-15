@@ -157,6 +157,11 @@ export class MezonAppService {
         ownerId: query.ownerId,
       });
     }
+    if (query.sortField && query.sortOrder) {
+      whereCondition.orderBy(`app.${query.sortField}`, query.sortOrder);
+    } else {
+      whereCondition.orderBy("app.name", "ASC");
+    }
 
     return paginate<App, SearchMezonAppResponse>(
       () =>

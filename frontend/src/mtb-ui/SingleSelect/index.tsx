@@ -16,10 +16,12 @@ const SingleSelect = (props: ISelectProps & SelectProps<IOption>) => {
     const { options, dropDownTitle, ...rest } = props;
 
     const [selectedValue, setSelectedValue] = useState(props.defaultValue ?? options[0] as IOption)
+    const [open, setOpen] = useState(false);
 
     const handleChange = useCallback((option: IOption) => {
         setSelectedValue(option)
         props.onChange?.(option)
+        setOpen(false)
     }, [props.onChange])
 
     const _className = useMemo(() => {
@@ -30,6 +32,8 @@ const SingleSelect = (props: ISelectProps & SelectProps<IOption>) => {
         <AntSelect
             value={selectedValue}
             labelInValue={true}
+            open={open}
+            onDropdownVisibleChange={(visible) => setOpen(visible)}
             title=""
             className={_className}
             dropdownRender={() => (

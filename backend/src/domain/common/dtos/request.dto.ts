@@ -25,9 +25,9 @@ export class PaginationQuery {
   pageNumber: number = 1;
 
   @IsOptional()
-  sortField: string = "createdAt";
+  sortField: string = "name";
 
   @IsOptional()
   @IsIn([SortOrder.ASC, SortOrder.DESC])
-  sortOrder: SortOrder = SortOrder.DESC;
+  sortOrder: SortOrder = SortOrder.ASC;
 }
