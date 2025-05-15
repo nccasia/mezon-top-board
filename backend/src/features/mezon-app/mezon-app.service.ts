@@ -1,6 +1,6 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
-import * as sanitizeHtml from "sanitize-html";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 
+import * as sanitizeHtml from "sanitize-html";
 import { Brackets, EntityManager, In, Not } from "typeorm";
 
 import { RequestWithId } from "@domain/common/dtos/request.dto";
@@ -67,8 +67,9 @@ export class MezonAppService {
     ]);
 
     if (!mezonApp) {
-      return new Result({ data: {} });
+      throw new NotFoundException("App not found");
     }
+
 
     const owner = await this.userRepository.findById(mezonApp.ownerId);
 
