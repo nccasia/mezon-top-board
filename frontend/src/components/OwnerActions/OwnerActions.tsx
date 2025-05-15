@@ -26,6 +26,7 @@ function OwnerActions({ data, isBotCard }: { data: any; isBotCard?: boolean }) {
       onOk: async () => {
         try {
           await deleteBot({ requestWithId: { id: botId } }).unwrap()
+          navigate('/')
           toast.success('Bot deleted successfully.')
         } catch (error) {
           toast.error('Failed to delete bot.')

@@ -1,5 +1,5 @@
 import { Divider, Flex, Pagination } from 'antd'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import BotCard from '@app/components/BotCard/BotCard'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import SingleSelect, { IOption } from '@app/mtb-ui/SingleSelect'
@@ -18,6 +18,7 @@ import { getPageFromParams } from '@app/utils/uri'
 const pageOptions = [5, 10, 15]
 function Main({ isSearchPage = false }: IMainProps) {
   const navigate = useNavigate()
+  const mainRef = useRef<HTMLDivElement>(null)
 
   const [searchParams, setSearchParams] = useSearchParams()
   const defaultSearchQuery = useMemo(() => searchParams.get('q')?.trim() || '', [searchParams.get('q')?.trim()])
@@ -106,6 +107,9 @@ function Main({ isSearchPage = false }: IMainProps) {
     newParams.set('page', newPage.toString())
     setSearchParams(newParams)
 
+    if (mainRef.current) {
+      mainRef.current.scrollIntoView({ behavior: 'auto' })
+    }
     if (newPage > Math.ceil(totals / botPerPage)) {
       setPage(1)
     }
@@ -122,7 +126,7 @@ function Main({ isSearchPage = false }: IMainProps) {
   }
 
   return (
-    <div className={`flex flex-col justify-center pt-8 pb-12 w-[75%] m-auto relative z-1`}>
+    <div ref={mainRef} className={`flex flex-col justify-center pt-8 pb-12 w-[75%] m-auto relative z-1`}>
       <Divider variant='solid' style={{ borderColor: 'gray' }}>
         <MtbTypography variant='h1' customClassName='max-md:whitespace-normal'>
           Explore millions of Mezon Bots
