@@ -10,7 +10,14 @@ export const tagExtraReducers = (builder: ActionReducerMapBuilder<ITagStore>) =>
     })
 
     .addMatcher(tagService.endpoints.tagControllerSearchTags.matchFulfilled, (state, { payload }) => {
-      state.searchTagList = payload
+      if (payload.pageNumber === 1) {
+        state.searchTagList = payload
+      } else {
+        state.searchTagList = {
+          ...payload,
+          data: [...(state.searchTagList?.data || []), ...payload.data]
+        }
+      }
     })
 
     .addMatcher(tagService.endpoints.tagControllerCreateTag.matchFulfilled, (state, { payload }) => {

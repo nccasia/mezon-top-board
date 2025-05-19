@@ -14,7 +14,14 @@ import { useSelector } from 'react-redux'
 import { SearchOutlined, EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons'
 import { useAppSelector } from '@app/store/hook'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
+import { toast } from 'react-toastify'
+import { set } from 'lodash'
+import { SLUG_RULE } from '@app/constants/common.constant'
 
+interface TagFormValues {
+  name: string,
+  slug: string
+}
 interface SearchFormValues {
   search: string
 }
@@ -27,16 +34,17 @@ function TagsList() {
   const [searchTag, { isLoading }] = useLazyTagControllerSearchTagsQuery()
   const searchTagList = useAppSelector((state: RootState) => state.tag.searchTagList)
 
-  const [form] = Form.useForm<SearchFormValues>()
+  const [searchForm] = Form.useForm<SearchFormValues>()
+  const [tagForm] = Form.useForm<TagFormValues>()
+
   const { tagList } = useSelector<RootState, ITagStore>((s) => s.tag)
   const searchRef = useRef<InputRef>(null)
 
-  const [newTag, setNewTag] = useState({
-    name: '',
-    slug: generateSlug('')
-  })
   const [isSlugEdited, setIsSlugEdited] = useState(false)
   const [showSlugInput, setShowSlugInput] = useState(false)
+
+
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
 
   const [editingTag, setEditingTag] = useState<{
     id: string | null
@@ -45,41 +53,43 @@ function TagsList() {
   }>({ id: null, name: '', slug: '' })
 
   const [page, setPage] = useState<number>(1)
-  const totalTags = searchTagList?.data?.length || 0
 
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false)
+
+  const totalTags = searchTagList?.totalCount || 0
+  const editError = !editingTag.name.trim() || !SLUG_RULE.pattern.test(editingTag.slug)
 
   useEffect(() => {
     searchTagsList()
   }, [page])
 
-  const handleCreate = async () => {
-    if (!newTag.name.trim()) return
-    const isDuplicate = tagList?.data?.some((tag) => tag.slug === newTag.slug)
-
+  const handleCreate = async (values: TagFormValues) => {
+    const isDuplicate = tagList?.data?.some((tag) => tag.slug === values.slug)
     if (isDuplicate) {
-      message.error('Tag already exists')
+      toast.error('Tag already exists')
       return
     }
 
+    if (typeof values.slug !== 'string' || !values.slug.trim()) {
+      values.slug = generateSlug(values.name)
+    }
+
     try {
-      await createTag({ createTagRequest: newTag }).unwrap()
+      await createTag({ createTagRequest: values }).unwrap()
       handleCancel()
       await getTagList()
       searchTagsList()
-      message.success('Tag created')
+      toast.success('Tag created')
     } catch (err) {
-      message.error('Failed to create tag')
+      toast.error('Failed to create tag')
     }
   }
 
   const handleUpdate = async (id: string) => {
-    if (!editingTag.name.trim()) return
-
     const isDuplicate = tagList?.data?.some((tag) => tag.name === editingTag.name && tag.id !== id)
 
     if (isDuplicate) {
-      message.error('Tag name already exists')
+      toast.error('Tag name already exists')
       return
     }
 
@@ -95,9 +105,9 @@ function TagsList() {
       setEditingTag({ id: null, name: '', slug: '' })
       await getTagList()
       searchTagsList()
-      message.success('Tag updated')
+      toast.success('Tag updated')
     } catch {
-      message.error('Failed to update tag')
+      toast.error('Failed to update tag')
     }
   }
 
@@ -106,14 +116,14 @@ function TagsList() {
       await deleteTag({ requestWithId: { id } }).unwrap()
       await getTagList()
       searchTagsList()
-      message.success('Tag deleted')
+      toast.success('Tag deleted')
     } catch {
-      message.error('Cannot delete tag. It might be in use.')
+      toast.error('Cannot delete tag. It might be in use.')
     }
   }
 
   const searchTagsList = () => {
-    const formValues = form.getFieldsValue()
+    const formValues = searchForm.getFieldsValue()
     searchTag({
       search: formValues.search || '',
       pageNumber: page,
@@ -128,10 +138,16 @@ function TagsList() {
       key: 'name',
       render: (text: string, record: any) =>
         editingTag.id === record.id ? (
-          <Input
-            value={editingTag.name}
-            onChange={(e) => setEditingTag((prev) => ({ ...prev, name: e.target.value }))}
-          />
+          <div>
+            <Input
+              required
+              status={!editingTag.name.trim() ? 'error' : ''}
+              placeholder={!editingTag.name.trim() ? 'This field is required' : undefined}
+              value={editingTag.name}
+              onChange={(e) => setEditingTag((prev) => ({ ...prev, name: e.target.value }))}
+            />
+            
+          </div>
         ) : (
           text
         )
@@ -142,8 +158,9 @@ function TagsList() {
       key: 'slug',
       render: (text: string, record: any) =>
         editingTag.id === record.id ? (
-          <Input
+          <Input required status={!SLUG_RULE.pattern.test(editingTag.slug) ? 'error' : ''}
             value={editingTag.slug}
+            placeholder={!SLUG_RULE.pattern.test(editingTag.slug) ? 'Slug must be lowercase, alphanumeric, and use hyphens (no spaces or special characters)' : undefined}
             onChange={(e) => setEditingTag((prev) => ({ ...prev, slug: e.target.value }))}
           />
         ) : (
@@ -153,23 +170,25 @@ function TagsList() {
     {
       title: 'Bot Count',
       dataIndex: 'botCount',
-      key: 'botCount'
+      key: 'botCount',
+      width: '15%',
     },
     {
       title: 'Actions',
       key: 'actions',
+      width: '20%',
       render: (_: any, record: any) =>
         editingTag.id === record.id ? (
-          <>
-            <Button type='primary' onClick={() => handleUpdate(record.id)}>
+          <div className='flex gap-2'>
+            <Button disabled={editError} type='primary' onClick={() => handleUpdate(record.id)}>
               Save
             </Button>
             <Button danger onClick={() => setEditingTag({ id: null, name: '', slug: '' })}>
               Cancel
             </Button>
-          </>
+          </div>
         ) : (
-          <>
+          <div className='flex gap-2'>
             <Button
               icon={<EditOutlined />}
               onClick={() => setEditingTag({ id: record.id, name: record.name, slug: record.slug })}
@@ -177,35 +196,40 @@ function TagsList() {
             <Popconfirm title='Delete this tag?' onConfirm={() => handleDelete(record.id)} okText='Yes' cancelText='No'>
               <Button danger icon={<DeleteOutlined />} />
             </Popconfirm>
-          </>
+          </div>
         )
     }
   ]
 
   const handleCancel = () => {
     setIsOpenModal(false)
-    setNewTag({ name: '', slug: generateSlug('') })
+    tagForm.resetFields();
     setShowSlugInput(false)
     setIsSlugEdited(false)
+  }
+
+  const onLoadMore = async () => {
+    setIsLoadingMore(true)
+    setPage((prev) => prev + 1)
+    setIsLoadingMore(false)
   }
 
   return (
     <div>
       <h2 className='font-bold text-lg mb-4'>Manage Tags</h2>
 
-      {/* Search & Add */}
       <div className='flex gap-2 mb-4'>
-        <Form form={form} onFinish={searchTagsList} initialValues={{ search: '' }} className='flex-grow'>
+        <Form form={searchForm} onFinish={searchTagsList} initialValues={{ search: '' }} className='flex-grow'>
           <Form.Item name='search' className='w-full'>
             <Input
               ref={searchRef}
               placeholder='Search by name or slug'
               prefix={<SearchOutlined style={{ color: '#bbb' }} />}
-              onPressEnter={() => form.submit()}
+              onPressEnter={() => searchForm.submit()}
             />
           </Form.Item>
         </Form>
-        <Button type='primary' icon={<SearchOutlined />} onClick={() => form.submit()}>
+        <Button type='primary' icon={<SearchOutlined />} onClick={() => searchForm.submit()}>
           Search
         </Button>
         <Button color='default' variant='outlined' icon={<PlusOutlined />} onClick={() => setIsOpenModal(true)} />
@@ -218,41 +242,48 @@ function TagsList() {
           No result
         </MtbTypography>
       )}
-      {totalTags > 7 && (
-        <div className='flex justify-center mt-4'>
-          <Button size='large' loading={isLoading} onClick={() => setPage((prev) => prev + 1)}>
-            Load More
-          </Button>
-        </div>
+      {totalTags > 7 && searchTagList.hasNextPage && (
+        <Button block className='mt-4'
+          size='large'
+          disabled={isLoadingMore}
+          loading={isLoading}
+          onClick={onLoadMore}
+        >
+          Load More
+        </Button>
       )}
 
       <Modal
         title={'Create New Tag'}
         open={isOpenModal}
         onCancel={handleCancel}
-        footer={<Button onClick={handleCreate}>Add</Button>}
+        footer={<Button onClick={() => tagForm.submit()}>Add</Button>}
         width={600}
         centered
       >
-        <Form layout='vertical' className='!pt-2'>
+        <Form form={tagForm} layout='vertical' className='!pt-2' onFinish={handleCreate}>
           <Form.Item name='name' label='Name' rules={[{ required: true, message: 'This field is required' }]}>
             <Input
               placeholder='New tag name'
-              value={newTag.name}
               onChange={(e) => {
-                setNewTag((prev) => ({
-                  ...prev,
-                  name: e.target.value,
-                  slug: isSlugEdited ? prev.slug : generateSlug(e.target.value)
-                }))
+                const name = e.target.value
+                const slug = isSlugEdited
+                  ? tagForm.getFieldValue('slug')
+                  : generateSlug(name)
+
+                tagForm.setFieldsValue({ name, slug })
               }}
             />
           </Form.Item>
           {!showSlugInput ? (
             <div className='flex items-center justify-between mb-3'>
-              <div>
-                <strong>Slug:</strong> {newTag.slug}
-              </div>
+              <Form.Item shouldUpdate>
+                {() => (
+                  <div>
+                    <strong>Slug:</strong> {tagForm.getFieldValue('slug')}
+                  </div>
+                )}
+              </Form.Item>
               <Button
                 type='link'
                 icon={<EditOutlined />}
@@ -263,17 +294,9 @@ function TagsList() {
               />
             </div>
           ) : (
-            <Form.Item name='slug' label='Slug' rules={[{ required: true, message: 'This field is required' }]}>
-              <Input
-                placeholder={newTag.slug}
-                value={newTag.slug}
-                onChange={(e) => {
-                  setNewTag({
-                    ...newTag,
-                    slug: e.target.value
-                  })
-                  setIsSlugEdited(true)
-                }}
+            <Form.Item name='slug' label='Slug' rules={[{ required: true, message: 'This field is required' }, SLUG_RULE]}>
+              <Input placeholder='New tag slug'
+                onChange={() => setIsSlugEdited(true)}
               />
             </Form.Item>
           )}

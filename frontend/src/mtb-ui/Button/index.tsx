@@ -28,8 +28,11 @@ const Button = (props: IButtonProps & Omit<AntdButtonProps, 'color'>) => {
     return `${colorClassName[color]} ${customClassName || ''}`
   }, [color, customClassName])
 
+  // Exclude 'color' and 'customClassName' from props before passing to AntdButton
+  const { color: _color, customClassName: _customClassName, ...antdButtonProps } = props
+
   return (
-    <AntdButton className={_className} {...props}>
+    <AntdButton className={_className} {...antdButtonProps}>
       {children}
     </AntdButton>
   )
