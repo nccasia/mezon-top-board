@@ -284,10 +284,8 @@ export class MezonAppService {
     if (socialLinks) {
       const seen = new Set<string>()
       const filteredSocialLinks = socialLinks.filter((link) => {
-        const key = `${link.linkTypeId}_${link.url}`;
-        if (seen.has(key)) return false;
-        seen.add(key);
-        return true;
+        const key = `${link.linkTypeId}::${link.url}`;
+        return seen.has(key) ? false : seen.add(key);
       });
 
       links = await Promise.all(
