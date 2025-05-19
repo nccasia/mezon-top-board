@@ -1,12 +1,14 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import * as sanitizeHtml from "sanitize-html";
 
+import * as sanitizeHtml from "sanitize-html";
 import { Brackets, EntityManager, In, Not } from "typeorm";
 
 import { RequestWithId } from "@domain/common/dtos/request.dto";
 import { Result } from "@domain/common/dtos/result.dto";
 import { AppStatus } from "@domain/common/enum/appStatus";
 import { Role } from "@domain/common/enum/role";
+import { SortField } from '@domain/common/enum/sortField';
+import { SortOrder } from '@domain/common/enum/sortOder';
 import { App, Link, LinkType, Tag, User } from "@domain/entities";
 
 import { ErrorMessages } from "@libs/constant/messages";
@@ -25,6 +27,7 @@ import {
   GetRelatedMezonAppResponse,
   SearchMezonAppResponse,
 } from "./dtos/response";
+
 
 
 @Injectable()
@@ -157,7 +160,11 @@ export class MezonAppService {
         ownerId: query.ownerId,
       });
     }
-    if (query.sortField && query.sortOrder) {
+
+    if (
+      Object.values(SortField).includes(query.sortField as SortField) &&
+      (query.sortOrder === SortOrder.ASC || query.sortOrder === SortOrder.DESC)
+    ) {
       whereCondition.orderBy(`app.${query.sortField}`, query.sortOrder);
     } else {
       whereCondition.orderBy("app.name", "ASC");
