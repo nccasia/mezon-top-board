@@ -133,12 +133,17 @@ export class MezonAppService {
     return new Result({ data: res });
   }
 
-  async searchMezonApp(query: SearchMezonAppRequest) {
+  private async buildSearchQuery(
+    query: SearchMezonAppRequest,
+  ) {
     const whereCondition = this.appRepository
       .getRepository()
       .createQueryBuilder("app")
       .leftJoinAndSelect("app.tags", "filterTag")
       .leftJoinAndSelect("app.ratings", "rating")
+      .leftJoinAndSelect("app.socialLinks", "socialLink")
+      .leftJoinAndSelect("app.socialLinks.type", "linkType")
+      .leftJoinAndSelect("app.owner", "owner")
       .where("app.status = :status", { status: AppStatus.PUBLISHED });
 
     // Priorize to search by keyword if field and search exist at the same time.
@@ -171,6 +176,12 @@ export class MezonAppService {
     } else {
       whereCondition.orderBy("app.name", "ASC");
     }
+
+    return whereCondition;
+  }
+
+  async searchMezonApp(query: SearchMezonAppRequest) {
+    const whereCondition = await this.buildSearchQuery(query);
 
     return paginate<App, SearchMezonAppResponse>(
       () =>
@@ -341,14 +352,14 @@ export class MezonAppService {
       allowedAttributes: {
         ...sanitizeHtml.defaults.allowedAttributes,
         img: ['src', 'alt', 'width', 'height', 'style'],
-        video: ['src', 'controls', 'width', 'height'], 
+        video: ['src', 'controls', 'width', 'height'],
         source: ['src', 'type'],
         embed: ['src', 'width', 'height', 'allowfullscreen'],
         span: ['style', 'class'],
         p: ['style', 'class'],
-        em: ['style', 'class'],       
-        strong: ['style', 'class'],   
-        u: ['style', 'class'],        
+        em: ['style', 'class'],
+        strong: ['style', 'class'],
+        u: ['style', 'class'],
       },
       allowedClasses: {
         '*': ['ql-size-small', 'ql-size-large', 'ql-size-huge',
@@ -375,7 +386,7 @@ export class MezonAppService {
         },
       }
     });
-    
+
 
     this.appRepository.getRepository().merge(app, {
       ...updateData,
@@ -392,28 +403,7 @@ export class MezonAppService {
   }
 
   async listAdminMezonApp(query: SearchMezonAppRequest) {
-    let whereCondition = this.appRepository
-      .getRepository()
-      .createQueryBuilder("app")
-      .leftJoinAndSelect("app.tags", "tag")
-      .leftJoinAndSelect("app.ratings", "rating")
-      .leftJoinAndSelect("app.owner", "owner");
-
-    // Priorize to search by keyword if field and search exist at the same time.
-    if (query.search)
-      whereCondition.andWhere(
-        new Brackets((qb) => {
-          qb.where("app.name ILIKE :keyword", {
-            keyword: `%${query.search}%`,
-          }).orWhere("app.headline ILIKE :keyword", {
-            keyword: `%${query.search}%`,
-          });
-        }),
-      );
-
-    if (query.tags?.length) {
-      whereCondition.andWhere("tag.id IN (:...tagIds)", { tagIds: query.tags });
-    }
+    const whereCondition = await this.buildSearchQuery(query);
 
     return paginate<App, SearchMezonAppResponse>(
       () => whereCondition.getManyAndCount(),
@@ -433,28 +423,10 @@ export class MezonAppService {
   }
 
   async getMyApp(userId: string, query: SearchMezonAppRequest) {
-    let whereCondition = this.appRepository
-      .getRepository()
-      .createQueryBuilder("app")
-      .leftJoinAndSelect("app.tags", "tag")
-      .leftJoinAndSelect("app.ratings", "rating")
-      .where("app.ownerId = :ownerId", { ownerId: userId });
-
-    // Priorize to search by keyword if field and search exist at the same time.
-    if (query.search)
-      whereCondition.andWhere(
-        new Brackets((qb) => {
-          qb.where("app.name ILIKE :keyword", {
-            keyword: `%${query.search}%`,
-          }).orWhere("app.headline ILIKE :keyword", {
-            keyword: `%${query.search}%`,
-          });
-        }),
-      );
-
-    if (query.tags?.length) {
-      whereCondition.andWhere("tag.id IN (:...tagIds)", { tagIds: query.tags });
-    }
+    const whereCondition = await this.buildSearchQuery(query);
+    whereCondition.andWhere("app.ownerId = :ownerId", {
+      ownerId: userId,
+    });
 
     return paginate<App, SearchMezonAppResponse>(
       () => whereCondition.getManyAndCount(),
