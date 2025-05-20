@@ -283,8 +283,14 @@ export class MezonAppService {
     }
 
     if (socialLinks) {
+      const seen = new Set<string>()
+      const filteredSocialLinks = socialLinks.filter((link) => {
+        const key = `${link.linkTypeId}::${link.url}`;
+        return seen.has(key) ? false : seen.add(key);
+      });
+
       links = await Promise.all(
-        socialLinks.map(async (socialLink) => {
+        filteredSocialLinks.map(async (socialLink) => {
           // Check if linkType exist.
           const linkType = await this.linkTypeRepository.findById(
             socialLink.linkTypeId,
