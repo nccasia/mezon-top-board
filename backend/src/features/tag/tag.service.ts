@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 
-import { EntityManager, ILike } from "typeorm";
+import { EntityManager, ILike, Not } from "typeorm";
 
 import { RequestWithId } from "@domain/common/dtos/request.dto";
 import { Result } from "@domain/common/dtos/result.dto";
@@ -67,17 +67,30 @@ export class TagService {
     await this.tagRepository.create(body)
     return new Result()
   }
-
+ 
   async updateTag(body: UpdateTagRequest) {
-    const tag = await this.tagRepository.getRepository().findOne({ where: { name: ILike(body.name), slug: ILike(body.slug) } });
+    const tag = await this.tagRepository.getRepository().findOne({ where: { name: ILike(body.name), slug: ILike(body.slug), id: Not(body.id) } });
     if (tag)
       throw new BadRequestException(ErrorMessages.EXISTED_TAG)
 
     await this.tagRepository.update(body.id, body)
-    return new Result()
+    const updatedTag = await this.tagRepository.findOne({ where: { id: body.id } })
+    return new Result({ data: updatedTag })
   }
 
   async deleteTag(body: RequestWithId) {
+    const tag = await this.tagRepository.findOne({
+      where: { id: body.id },
+      relations: ['apps']
+    })
+
+    if (!tag) {
+      throw new BadRequestException('Tag not found')
+    }
+
+    if (tag.apps && tag.apps.length > 0) {
+      throw new BadRequestException('Cannot delete tag because it is associated with one or more bots.')
+    }
     await this.tagRepository.softDelete(body.id)
     return new Result()
   }

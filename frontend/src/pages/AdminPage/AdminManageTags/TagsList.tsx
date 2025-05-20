@@ -8,15 +8,16 @@ import {
 import { RootState } from '@app/store'
 import { ITagStore } from '@app/store/tag'
 import { generateSlug } from '@app/utils/stringHelper'
-import { Button, Form, Input, InputRef, message, Modal, Popconfirm, Table } from 'antd'
+import { Button, Form, Input, InputRef, message, Modal, Popconfirm, Table, Tooltip } from 'antd'
 import { useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { SearchOutlined, EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons'
 import { useAppSelector } from '@app/store/hook'
 import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import { toast } from 'react-toastify'
-import { set } from 'lodash'
 import { SLUG_RULE } from '@app/constants/common.constant'
+
+import MuiButton from '@app/mtb-ui/Button'
 
 interface TagFormValues {
   name: string,
@@ -86,10 +87,13 @@ function TagsList() {
   }
 
   const handleUpdate = async (id: string) => {
-    const isDuplicate = tagList?.data?.some((tag) => tag.name === editingTag.name && tag.id !== id)
+    const isDuplicate = tagList?.data?.some((tag) =>
+      (tag.name === editingTag.name || tag.slug === editingTag.slug) &&
+      tag.id !== id
+    )
 
     if (isDuplicate) {
-      toast.error('Tag name already exists')
+      toast.error('Tag name or tag slug already exists')
       return
     }
 
@@ -112,6 +116,10 @@ function TagsList() {
   }
 
   const handleDelete = async (id: string) => {
+    if (tagList?.data?.some((tag) => tag.id === id && tag.botCount > 0) ) {
+      toast.error('Tag is in use and cannot be deleted')
+      return
+    }
     try {
       await deleteTag({ requestWithId: { id } }).unwrap()
       await getTagList()
@@ -138,16 +146,18 @@ function TagsList() {
       key: 'name',
       render: (text: string, record: any) =>
         editingTag.id === record.id ? (
-          <div>
+          <Tooltip
+            open={!editingTag.name.trim()}
+            title='This field is required'
+            placement='topLeft' color='rgba(255, 0, 0, 0.8)'
+          >
             <Input
               required
               status={!editingTag.name.trim() ? 'error' : ''}
-              placeholder={!editingTag.name.trim() ? 'This field is required' : undefined}
               value={editingTag.name}
               onChange={(e) => setEditingTag((prev) => ({ ...prev, name: e.target.value }))}
             />
-            
-          </div>
+          </Tooltip>
         ) : (
           text
         )
@@ -158,11 +168,18 @@ function TagsList() {
       key: 'slug',
       render: (text: string, record: any) =>
         editingTag.id === record.id ? (
-          <Input required status={!SLUG_RULE.pattern.test(editingTag.slug) ? 'error' : ''}
-            value={editingTag.slug}
-            placeholder={!SLUG_RULE.pattern.test(editingTag.slug) ? 'Slug must be lowercase, alphanumeric, and use hyphens (no spaces or special characters)' : undefined}
-            onChange={(e) => setEditingTag((prev) => ({ ...prev, slug: e.target.value }))}
-          />
+          <Tooltip
+            open={!SLUG_RULE.pattern.test(editingTag.slug)}
+            title='Slug must be lowercase, alphanumeric, and use hyphens (no spaces or special characters)'
+            placement='topLeft' color='rgba(255, 0, 0, 0.8)'
+          >
+            <Input
+              required
+              status={!SLUG_RULE.pattern.test(editingTag.slug) ? 'error' : ''}
+              value={editingTag.slug}
+              onChange={(e) => setEditingTag((prev) => ({ ...prev, slug: e.target.value }))}
+            />
+          </Tooltip>
         ) : (
           text
         )
@@ -243,14 +260,13 @@ function TagsList() {
         </MtbTypography>
       )}
       {totalTags > 7 && searchTagList.hasNextPage && (
-        <Button block className='mt-4'
-          size='large'
-          disabled={isLoadingMore}
+        <MuiButton block
+          customClassName="mt-4 !h-10"
           loading={isLoading}
           onClick={onLoadMore}
         >
           Load More
-        </Button>
+        </MuiButton>
       )}
 
       <Modal
