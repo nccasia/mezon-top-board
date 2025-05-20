@@ -142,7 +142,7 @@ function TagsList() {
     searchTag({
       search: formValues.search || '',
       pageNumber: pageNumber ?? page,
-      pageSize: 3
+      pageSize: 7
     })
   }
 
@@ -266,7 +266,7 @@ function TagsList() {
           No result
         </MtbTypography>
       )}
-      {totalTags > 3 && searchTagList.hasNextPage && (
+      {totalTags > 7 && searchTagList.hasNextPage && (
         <MuiButton block
           customClassName="mt-4 !h-10"
           loading={isLoading}
