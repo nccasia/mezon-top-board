@@ -176,9 +176,15 @@ export class MezonAppService {
       Object.values(SortField).includes(query.sortField as SortField) &&
       (query.sortOrder === SortOrder.ASC || query.sortOrder === SortOrder.DESC)
     ) {
-      whereCondition.orderBy(`app.${query.sortField}`, query.sortOrder);
+      if (query.sortField === SortField.NAME) {
+        whereCondition
+          .addSelect('LOWER(app.name)', 'app_name_lower')
+          .orderBy('app_name_lower', query.sortOrder);
+      } else whereCondition.orderBy(`app.${query.sortField}`, query.sortOrder);
     } else {
-      whereCondition.orderBy("app.name", "ASC");
+      whereCondition
+        .addSelect('LOWER(app.name)', 'app_name_lower')
+        .orderBy('app_name_lower', query.sortOrder);
     }
 
     return whereCondition;
