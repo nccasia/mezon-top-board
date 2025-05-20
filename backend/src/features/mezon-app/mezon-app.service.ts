@@ -142,7 +142,6 @@ export class MezonAppService {
       .leftJoinAndSelect("app.tags", "filterTag")
       .leftJoinAndSelect("app.ratings", "rating")
       .leftJoinAndSelect("app.socialLinks", "socialLink")
-      .leftJoinAndSelect("app.socialLinks.type", "linkType")
       .leftJoinAndSelect("app.owner", "owner")
       .where("app.status = :status", { status: AppStatus.PUBLISHED });
 
