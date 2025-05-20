@@ -142,8 +142,7 @@ export class MezonAppService {
       .leftJoinAndSelect("app.tags", "filterTag")
       .leftJoinAndSelect("app.ratings", "rating")
       .leftJoinAndSelect("app.socialLinks", "socialLink")
-      .leftJoinAndSelect("app.owner", "owner")
-      .where("app.status = :status", { status: AppStatus.PUBLISHED });
+      .leftJoinAndSelect("app.owner", "owner");
 
     // Priorize to search by keyword if field and search exist at the same time.
     if (query.search)
@@ -181,6 +180,8 @@ export class MezonAppService {
 
   async searchMezonApp(query: SearchMezonAppRequest) {
     const whereCondition = await this.buildSearchQuery(query);
+    
+    whereCondition.where("app.status = :status", { status: AppStatus.PUBLISHED });
 
     return paginate<App, SearchMezonAppResponse>(
       () =>
