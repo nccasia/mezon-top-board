@@ -24,12 +24,18 @@ export const tagExtraReducers = (builder: ActionReducerMapBuilder<ITagStore>) =>
       if (state.tagList?.data) {
         state.tagList.data.unshift(payload.data)
       }
+      if (state.searchTagList?.data) {
+        state.searchTagList.data.unshift(payload.data)
+      }
     })
 
     .addMatcher(tagService.endpoints.tagControllerDeleteTag.matchFulfilled, (state, action) => {
       const deletedId = action.meta.arg.originalArgs.requestWithId.id
       if (state.tagList?.data) {
         state.tagList.data = state.tagList.data.filter((tag: TagResponse) => tag.id !== deletedId)
+      }
+      if (state.searchTagList?.data) {
+        state.searchTagList.data = state.searchTagList.data.filter((tag: TagResponse) => tag.id !== deletedId);
       }
     })
 
@@ -42,6 +48,15 @@ export const tagExtraReducers = (builder: ActionReducerMapBuilder<ITagStore>) =>
             ...state.tagList.data[index],
             ...updatedTag
           }
+        }
+      }
+      if (state.searchTagList?.data) {
+        const index = state.searchTagList.data.findIndex((tag: TagResponse) => tag.id === updatedTag.id);
+        if (index !== -1) {
+          state.searchTagList.data[index] = {
+            ...state.searchTagList.data[index],
+            ...updatedTag,
+          };
         }
       }
     })

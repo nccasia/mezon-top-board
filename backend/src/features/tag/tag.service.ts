@@ -61,19 +61,39 @@ export class TagService {
   }
 
   async createTag(body: CreateTagRequest) {
-    const tag = await this.tagRepository.getRepository().findOne({ where: { name: ILike(body.name), slug: ILike(body.slug) } });
+    const tag = await this.tagRepository.getRepository().findOne({
+      where: [
+        { name: ILike(body.name.trim()) },
+        { slug: ILike(body.slug) }
+      ]
+    });
     if (tag)
       throw new BadRequestException(ErrorMessages.EXISTED_TAG)
-    await this.tagRepository.create(body)
-    return new Result()
+    
+    const createdTag = await this.tagRepository.create({ name: body.name.trim(), slug: body.slug })
+    const fullTag = await this.tagRepository.findOne({
+      where: { id: createdTag.id },
+      relations: ['apps']
+    });
+    return new Result({
+      data: Mapper(TagResponse, {
+        ...fullTag,
+        botCount: fullTag?.apps?.length || 0
+      })
+    })
   }
  
   async updateTag(body: UpdateTagRequest) {
-    const tag = await this.tagRepository.getRepository().findOne({ where: { name: ILike(body.name), slug: ILike(body.slug), id: Not(body.id) } });
+    const tag = await this.tagRepository.getRepository().findOne({
+      where: [
+        { name: ILike(body.name), id: Not(body.id) },
+        { slug: ILike(body.slug), id: Not(body.id) }
+      ]
+    });
     if (tag)
       throw new BadRequestException(ErrorMessages.EXISTED_TAG)
 
-    await this.tagRepository.update(body.id, body)
+    await this.tagRepository.update(body.id, { name: body.name.trim(), slug: body.slug })
     const updatedTag = await this.tagRepository.findOne({ where: { id: body.id } })
     return new Result({ data: updatedTag })
   }

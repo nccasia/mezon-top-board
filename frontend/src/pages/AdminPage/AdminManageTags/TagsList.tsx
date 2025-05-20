@@ -18,6 +18,7 @@ import { toast } from 'react-toastify'
 import { SLUG_RULE } from '@app/constants/common.constant'
 
 import MuiButton from '@app/mtb-ui/Button'
+import { set } from 'lodash'
 
 interface TagFormValues {
   name: string,
@@ -63,23 +64,27 @@ function TagsList() {
   useEffect(() => {
     searchTagsList()
   }, [page])
+  useEffect(() => {
+    getTagList()
+  }, [])
 
   const handleCreate = async (values: TagFormValues) => {
-    const isDuplicate = tagList?.data?.some((tag) => tag.slug === values.slug)
+    if (typeof values.slug !== 'string' || !values.slug.trim()) {
+      values.slug = generateSlug(values.name)
+    }
+    values.name = values.name.trim()
+    const isDuplicate = tagList?.data?.some((tag) =>
+      (tag.name.trim() === values.name || tag.slug === values.slug)
+    )
     if (isDuplicate) {
       toast.error('Tag already exists')
       return
-    }
-
-    if (typeof values.slug !== 'string' || !values.slug.trim()) {
-      values.slug = generateSlug(values.name)
     }
 
     try {
       await createTag({ createTagRequest: values }).unwrap()
       handleCancel()
       await getTagList()
-      searchTagsList()
       toast.success('Tag created')
     } catch (err) {
       toast.error('Failed to create tag')
@@ -88,7 +93,7 @@ function TagsList() {
 
   const handleUpdate = async (id: string) => {
     const isDuplicate = tagList?.data?.some((tag) =>
-      (tag.name === editingTag.name || tag.slug === editingTag.slug) &&
+      (tag.name === editingTag.name.trim() || tag.slug === editingTag.slug) &&
       tag.id !== id
     )
 
@@ -101,14 +106,12 @@ function TagsList() {
       await updateTag({
         updateTagRequest: {
           id,
-          name: editingTag.name,
+          name: editingTag.name.trim(),
           slug: editingTag.slug
         }
       }).unwrap()
-
       setEditingTag({ id: null, name: '', slug: '' })
       await getTagList()
-      searchTagsList()
       toast.success('Tag updated')
     } catch {
       toast.error('Failed to update tag')
@@ -123,19 +126,23 @@ function TagsList() {
     try {
       await deleteTag({ requestWithId: { id } }).unwrap()
       await getTagList()
-      searchTagsList()
       toast.success('Tag deleted')
     } catch {
       toast.error('Cannot delete tag. It might be in use.')
     }
   }
 
-  const searchTagsList = () => {
+  const handleSearch = () => {
+    setPage(1)
+    searchTagsList(1)
+  }
+
+  const searchTagsList = (pageNumber? : number) => {
     const formValues = searchForm.getFieldsValue()
     searchTag({
       search: formValues.search || '',
-      pageNumber: page,
-      pageSize: 7
+      pageNumber: pageNumber ?? page,
+      pageSize: 3
     })
   }
 
@@ -236,7 +243,7 @@ function TagsList() {
       <h2 className='font-bold text-lg mb-4'>Manage Tags</h2>
 
       <div className='flex gap-2 mb-4'>
-        <Form form={searchForm} onFinish={searchTagsList} initialValues={{ search: '' }} className='flex-grow'>
+        <Form form={searchForm} onFinish={handleSearch} initialValues={{ search: '' }} className='flex-grow'>
           <Form.Item name='search' className='w-full'>
             <Input
               ref={searchRef}
@@ -259,7 +266,7 @@ function TagsList() {
           No result
         </MtbTypography>
       )}
-      {totalTags > 7 && searchTagList.hasNextPage && (
+      {totalTags > 3 && searchTagList.hasNextPage && (
         <MuiButton block
           customClassName="mt-4 !h-10"
           loading={isLoading}
