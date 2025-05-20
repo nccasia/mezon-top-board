@@ -119,7 +119,7 @@ export const routePaths: RoutePath[] = [
   },
   {
     index: false,
-    path: '*',
+    path: '404',
     element: <NotFoundPage />,
     strLabel: 'Not Found',
     isShowMenu: false,
