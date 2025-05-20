@@ -31,7 +31,7 @@ import Button from '@app/mtb-ui/Button'
 import { getUrlMedia } from '@app/utils/stringHelper'
 function BotDetailPage() {
   const navigate = useNavigate()
-  const [getMezonAppDetail, { isError, error, isSuccess, data: getMezonAppDetailApiResponse }] = useLazyMezonAppControllerGetMezonAppDetailQuery()
+  const [getMezonAppDetail, { isError, error, data: getMezonAppDetailApiResponse }] = useLazyMezonAppControllerGetMezonAppDetailQuery()
   const [getrelatedMezonApp] = useLazyMezonAppControllerGetRelatedMezonAppQuery()
   const [getTagList] = useLazyTagControllerGetTagsQuery()
   const [getRatingsByApp, { isLoading: isLoadingReview }] = useLazyRatingControllerGetRatingsByAppQuery()
@@ -74,7 +74,7 @@ function BotDetailPage() {
   useEffect(() => {
     if (isError && error) {
       const apiError = error as ApiError
-      if (mezonAppDetail.id === undefined && apiError?.status === 500) {
+      if (mezonAppDetail.id === undefined && (apiError?.status === 500 || apiError?.status === 404)) {
         navigate('/*');
       } else {
         toast.error(apiError?.data?.message);

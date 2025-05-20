@@ -1,4 +1,5 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 
 import * as sanitizeHtml from "sanitize-html";
 import { Brackets, EntityManager, In, Not } from "typeorm";
@@ -70,8 +71,9 @@ export class MezonAppService {
     ]);
 
     if (!mezonApp) {
-      return new Result({ data: {} });
+      throw new NotFoundException("App not found");
     }
+
 
     const owner = await this.userRepository.findById(mezonApp.ownerId);
 
@@ -294,8 +296,14 @@ export class MezonAppService {
     }
 
     if (socialLinks) {
+      const seen = new Set<string>()
+      const filteredSocialLinks = socialLinks.filter((link) => {
+        const key = `${link.linkTypeId}::${link.url}`;
+        return seen.has(key) ? false : seen.add(key);
+      });
+
       links = await Promise.all(
-        socialLinks.map(async (socialLink) => {
+        filteredSocialLinks.map(async (socialLink) => {
           // Check if linkType exist.
           const linkType = await this.linkTypeRepository.findById(
             socialLink.linkTypeId,
