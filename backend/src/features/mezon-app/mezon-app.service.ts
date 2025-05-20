@@ -2,7 +2,7 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 
 import * as sanitizeHtml from "sanitize-html";
-import { Brackets, EntityManager, In, Not } from "typeorm";
+import { Brackets, EntityManager, In, Not, ObjectLiteral } from "typeorm";
 
 import { RequestWithId } from "@domain/common/dtos/request.dto";
 import { Result } from "@domain/common/dtos/result.dto";
@@ -135,6 +135,8 @@ export class MezonAppService {
 
   private async buildSearchQuery(
     query: SearchMezonAppRequest,
+    initialWhereCondition?: string | Brackets | ((qb: this) => string) | ObjectLiteral | ObjectLiteral[],
+    ititialWhereParams?: ObjectLiteral,
   ) {
     const whereCondition = this.appRepository
       .getRepository()
@@ -143,6 +145,10 @@ export class MezonAppService {
       .leftJoinAndSelect("app.ratings", "rating")
       .leftJoinAndSelect("app.socialLinks", "socialLink")
       .leftJoinAndSelect("app.owner", "owner");
+
+    if (initialWhereCondition) {
+      whereCondition.where(initialWhereCondition, ititialWhereParams);
+    }
 
     // Priorize to search by keyword if field and search exist at the same time.
     if (query.search)
@@ -179,9 +185,7 @@ export class MezonAppService {
   }
 
   async searchMezonApp(query: SearchMezonAppRequest) {
-    const whereCondition = await this.buildSearchQuery(query);
-    
-    whereCondition.where("app.status = :status", { status: AppStatus.PUBLISHED });
+    const whereCondition = await this.buildSearchQuery(query, "app.status = :status", { status: AppStatus.PUBLISHED });
 
     return paginate<App, SearchMezonAppResponse>(
       () =>
@@ -423,8 +427,7 @@ export class MezonAppService {
   }
 
   async getMyApp(userId: string, query: SearchMezonAppRequest) {
-    const whereCondition = await this.buildSearchQuery(query);
-    whereCondition.andWhere("app.ownerId = :ownerId", {
+    const whereCondition = await this.buildSearchQuery(query, "app.ownerId = :ownerId", {
       ownerId: userId,
     });
 
