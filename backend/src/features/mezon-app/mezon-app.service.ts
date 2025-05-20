@@ -1,3 +1,4 @@
+
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 
 import * as sanitizeHtml from "sanitize-html";
@@ -7,6 +8,8 @@ import { RequestWithId } from "@domain/common/dtos/request.dto";
 import { Result } from "@domain/common/dtos/result.dto";
 import { AppStatus } from "@domain/common/enum/appStatus";
 import { Role } from "@domain/common/enum/role";
+import { SortField } from '@domain/common/enum/sortField';
+import { SortOrder } from '@domain/common/enum/sortOder';
 import { App, Link, LinkType, Tag, User } from "@domain/entities";
 
 import { ErrorMessages } from "@libs/constant/messages";
@@ -25,6 +28,7 @@ import {
   GetRelatedMezonAppResponse,
   SearchMezonAppResponse,
 } from "./dtos/response";
+
 
 
 @Injectable()
@@ -157,6 +161,15 @@ export class MezonAppService {
       whereCondition.andWhere("app.ownerId = :ownerId", {
         ownerId: query.ownerId,
       });
+    }
+
+    if (
+      Object.values(SortField).includes(query.sortField as SortField) &&
+      (query.sortOrder === SortOrder.ASC || query.sortOrder === SortOrder.DESC)
+    ) {
+      whereCondition.orderBy(`app.${query.sortField}`, query.sortOrder);
+    } else {
+      whereCondition.orderBy("app.name", "ASC");
     }
 
     return paginate<App, SearchMezonAppResponse>(

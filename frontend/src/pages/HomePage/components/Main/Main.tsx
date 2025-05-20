@@ -16,6 +16,14 @@ import { IMainProps } from '@app/types/Main.type'
 import { getPageFromParams } from '@app/utils/uri'
 
 const pageOptions = [5, 10, 15]
+const sortOptions = [
+  { value: "name_ASC", label: "Name (A–Z)" },
+  { value: "name_DESC", label: "Name (Z–A)" },
+  { value: "createdAt_DESC", label: "Date Created (Newest → Oldest)" },
+  { value: "createdAt_ASC", label: "Date Created (Oldest → Newest)" },
+  { value: "updatedAt_DESC", label: "Date Updated (Newest → Oldest)" },
+  { value: "updatedAt_ASC", label: "Date Updated (Oldest → Newest)" },
+];
 function Main({ isSearchPage = false }: IMainProps) {
   const navigate = useNavigate()
   const mainRef = useRef<HTMLDivElement>(null)
@@ -33,10 +41,12 @@ function Main({ isSearchPage = false }: IMainProps) {
   const [getMezonApp, { isError, error }] = useLazyMezonAppControllerSearchMezonAppQuery()
 
   const [botPerPage, setBotPerPage] = useState<number>(pageOptions[0])
+  const [sortField, setSortField] = useState<string>('name')
+  const [sortOrder, setSortOrder] = useState<"ASC" | "DESC">("ASC")
+  const [selectedSort, setSelectedSort] = useState<IOption>(sortOptions[0]);
   const [isInitialized, setIsInitialized] = useState<boolean>(false)
   const [page, setPage] = useState<number>(() => getPageFromParams(searchParams))
 
-  const [isOpen, setIsOpen] = useState<boolean>(false)
   const [searchQuery, setSearchQuery] = useState<string>(searchParams.get('q')?.trim() || '')
   const [tagIds, setTagIds] = useState<string[]>(searchParams.get('tags')?.split(',').filter(Boolean) || [])
 
@@ -65,7 +75,7 @@ function Main({ isSearchPage = false }: IMainProps) {
 
   useEffect(() => {
     searchMezonAppList(searchQuery, tagIds)
-  }, [page, botPerPage, isSearchPage])
+  }, [page, botPerPage, isSearchPage, selectedSort])
 
   useEffect(() => {
     const newPage = getPageFromParams(searchParams)
@@ -74,14 +84,20 @@ function Main({ isSearchPage = false }: IMainProps) {
     }
   }, [searchParams])
 
+  useEffect(() => {
+    setSelectedSort(sortOptions[0])
+    setSortField('name')
+    setSortOrder('ASC')
+  }, [searchQuery])
+
   const searchMezonAppList = (searchQuery?: string, tagIds?: string[]) => {
     getMezonApp({
       search: isSearchPage ? searchQuery : undefined,
       tags: tagIds && tagIds.length ? tagIds : undefined,
       pageNumber: page,
       pageSize: botPerPage,
-      sortField: 'createdAt',
-      sortOrder: 'DESC'
+      sortField: sortField,
+      sortOrder: sortOrder
     })
   }
 
@@ -94,10 +110,19 @@ function Main({ isSearchPage = false }: IMainProps) {
     })
   }, [])
 
+  const handleSortChange = (option: IOption) => {
+    setSelectedSort(option)
+    if (typeof option.value === 'string') {
+    const [field, order] = option.value.split("_");
+      setSortField(field);
+      setSortOrder(order as "ASC" | "DESC");
+      setPage(1);
+    }
+  };
+
   const handlePageSizeChange = (option: IOption) => {
     setBotPerPage(Number(option.value))
     setPage(1)
-    setIsOpen(false)
   }
 
   const handlePageChange = (newPage: number) => {
@@ -147,18 +172,28 @@ function Main({ isSearchPage = false }: IMainProps) {
               Showing 1 of {mezonApp.totalPages ?? 0} page
             </MtbTypography>
           </div>
-          <SingleSelect
-            getPopupContainer={(trigger) => trigger.parentElement}
-            onChange={handlePageSizeChange}
-            options={options}
-            placeholder='Select'
-            size='large'
-            className='w-[13rem]'
-            dropDownTitle='Title'
-            defaultValue={options[0]}
-            onDropdownVisibleChange={(visible) => setIsOpen(visible)}
-            open={isOpen}
-          />
+          <Flex gap={10} align='center'>
+            <SingleSelect
+              getPopupContainer={(trigger) => trigger.parentElement}
+              options={sortOptions}
+              value={selectedSort}
+              onChange={handleSortChange}
+              size='large'
+              placeholder="Sort bots by..."
+              className='w-[18rem]'
+              defaultValue={sortOptions[0]}
+            />
+            <SingleSelect
+              getPopupContainer={(trigger) => trigger.parentElement}
+              onChange={handlePageSizeChange}
+              options={options}
+              placeholder='Select'
+              size='large'
+              className='w-[13rem]'
+              dropDownTitle='Title'
+              defaultValue={options[0]}
+            />
+          </Flex>
         </Flex>
         <div>
           {mezonApp?.data?.length !== 0 ? (
