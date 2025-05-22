@@ -55,6 +55,20 @@ function BotDetailPage() {
   const [page, setPage] = useState(1)
   const [isLoadingMore, setIsLoadingMore] = useState(false);
 
+  const [dragging, setDragging] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 767);
+    };
+
+    handleResize();
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   useEffect(() => {
     if (botId && botId !== 'undefined' && botId.trim() !== '') {
       getMezonAppDetail({ id: botId });
@@ -183,11 +197,15 @@ function BotDetailPage() {
             <MtbTypography variant='h3'>More like this</MtbTypography>
             <Divider className='bg-gray-200'></Divider>
             {relatedMezonApp?.length > 0 ? (
-              <Carousel arrows infinite={true} draggable swipeToSlide={true} touchThreshold={5} variableWidth={false} 
-                slidesToShow={4}  responsive={responsive} className='text-center'>
+              <Carousel arrows={!isMobile} infinite={true} draggable swipeToSlide={true} touchThreshold={5} variableWidth={false} 
+                slidesToShow={4}  responsive={responsive} className='text-center' 
+                beforeChange={() => setDragging(true)}
+                afterChange={() => {
+                  setTimeout(() => setDragging(false), 100);
+                }}>
                 {relatedMezonApp.map((bot) => (
                   <div className="p-1" key={bot.id}>
-                    <CompactBotCard data={bot} />
+                    <CompactBotCard data={bot} isDragging={dragging} />
                   </div>
                 ))}
               </Carousel>
