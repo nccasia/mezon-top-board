@@ -17,9 +17,9 @@ export const adminRoutePaths: RoutePath[] = [
     isShowMenu: true
   },
   {
-    path: '/manage/categories',
+    path: '/manage/tags',
     element: <TagsList />,
-    strLabel: 'Categories',
+    strLabel: 'Tags',
     icon: <TagOutlined />,
     isShowMenu: true
   },

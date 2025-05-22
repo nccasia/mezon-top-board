@@ -8,7 +8,7 @@ import {
 import { RootState } from '@app/store'
 import { ITagStore } from '@app/store/tag'
 import { generateSlug } from '@app/utils/stringHelper'
-import { Button, Form, Input, InputRef, message, Modal, Popconfirm, Table, Tooltip } from 'antd'
+import { Form, Input, InputRef, Popconfirm, Table, Tooltip } from 'antd'
 import { useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { SearchOutlined, EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons'
@@ -17,8 +17,8 @@ import MtbTypography from '@app/mtb-ui/Typography/Typography'
 import { toast } from 'react-toastify'
 import { SLUG_RULE } from '@app/constants/common.constant'
 
-import MuiButton from '@app/mtb-ui/Button'
-import { set } from 'lodash'
+import MtbButton from '@app/mtb-ui/Button'
+import CreateTagModal from './components/CreateTagModel'
 
 interface TagFormValues {
   name: string,
@@ -41,10 +41,6 @@ function TagsList() {
 
   const { tagList } = useSelector<RootState, ITagStore>((s) => s.tag)
   const searchRef = useRef<InputRef>(null)
-
-  const [isSlugEdited, setIsSlugEdited] = useState(false)
-  const [showSlugInput, setShowSlugInput] = useState(false)
-
 
   const [isLoadingMore, setIsLoadingMore] = useState(false)
 
@@ -204,21 +200,21 @@ function TagsList() {
       render: (_: any, record: any) =>
         editingTag.id === record.id ? (
           <div className='flex gap-2'>
-            <Button disabled={editError} type='primary' onClick={() => handleUpdate(record.id)}>
+            <MtbButton disabled={editError} color="default" variant='outlined' onClick={() => handleUpdate(record.id)}>
               Save
-            </Button>
-            <Button danger onClick={() => setEditingTag({ id: null, name: '', slug: '' })}>
+            </MtbButton>
+            <MtbButton color='danger' onClick={() => setEditingTag({ id: null, name: '', slug: '' })}>
               Cancel
-            </Button>
+            </MtbButton>
           </div>
         ) : (
           <div className='flex gap-2'>
-            <Button
+            <MtbButton color='secondary'
               icon={<EditOutlined />}
               onClick={() => setEditingTag({ id: record.id, name: record.name, slug: record.slug })}
             />
             <Popconfirm title='Delete this tag?' onConfirm={() => handleDelete(record.id)} okText='Yes' cancelText='No'>
-              <Button danger icon={<DeleteOutlined />} />
+              <MtbButton color='danger'  icon={<DeleteOutlined />} />
             </Popconfirm>
           </div>
         )
@@ -228,8 +224,6 @@ function TagsList() {
   const handleCancel = () => {
     setIsOpenModal(false)
     tagForm.resetFields();
-    setShowSlugInput(false)
-    setIsSlugEdited(false)
   }
 
   const onLoadMore = async () => {
@@ -253,10 +247,10 @@ function TagsList() {
             />
           </Form.Item>
         </Form>
-        <Button type='primary' icon={<SearchOutlined />} onClick={() => searchForm.submit()}>
+        <MtbButton icon={<SearchOutlined />} onClick={() => searchForm.submit()}>
           Search
-        </Button>
-        <Button color='default' variant='outlined' icon={<PlusOutlined />} onClick={() => setIsOpenModal(true)} />
+        </MtbButton>
+        <MtbButton color='default' variant='outlined' icon={<PlusOutlined />} onClick={() => setIsOpenModal(true)} />
       </div>
 
       {searchTagList?.data?.length ? (
@@ -267,64 +261,20 @@ function TagsList() {
         </MtbTypography>
       )}
       {totalTags > 7 && searchTagList.hasNextPage && (
-        <MuiButton block
+        <MtbButton block
           customClassName="mt-4 !h-10"
           loading={isLoading}
           onClick={onLoadMore}
         >
           Load More
-        </MuiButton>
+        </MtbButton>
       )}
 
-      <Modal
-        title={'Create New Tag'}
+      <CreateTagModal
         open={isOpenModal}
-        onCancel={handleCancel}
-        footer={<Button onClick={() => tagForm.submit()}>Add</Button>}
-        width={600}
-        centered
-      >
-        <Form form={tagForm} layout='vertical' className='!pt-2' onFinish={handleCreate}>
-          <Form.Item name='name' label='Name' rules={[{ required: true, message: 'This field is required' }]}>
-            <Input
-              placeholder='New tag name'
-              onChange={(e) => {
-                const name = e.target.value
-                const slug = isSlugEdited
-                  ? tagForm.getFieldValue('slug')
-                  : generateSlug(name)
-
-                tagForm.setFieldsValue({ name, slug })
-              }}
-            />
-          </Form.Item>
-          {!showSlugInput ? (
-            <div className='flex items-center justify-between mb-3'>
-              <Form.Item shouldUpdate>
-                {() => (
-                  <div>
-                    <strong>Slug:</strong> {tagForm.getFieldValue('slug')}
-                  </div>
-                )}
-              </Form.Item>
-              <Button
-                type='link'
-                icon={<EditOutlined />}
-                onClick={() => {
-                  setShowSlugInput(true)
-                  setIsSlugEdited(true)
-                }}
-              />
-            </div>
-          ) : (
-            <Form.Item name='slug' label='Slug' rules={[{ required: true, message: 'This field is required' }, SLUG_RULE]}>
-              <Input placeholder='New tag slug'
-                onChange={() => setIsSlugEdited(true)}
-              />
-            </Form.Item>
-          )}
-        </Form>
-      </Modal>
+        onClose={handleCancel}
+        onCreate={handleCreate}
+      />
     </div>
   )
 }
