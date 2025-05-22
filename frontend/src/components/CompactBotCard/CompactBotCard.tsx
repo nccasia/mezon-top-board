@@ -5,9 +5,7 @@ import { getUrlMedia } from '@app/utils/stringHelper'
 import { avatarBotDefault } from '@app/assets'
 import OwnerActions from '../OwnerActions/OwnerActions'
 
-
-  function CompactBotCard({ data, isPublic = true, isDragging }: ICompactBotCardProps) {
-
+function CompactBotCard({ data, isPublic = true, isDragging }: ICompactBotCardProps) {
   const navigate = useNavigate()
 
   const handleNavigateDetail = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
