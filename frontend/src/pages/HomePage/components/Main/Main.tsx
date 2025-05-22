@@ -165,14 +165,14 @@ function Main({ isSearchPage = false }: IMainProps) {
         ></SearchBar>
       </div>
       <div className='pt-8'>
-        <Flex justify='space-between'>
-          <div>
+        <Flex justify="space-between" wrap="wrap">
+          <div className='flex-shrink-0'>
             <MtbTypography variant='h3'>Mezon Bots</MtbTypography>
             <MtbTypography variant='h5' weight='normal'>
               Showing 1 of {mezonApp.totalPages ?? 0} page
             </MtbTypography>
           </div>
-          <Flex gap={10} align='center'>
+          <Flex gap={10} align='center' wrap="wrap">
             <SingleSelect
               getPopupContainer={(trigger) => trigger.parentElement}
               options={sortOptions}
@@ -180,7 +180,8 @@ function Main({ isSearchPage = false }: IMainProps) {
               onChange={handleSortChange}
               size='large'
               placeholder="Sort bots by..."
-              className='w-[18rem]'
+              dropDownTitle='Sort by'
+              className='w-[12rem] lg:w-[18rem] '
               defaultValue={sortOptions[0]}
             />
             <SingleSelect
@@ -189,7 +190,7 @@ function Main({ isSearchPage = false }: IMainProps) {
               options={options}
               placeholder='Select'
               size='large'
-              className='w-[13rem]'
+              className='w-[10rem] lg:w-[13rem]'
               dropDownTitle='Title'
               defaultValue={options[0]}
             />
